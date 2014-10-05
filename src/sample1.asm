@@ -272,7 +272,7 @@ copymap:
 	sta	$2005
 
 ; スクリーンオン
-	lda	#%10001000	; VBlank割り込みあり
+	lda	#%10001100	; VBlank割り込みあり
 ;	lda	#%00001000
 	sta	$2000
 	lda	#%00011110
@@ -376,7 +376,7 @@ SubSpdSkip:
 	;sta multiplier
 	;jsr Multi
 
-	lda	#%10001000	; VBlank割り込みあり
+	lda	#%10001100	; VBlank割り込みあり
 	sta	$2000
 
 		;VBLANK終了待ち
