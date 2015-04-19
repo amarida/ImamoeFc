@@ -7,9 +7,10 @@
 ; A
 .proc	PlayerJump
 	; ジャンプ中なら抜ける
-	lda	#1
-	cmp	is_jump
-	beq	End
+	;lda	#1
+	;cmp	is_jump
+	lda is_jump
+	bne	End
 	;inc	player_y
 
 	; ジャンプフラグON
@@ -51,33 +52,36 @@ End:
 	sta	player_x_up
 
 	; 上位が0かつ下位が127以下
-	lda #0
-	cmp player_x_up
-	bne no_skip
+	;lda #0
+	;cmp player_x_up
+;	lda player_x_up
+;	bne no_skip
 	
 	;sec
 	;lda player_x_low
 	;sbc #127
-	clc
-	lda player_x_low
-	asl	; 左シフト
-	bcs no_skip
+;	clc
+;	lda player_x_low
+;	asl	; 左シフト
+;	bcs no_skip
 
-	jmp skip
+;	jmp skip
 no_skip:
 
 	; スクロール情報
-	sec
-	lda scrool_x
-	sbc #1
-	sta scrool_x
+;	sec
+;	lda scrool_x
+;	sbc #1
+;	sta scrool_x
 
 	; フィールドスクロール情報
-	sec
-	lda field_scrool_x_low
-	sbc #1
-	sta field_scrool_x_low
-	
+;	sec
+;	lda field_scrool_x_low
+;	sbc #1
+;	sta field_scrool_x_low
+;	lda field_scrool_x_up
+;	sbc #1
+;	sta field_scrool_x_up
 
 skip:
 
@@ -98,21 +102,32 @@ skip:
 	adc	#0
 	sta	player_x_up
 
+	; スクロール座標とキャラクタ座標の差が
+	; 127以下はスクロール座標を更新しない
+	sec
+	lda player_x_low
+	sbc field_scrool_x_low
+	sec
+	sbc #127
+	sta window_player_x_low
+	bcc skip
+
 	; 上位が0かつ下位が127以下
-	lda #0
-	cmp player_x_up
-	bne no_skip
+	;lda #0
+	;cmp player_x_up
+;	lda player_x_up
+;	bne no_skip
 	
 	;sec
 	;lda player_x_low
 	;sbc #127
-	clc
-	lda player_x_low
-	asl	; 左シフト
-	bcs no_skip
+;	clc
+;	lda player_x_low
+;	asl	; 左シフト
+;	bcs no_skip
 
-	jmp skip
-no_skip:
+;	jmp skip
+;no_skip:
 
 	; スクロール情報
 	clc
@@ -125,6 +140,16 @@ no_skip:
 	adc #1
 	sta field_scrool_x_low
 
+	bcc eor_skip
+	lda #%00000001
+	eor current_draw_display_no
+	sta current_draw_display_no
+eor_skip:
+
+	lda field_scrool_x_up
+	adc #0
+	sta field_scrool_x_up
+
 skip:
 
 ;	inc player_x;
@@ -136,9 +161,11 @@ skip:
 ; 更新
 .proc	PlayerUpdate
 	; ジャンプ中確認
-	lda	#1
-	cmp	is_jump
-	bne	End
+;	lda	#1
+;	cmp	is_jump
+;	bne	End
+	lda	is_jump
+	beq	End
 	; ジャンプ中処理
 	jsr	PlayerUpdateJump
 
@@ -149,7 +176,7 @@ End:
 ; ジャンプ中処理
 .proc	PlayerUpdateJump
 	; 小数部の引き算
-	sec			; キャリーフラグOFF
+	sec			; キャリーフラグON
 	lda	player_y+1	; メモリからAにロードします
 	sbc	spd_y+1		; 減算
 	sta	player_y+1	; Aからメモリにストアします
@@ -178,6 +205,8 @@ End:
 	; ジャンプフラグを落とす
 	lda	#0
 	sta	is_jump
+
+	; プレイヤーの位置を地面に合わせる
 	lda FIELD_HEIGHT
 	sta player_y
 
@@ -188,30 +217,24 @@ End:
 
 ; 描画
 .proc	player_draw
-	; アニメパターン
-	lda	#1
-	cmp	p_pat
-	beq	Pat1
-	lda	#0
-	cmp	p_pat
-	beq	Pat2
-Pat1:
-	lda #0
-	sta REG0
-	jmp Continue
-Pat2:
-	lda #2
-	sta REG0
-	jmp Continue
-Continue:
+	;REG0 = (p_pat == 0) ? 2 : 0;
 
+	ldx #2
+	lda p_pat
+	bne	Pat1
+	ldx #0
+Pat1:
+	stx REG0
+
+
+	; REG0 = (is_jump == 0) ? #$40 : #0;
 	; ジャンプ中
-	lda #0
-	cmp is_jump
-	beq ContinueJmp
-	lda #$40
-	sta REG0
+	ldx #$40
+	lda is_jump
+	bne ContinueJmp
+	ldx REG0
 ContinueJmp:
+	stx REG0
 
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
@@ -226,137 +249,115 @@ ContinueJmp:
 	sbc #8
 	sta window_player_x_low8
 
+	; REG1 = (chr_lr == 0) ? #%00000000 : #%01000000;
+	; REG2 = (chr_lr == 0) ? window_player_x_low8 : window_player_x_low;
+	; REG3 = (chr_lr == 0) ? window_player_x_low : window_player_x_low8;
 	; 左右判定
-	lda #0
-	cmp chr_lr
-	beq Right
-	bne Left
-Right:
-	lda #%00000000
-	sta REG1
-	lda window_player_x_low8;#120
-	sta REG2
-	lda window_player_x_low;#128
-	sta REG3
-	jmp ContinueLR
-Left:
 	lda #%01000000
 	sta REG1
-	lda window_player_x_low;#128
+	lda window_player_x_low
 	sta REG2
-	lda window_player_x_low8;#120
+	lda window_player_x_low8
 	sta REG3
-	jmp ContinueLR
+
+	lda chr_lr
+	bne ContinueLR
+
+	lda #%00000000
+	sta REG1
+	lda window_player_x_low8
+	sta REG2
+	lda window_player_x_low
+	sta REG3
+
 ContinueLR:
 
 
 	sec			; キャリーフラグON
 	lda player_y
 	sbc #32
-	sta $2004   ; Y座標をレジスタにストアする
+	sta player1_y;
+	sta player2_y;
 	clc
 	lda #$80     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
+	sta player1_t
 	lda REG1;#%00000000     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta player1_s
+	sta player2_s
+	sta player3_s
+	sta player4_s
+	sta player5_s
+	sta player6_s
+	sta player7_s
+	sta player8_s
 	lda REG2; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player1_x
+	sta player3_x
+	sta player5_x
+	sta player7_x
 
-	sec			; キャリーフラグON
-	lda player_y
-	sbc #32
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$81     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta player2_t
 	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player2_x
+	sta player4_x
+	sta player6_x
+	sta player8_x
 
 	sec			; キャリーフラグON
 	lda player_y
 	sbc #24
-	sta $2004   ; Y座標をレジスタにストアする
+	sta player3_y;
+	sta player4_y;
 	clc
 	lda #$90     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG2; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player3_t
 
-	sec			; キャリーフラグON
-	lda player_y
-	sbc #24
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$91     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player4_t
 
 	sec			; キャリーフラグON
 	lda player_y
 	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
+	sta player5_y;
+	sta player6_y;
 	clc
 	lda #$A0     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG2; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player5_t
 
-	sec			; キャリーフラグON
-	lda player_y
-	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$A1     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player6_t
 
 	sec			; キャリーフラグON
 	lda player_y
 	sbc #8
-	sta $2004   ; Y座標をレジスタにストアする
+	sta player7_y;
+	sta player8_y;
 	clc
 	lda #$B0     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG2; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player7_t
 
-	sec			; キャリーフラグON
-	lda player_y
-	sbc #8
 	clc
-	sta $2004   ; Y座標をレジスタにストアする
 	lda #$B1     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
+	sta player8_t
 	lda REG1     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta $2004   ; X座標をレジスタにストアする
+	sta player8_s
 
-	inc pat_change_frame
-	lda	#10
-	cmp pat_change_frame
+	dec pat_change_frame
+	;lda	#10
+	;cmp pat_change_frame
+	lda pat_change_frame
 	beq change_pat
 
 ;End:
@@ -372,7 +373,7 @@ ContinueLR:
 	sbc p_pat
 	sta p_pat
 
-	lda	#0
+	lda	#10
 	sta	pat_change_frame
 
 	rts

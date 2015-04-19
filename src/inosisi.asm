@@ -3,6 +3,17 @@
 	sta inosisi_x
 	lda #207
 	sta inosisi_y
+	; 属性は変わらない
+	lda #%00000001     ; 0(10進数)をAにロード
+	sta inosisi1_s
+	sta inosisi2_s
+	sta inosisi3_s
+	sta inosisi4_s
+	sta inosisi5_s
+	sta inosisi6_s
+	sta inosisi7_s
+	sta inosisi8_s
+
 	rts
 .endproc
 
@@ -28,153 +39,94 @@ End:
 ; 描画
 .proc	InosisiDraw
 	; アニメパターン
-	lda	#1
-	cmp	p_pat
-	beq	Pat1
-	lda	#0
-	cmp	p_pat
-	beq	Pat2
+	;REG0 = (p_pat == 0) ? #$20 : #0;
+
+	ldx #$20
+	lda p_pat
+	bne	Pat1
+	ldx #0
 Pat1:
-	lda #$0
-	sta REG0
-	jmp Continue
-Pat2:
-	lda #$20
-	sta REG0
-	;jmp Continue
-Continue:
+	stx REG0
 
 	sec			; キャリーフラグON
 	lda inosisi_y
 	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
+	sta inosisi1_y
+	sta inosisi2_y
+	sta inosisi3_y
+	sta inosisi4_y
 	clc
 	lda #$84     ; 
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta inosisi1_t
 	sec			; キャリーフラグON
 	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sbc scrool_x;
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi1_x
+	sta inosisi5_x
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$85     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta inosisi2_t
 	sec			; キャリーフラグON
 	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sbc scrool_x;
 	clc			; キャリーフラグOFF
 	adc #8
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi2_x
+	sta inosisi6_x
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$86     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta inosisi3_t
 	sec			; キャリーフラグON
 	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sbc scrool_x;
 	clc			; キャリーフラグOFF
 	adc #16
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi3_x
+	sta inosisi7_x
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #16
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$87     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+	sta inosisi4_t
 	sec			; キャリーフラグON
 	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sbc scrool_x;
 	clc			; キャリーフラグOFF
 	adc #24
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi4_x
+	sta inosisi8_x
 
 	sec			; キャリーフラグON
 	lda inosisi_y
 	sbc #8
-	sta $2004   ; Y座標をレジスタにストアする
+	sta inosisi5_y
+	sta inosisi6_y
+	sta inosisi7_y
+	sta inosisi8_y
 	clc
 	lda #$94     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	sec			; キャリーフラグON
-	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sbc scrool_x;
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi5_t
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #8
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$95     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	sec			; キャリーフラグON
-	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sbc scrool_x;
-	clc			; キャリーフラグOFF
-	adc #8
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi6_t
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #8
-	sta $2004   ; Y座標をレジスタにストアする
 	clc
 	lda #$96     ; 21をAにロード
 	adc REG0
-	sta $2004   ; 0をストアして0番のスプライトを指定する
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	sec			; キャリーフラグON
-	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sbc scrool_x;
-	clc			; キャリーフラグOFF
-	adc #16
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi7_t
 
-	sec			; キャリーフラグON
-	lda inosisi_y
-	sbc #8
 	clc
-	sta $2004   ; Y座標をレジスタにストアする
 	lda #$97     ; 21をAにロード
-	sta $2004   ; 0をストアして0番のスプライトを指定する
 	adc REG0
-	lda #%00000000     ; 0(10進数)をAにロード
-	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
-	sec			; キャリーフラグON
-	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sbc scrool_x;
-	clc			; キャリーフラグOFF
-	adc #24
-	sta $2004   ; X座標をレジスタにストアする
+	sta inosisi8_t
 
 
 ;End:

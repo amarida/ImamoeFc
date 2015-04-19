@@ -1,36 +1,3 @@
-; かけ算関数（65535まで）
-.proc	Multi
-	;multiplicand	かけられる数
-	;multiplier		かける数
-	;multi_ans_up	結果上位
-	;multi_ans_low	結果下位
-
-	lda #0
-	sta	multi_ans_up
-	sta	multi_ans_low
-
-	lda	multiplier		; Yにかける数（ループ回数）
-	sta multi_loop_cnt
-loop_y:
-
-	clc				; キャリーフラグOFF
-	lda multi_ans_low
-	adc multiplicand
-	sta multi_ans_low
-	bcc no_countup
-
-	lda #0
-	adc multi_ans_up
-	sta multi_ans_up
-
-no_countup:
-
-	dec multi_loop_cnt
-	bne	loop_y		; ゼロフラグが立っていない
-
-	rts
-.endproc
-
 ; X座標、Y座標から
 ; 表示位置の上位ビット下位ビットを計算
 .proc ConvertCoordToBit

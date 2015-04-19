@@ -1,6 +1,9 @@
+
+
 ;  #10 10進数値
 ; #$10 16進数値
 ;  $10 16進アドレス
+; #%00000000 2進数
 
 .setcpu		"6502"
 .autoimport	on
@@ -9,6 +12,10 @@
 .include "player.asm"
 .include "inosisi.asm"
 .include "utility.asm"
+
+
+
+
 
 ; iNESヘッダ
 .segment "HEADER"
@@ -46,7 +53,11 @@
 	sta FIELD_HEIGHT	; 地面の高さ
 
 	lda #0
+	sta current_draw_display_no ; 現在の描画画面番号
+
+	lda #0
 	sta p_pat		; プレイヤーの描画パターンを0で初期化
+	lda #10
 	sta pat_change_frame;	パターン切り替えフレーム
 
 	jsr PlayerInit	; プレイヤー初期化
@@ -76,10 +87,15 @@
 ;	cpy #20					; 20回(星テーブルの数)ループする
 ;	bne loadNametable1
 
+	lda #< map_chip
+	sta map_table_low
+	lda #> map_chip
+	sta map_table_hi
 
-
-
-
+	lda #< map_chip_attribute
+	sta map_table_attribute_low
+	lda #> map_chip_attribute
+	sta map_table_attribute_hi
 
 ; パレットテーブルへ転送(BG用のみ転送)
 	lda	#$3f
@@ -119,15 +135,10 @@ copypal2:
 	; Y座標
 	lda #2
 	sta draw_bg_y
-	; 横ブロック数
-	lda #2
-	sta draw_bg_w
-	; 縦ブロック数
-	lda #2
-	sta draw_bg_h
 
 	;sta $2007		; 左上テスト
 
+	jsr SetPosition
 	jsr DrawMapChip
 
 	; タイル番号
@@ -139,12 +150,6 @@ copypal2:
 	; Y座標
 	lda #4
 	sta draw_bg_y
-	; 横ブロック数
-	lda #2
-	sta draw_bg_w
-	; 縦ブロック数
-	lda #2
-	sta draw_bg_h
 
 	;jsr DrawMapChip
 
@@ -227,44 +232,44 @@ copymap:
 	bne	loopTo_y
 
 	; 海
-	lda #$27
-	sta $2006
-	lda #$40
-	sta $2006
-	lda #$03
-	sta $2007
-	lda #$04
-	sta $2007
-	lda #$27
-	sta $2006
-	lda #$60
-	sta $2006
-	lda #$13
-	sta $2007
-	lda #$14
-	sta $2007
-	lda #$27
-	sta $2006
-	lda #$80
-	sta $2006
-	lda #$05
-	sta $2007
-	lda #$06
-	sta $2007
-
-	lda #$27
-	sta $2006
-	lda #$F0
-	sta $2006
-	lda #%00010001
-	sta $2007
-
-	lda #$27
-	sta $2006
-	lda #$F8
-	sta $2006
-	lda #%00010001
-	sta $2007
+;	lda #$27
+;	sta $2006
+;	lda #$40
+;	sta $2006
+;	lda #$03
+;	sta $2007
+;	lda #$04
+;	sta $2007
+;	lda #$27
+;	sta $2006
+;	lda #$60
+;	sta $2006
+;	lda #$13
+;	sta $2007
+;	lda #$14
+;	sta $2007
+;	lda #$27
+;	sta $2006
+;	lda #$80
+;	sta $2006
+;	lda #$05
+;	sta $2007
+;	lda #$06
+;	sta $2007
+;
+;	lda #$27
+;	sta $2006
+;	lda #$F0
+;	sta $2006
+;	lda #%00010001
+;	sta $2007
+;
+;	lda #$27
+;	sta $2006
+;	lda #$F8
+;	sta $2006
+;	lda #%00010001
+;	sta $2007
 
 ; スクロール設定
 	lda	#$00
@@ -282,17 +287,21 @@ copymap:
 ; メインループ
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 mainloop:
-vblank_wait:
-		lda	$2002
-		and	#%10000000
-		beq	vblank_wait
+;	jmp	mainloop
 
-;	lda #$20
-;	sta $2006
-;	lda scrool_x
-;	sta $2006
-;	lda #$05
-;	sta $2007
+vblank_wait:
+	lda	$2002
+	and	#%10000000
+	beq	vblank_wait
+
+	lda test_toggle_update
+	beq test_toggle_jmp
+	lda #0
+	sta test_toggle_update
+	;jmp not_toggle_jmp
+test_toggle_jmp:
+	lda #1
+	sta test_toggle_update
 
 	; タイル番号
 	lda #$01
@@ -310,53 +319,34 @@ skip:
 	; Y座標
 	lda #20
 	sta draw_bg_y
-	; 横ブロック数
-	lda #2
-	sta draw_bg_w
-	; 縦ブロック数
-	lda #2
-	sta draw_bg_h
 
+	jsr SetPosition
 	jsr DrawMapChip
 
-		
-	;ゲームメイン処理
-	;更新
-	;lda player_x
-	;sec						; キャリーフラグON
-	;sbc #128
-	;sta scrool_x
-	;lda	player_x; scrool_x	; Xのスクロール値をロード
-	lda scrool_x
-	sta	$2005		; X方向スクロール
-	lda	#0		; Yは固定
-	sta	$2005
 
-	;inc scrool_x
-	;inc scrool_y
+	; X座標
+	lda #5
+	sta draw_bg_x
+	; Y座標
+	lda #0
+	sta draw_bg_y
+	jsr SetPosition
 
-	lda	spd_vec
-	cmp	#0
-	bne	AddSpdSkip
-	jsr	AddSpd
-AddSpdSkip:
-	lda	spd_vec
-	cmp	#0
-	beq	SubSpdSkip
-	jsr	SubSpd
-SubSpdSkip:
-	
-	;clc			; キャリーフラグクリア
-	;lda	player_y
-	;sbc	spd_y		; 速度分増加
-	;sta	player_y
+	; タイル番号
+	lda #$30
+	sta draw_bg_tile
 
-	jsr	sprite_update	; スプライト更新
 
 	; 描画
 
 	; 画面外背景の描画
-	;jsr draw_bg
+	jsr draw_bg
+;	lda #$27
+;	sta $2006
+;	lda #$c0
+;	sta $2006
+	jsr draw_bg_attribute	; 属性テーブル
+
 
 ;	lda	0
 ;	sta	REG0
@@ -364,31 +354,141 @@ SubSpdSkip:
 	sta $2003  ; AのスプライトRAMのアドレスをストア
 
 ;	jsr change_palette1	; パレット差し替え
-	jsr	sprite_draw	; スプライト描画関数
+	;jsr	sprite_draw	; スプライト描画関数
+	jsr	player_draw	; プレイヤー描画関数
+	jsr InosisiDraw	; イノシシ描画関数
 ;	lda	1
 ;	sta	REG0
 ;	jsr change_palette2
-	jsr	sprite_draw2	; スプライト描画関数
-		
-	;lda #20
-	;sta multiplicand
-	;lda #20
-	;sta multiplier
-	;jsr Multi
+	;jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
 
+	; スクロール位置更新
+	lda scrool_x
+	sta	$2005		; X方向スクロール
+	lda	#0		; Yは固定
+	sta	$2005
+	
+	; スプライト描画(DMAを利用)
+	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
+	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
+
+;	lda	spd_vec
+;	cmp	#0
+;	bne	AddSpdSkip
+;	jsr	AddSpd
+;AddSpdSkip:
+;	lda	spd_vec
+;	cmp	#0
+;	beq	SubSpdSkip
+;	jsr	SubSpd
+;SubSpdSkip:
+
+	clc
 	lda	#%10001100	; VBlank割り込みあり
+	adc current_draw_display_no	; 画面０か１
 	sta	$2000
+	
+	jsr	sprite_update	; スプライト更新
+
+not_toggle_jmp:
 
 		;VBLANK終了待ち
-vblank_in_wait:
-		lda	$2002
-		and	#%10000000
-		bne	vblank_in_wait
+;vblank_in_wait:
+;		lda	$2002
+;		and	#%10000000
+;		bne	vblank_in_wait
 	jmp	mainloop
 .endproc
 
 ; VBlank割り込み
 .proc	VBlank
+
+	inc vblank_count
+	rti			; 割り込みから復帰命令
+
+
+	; タイル番号
+	lda #$01
+	sta draw_bg_tile
+
+	lda scrool_x
+	and #1
+	bne skip
+	lda #$03
+	sta draw_bg_tile
+skip:
+	; X座標
+	lda #10
+	sta draw_bg_x
+	; Y座標
+	lda #20
+	sta draw_bg_y
+
+	jsr SetPosition
+	jsr DrawMapChip
+
+
+	; X座標
+	lda #5
+	sta draw_bg_x
+	; Y座標
+	lda #0
+	sta draw_bg_y
+	jsr SetPosition
+
+	; タイル番号
+	lda #$30
+	sta draw_bg_tile
+
+;	lda	spd_vec
+;	cmp	#0
+;	bne	AddSpdSkip
+;	jsr	AddSpd
+;AddSpdSkip:
+;	lda	spd_vec
+;	cmp	#0
+;	beq	SubSpdSkip
+;	jsr	SubSpd
+;SubSpdSkip:
+	
+	jsr	sprite_update	; スプライト更新
+
+	; 描画
+
+	; 画面外背景の描画
+	jsr draw_bg				; ネームテーブル
+
+
+;	lda	0
+;	sta	REG0
+	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
+	sta $2003  ; AのスプライトRAMのアドレスをストア
+
+;	jsr change_palette1	; パレット差し替え
+	;jsr	sprite_draw	; スプライト描画関数
+	jsr	player_draw	; プレイヤー描画関数
+	jsr InosisiDraw	; イノシシ描画関数
+;	lda	1
+;	sta	REG0
+;	jsr change_palette2
+	;jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
+
+	; スクロール位置更新
+	lda scrool_x
+	sta	$2005		; X方向スクロール
+	lda	#0		; Yは固定
+	sta	$2005
+
+	lda	#%10001100	; VBlank割り込みあり
+	sta	$2000
+
+;loop:
+;	jmp loop
+		
+	; スプライト描画(DMAを利用)
+	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
+	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
+
 	rti			; 割り込みから復帰命令
 .endproc
 
@@ -427,6 +527,7 @@ End:
 
 ; スプライト更新
 .proc	sprite_update
+	inc loop_count;
 	lda #$01
 	sta $4016
 	lda #$00
@@ -474,109 +575,320 @@ Nothing:
 ; 画面外BG描画
 .proc draw_bg
 
-	; field_scrool_x を 16で割った数が現在描画するべきBG
+	; field_scrool_x を 8で割った数が現在描画するべきBG
+	; シフトするのでテンプに一旦入れる
+	lda field_scrool_x_up
+	sta field_scrool_x_up_tmp
+	lda field_scrool_x_low
+	sta field_scrool_x_low_tmp
+
 	lda field_scrool_x_up
 	sta map_chip_index_up
 	lda field_scrool_x_low
 	sta map_chip_index_low
-	; 16で割る
+	; 8で割る
 	clc
-	lsr field_scrool_x_up	; 上位は右シフト
-	ror field_scrool_x_low	; 下位は右ローテート
-	lsr field_scrool_x_up	; 上位は右シフト
-	ror field_scrool_x_low	; 下位は右ローテート
-	lsr field_scrool_x_up	; 上位は右シフト
-	ror field_scrool_x_low	; 下位は右ローテート
-	lsr field_scrool_x_up	; 上位は右シフト
-	ror field_scrool_x_low	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
 
 	; bg_already_drawがその値に達していなければ描画
 	sec
 	lda bg_already_draw;
-	sbc field_scrool_x_low
-	bne skip 
+	sbc field_scrool_x_low_tmp
+	beq not_skip
+	jmp skip
+not_skip:
 
 	; bg_already_drawを13倍(x16-(x2 + x1))したところがスタート
+	; bg_already_drawを26倍(x16+x8+x2)したところがスタート
+	;				TODO : 32倍にして、使わないところは使わないようにする
+
+;	lda #1					; テスト
+;	sta bg_already_draw
 
 	; 16倍
 	lda #0
-	sta map_chip_offset16_up
+	sta map_chip_offset_cal16_up
 	lda bg_already_draw
-	sta map_chip_offset16_low
+	sta map_chip_offset_cal16_low
 	clc
-	asl map_chip_offset16_up		; 下位は左シフト
-	rol map_chip_offset16_low		; 上位は左ローテート
-	asl map_chip_offset16_up		; 下位は左シフト
-	rol map_chip_offset16_low		; 上位は左ローテート
-	asl map_chip_offset16_up		; 下位は左シフト
-	rol map_chip_offset16_low		; 上位は左ローテート
-	asl map_chip_offset16_up		; 下位は左シフト
-	rol map_chip_offset16_low		; 上位は左ローテート
+;	asl map_chip_offsetcal16_up		; 下位は左シフト
+;	rol map_chip_offset16_low		; 上位は左ローテート
+;	asl map_chip_offset16_up		; 下位は左シフト
+;	rol map_chip_offset16_low		; 上位は左ローテート
+;	asl map_chip_offset16_up		; 下位は左シフト
+;	rol map_chip_offset16_low		; 上位は左ローテート
+;	asl map_chip_offset16_up		; 下位は左シフト
+;	rol map_chip_offset16_low		; 上位は左ローテート
+	lda bg_already_draw
+	asl a		; 下位は左シフト
+	asl a		; 下位は左シフト
+	asl a		; 下位は左シフト
+	asl a		; 下位は左シフト
+	sta map_chip_offset_cal16_low
+	lda bg_already_draw
+	lsr a		; 右へシフト
+	lsr a
+	lsr a
+	lsr a
+	sta map_chip_offset_cal16_up
+
+	; 8倍
+	lda #0
+	sta map_chip_offset_cal8_up
+	lda bg_already_draw
+	sta map_chip_offset_cal8_low
+	clc
+;	asl map_chip_offset8_up		; 下位は左シフト
+;	rol map_chip_offset8_low	; 上位は左ローテート
+;	asl map_chip_offset8_up		; 下位は左シフト
+;	rol map_chip_offset8_low	; 上位は左ローテート
+;	asl map_chip_offset8_up		; 下位は左シフト
+;	rol map_chip_offset8_low	; 上位は左ローテート
+	lda bg_already_draw
+	asl a						; 左へシフト
+	asl a
+	asl a
+	sta map_chip_offset_cal8_low
+	lda bg_already_draw
+	lsr a						; 右へシフト
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	sta map_chip_offset_cal8_up
 
 	; 2倍
 	lda #0
-	sta map_chip_offset3_up
+	sta map_chip_offset_cal2_up
 	lda bg_already_draw
-	sta map_chip_offset3_low
+	sta map_chip_offset_cal2_low
 	clc
-	asl map_chip_offset3_up		; 下位は左シフト
-	rol map_chip_offset3_low		; 上位は左ローテート
+;	asl map_chip_offset2_up		; 下位は左シフト
+;	rol map_chip_offset2_low	; 上位は左ローテート
+	lda bg_already_draw
+	asl a
+	sta map_chip_offset_cal2_low
+	lda bg_already_draw
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	lsr a
+	sta map_chip_offset_cal2_up
 
-	; 自分を加える
-	clc
-	lda map_chip_offset3_low
-	adc bg_already_draw
-	sta map_chip_offset3_low
-	lda map_chip_offset3_up
-	adc #0
-	sta map_chip_offset3_up
-
-	; x16 - x3
+	; x16 + x8 + x2
 	lda #0
-	sta map_chip_offset_up
-	sta map_chip_offset_low
-	sec
-	lda map_chip_offset16_low
-	adc map_chip_offset3_low
-	sta map_chip_offset_low
-	lda map_chip_offset16_up
-	adc map_chip_offset3_up
-	sta map_chip_offset_up
+	sta map_chip_offset_cal_up
+	sta map_chip_offset_cal_low
+	clc
+	lda map_chip_offset_cal8_low
+	adc map_chip_offset_cal2_low
+	sta map_chip_offset_cal_low
+	lda map_chip_offset_cal8_up
+	adc map_chip_offset_cal2_up
+	sta map_chip_offset_cal_up
 
 	clc
-	lda map_chip
-	adc map_chip_offset_low
-	sta map_chip_offset_start
+	lda map_chip_offset_cal16_low
+	adc map_chip_offset_cal_low
+	sta map_chip_offset_cal_low
+	lda map_chip_offset_cal16_up
+	adc map_chip_offset_cal_up
+	sta map_chip_offset_cal_up
+
+	;clc
+	;lda map_chip
+	;adc map_chip_offset_low
+	;lda map_chip_offset_low
+	;sta map_chip_offset_start
+
+	; とりあえず下位ビットだけ考えて+25(長さが26なので)する
+	clc
+	lda map_chip_offset_cal_low
+	adc #25
+	sta map_chip_offset_low
+	lda map_chip_offset_cal_up
+	adc #0
+	sta map_chip_offset_up
 
 ; 描画
 
-	ldy #13
-
-draw_loop:
-
-	lda	map_chip_offset_start, y
-	sta draw_bg_tile	; タイル番号
-	; bg_already_draw * 2 + 32
+	ldy #0
+	lda #3
+	sta draw_bg_y	; Y座標
 	lda bg_already_draw
-	asl
-	clc
-	adc #32
-	sta draw_bg_x	; X座標
-	sec
-	tya	; YをAへコピーします。
-	sbc #13
-	sta draw_bg_y
-	asl draw_bg_y	; Y座標
-	lda #2
-	sta draw_bg_w	; 横ブロック数
-	sta draw_bg_h	; 縦ブロック数
-	jsr DrawMapChip
+	; bg_already_draw + 32
+;	clc
+;	adc #0;32				; 32ブロックオフセット
+	sta draw_bg_x	; X座標（ブロック）
+;jmp skip
+	jsr SetPosition
+;lda #$01
+;sta draw_bg_tile
+;jsr DrawMapChip
+
+	ldy #24
+draw_loop:
+;	sty REG0
+;	sec
+;	lda map_chip_offset_low
+;	sbc REG0
+;	sta map_chip_offset_start
+	;ldy map_chip_offset_start
+;	ldx map_chip_offset_start
+	; lda map_chip, x
+	lda (map_table_low), y
+;lda	map_chip_offset_start, y
+	;sta draw_bg_tile	; タイル番号
 	
+	;jsr DrawMapChip
+	;lda draw_bg_tile
+	sta $2007
+
+
+
+;mugen:
+;jmp mugen
+	
+	; 26と比較して等しくなければループする
+	;iny
 	dey
-	bcs	draw_loop
+;	cpy #0
+	bpl	draw_loop
+
 
 	; 描画したら bg_already_draw をincする
 	inc bg_already_draw
+
+	; マップチップの起点を25ずらす
+	clc
+	lda map_table_low
+	adc #25
+	sta map_table_low
+	lda map_table_hi
+	adc #0
+	sta map_table_hi
+
+skip:
+
+	rts
+.endproc
+
+; 画面外BG属性設定
+.proc draw_bg_attribute
+	; field_scrool_x を 32で割った数が現在描画するべきBG
+	; シフトするのでテンプに一旦入れる
+	lda field_scrool_x_up
+	sta field_scrool_x_up_tmp
+	lda field_scrool_x_low
+	sta field_scrool_x_low_tmp
+
+	lda field_scrool_x_up
+	sta map_chip_index_up
+	lda field_scrool_x_low
+	sta map_chip_index_low
+	; 32で割る
+	clc
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scrool_x_up_tmp	; 上位は右シフト
+	ror field_scrool_x_low_tmp	; 下位は右ローテート
+
+	; bg_already_draw_attributeがその値に達していなければ設定
+	sec
+	lda bg_already_draw_attribute;
+	sbc field_scrool_x_low_tmp
+	beq not_skip
+	jmp skip
+not_skip:
+
+; 描画
+	lda #0
+	sta offset_y_attribute
+	sta draw_bg_y
+	lda bg_already_draw_attribute
+	sta draw_bg_x
+
+	; 1度だけ座標からアドレスを求める
+	; draw_bg_x
+	; draw_bg_y
+	; attribute_pos_adress_up
+	; attribute_pos_adress_low
+	jsr CalcAttributeAdressFromCoord
+
+	ldy #7
+draw_loop:
+;	sty REG0
+;	sec
+;	lda map_chip_offset_low
+;	sbc REG0
+;	sta map_chip_offset_start
+	;ldy map_chip_offset_start
+;	ldx map_chip_offset_start
+	; lda map_chip, x
+;	lda bg_already_draw_attribute
+;	sta draw_bg_x
+;	sty draw_bg_y
+;	jsr SetAttributePosition
+
+;	ldy #0
+;	lda offset_y_attribute
+;	sta draw_bg_y	; Y座標
+;	lda bg_already_draw_attribute
+;	sta draw_bg_x	; X座標（ブロック）
+;	jsr SetAttributePosition
+
+	lda attribute_pos_adress_up
+	sta $2006
+	lda attribute_pos_adress_low
+	sta $2006
+	lda (map_table_attribute_low), y
+;lda	map_chip_offset_start, y
+	;sta draw_bg_tile	; タイル番号
+	
+	;jsr DrawMapChip
+	;lda draw_bg_tile
+	sta $2007
+
+
+
+;mugen:
+;jmp mugen
+	lda attribute_pos_adress_low
+	clc
+	adc #$8
+	sta attribute_pos_adress_low
+	; マイナスじゃなければループする
+	;iny
+	dey
+;	cpy #0
+	bpl	draw_loop
+
+
+	; 描画したら bg_already_draw_attribute をincする
+	inc bg_already_draw_attribute
+
+	; マップチップの起点を8ずらす
+	clc
+	lda map_table_attribute_low
+	adc #8
+	sta map_table_attribute_low
+	lda map_table_attribute_hi
+	adc #0
+	sta map_table_attribute_hi
 
 skip:
 
@@ -588,7 +900,6 @@ skip:
 
 	jsr	player_draw	; プレイヤー描画関数
 	jsr InosisiDraw	; イノシシ描画関数
-
 
 	rts	; サブルーチンから復帰します。
 .endproc
@@ -733,30 +1044,17 @@ copypal2:
 	rts
 .endproc
 
-.proc DrawMapChip
-	; draw_bg_tile	タイル番号
+.proc SetPosition
 	; draw_bg_x	X座標
 	; draw_bg_y	Y座標
-	; draw_bg_w	横ブロック数
-	; draw_bg_h	縦ブロック数
 
-	lda #0			; Y初期化
-	sta draw_loop_y
-loop_y:
-	lda #0			; X初期化
-	sta draw_loop_x
-loop_x:
-	clc
-	lda draw_loop_x	
-	adc draw_bg_x
+	lda draw_bg_x	
 	sta conv_coord_bit_x
-	clc
-	lda draw_loop_y
-	adc draw_bg_y
+	lda draw_bg_y
 	sta conv_coord_bit_y
 ;;;;;↓ 座標をアドレス空間に変換 ;;;;;
 	;jsr ConvertCoordToBit
-	; y * 32
+	; y * 32 ; Y座標を一つ下にずらすとX方向に32動かしたこと
 	lda #0
 	sta multi_ans_up
 	sta multi_ans_low
@@ -780,27 +1078,24 @@ loop_x:
 	asl multi_ans_low
 	rol multi_ans_up
 
-	; + x
-;	lda multi_ans_low
-;	adc conv_coord_bit_x
-;	sta multi_ans_low
 	
 	; 画面１か画面２か
+	lda #$24
+	sta draw_bg_display
+
+	lda current_draw_display_no
+	beq set_skip
 	lda #$20
 	sta draw_bg_display
 
-;jmp noset24
+set_skip:
+
+jmp noset24
 	clc
-;	lda conv_coord_bit_x
-	asl				; 左シフト
-	lsr				; 右シフト
-	asl				; 左シフト
-	lsr				; 右シフト
-;	bcs set24
+	lda conv_coord_bit_x
 	asl	; 左シフト
-;	bcs set24
 	asl	; 左シフト
-;	bcs set24
+	bcs set24
 	jmp noset24
 	
 set24:
@@ -828,66 +1123,109 @@ noset24:
 	sta conv_coord_bit_up
 ;;;;;↑ 座標をアドレス空間に変換 ;;;;;
 
-
-
-
 	lda conv_coord_bit_up
 	sta $2006
 	lda conv_coord_bit_low
 	sta $2006
 
-; タイル番号
-	; y * 16
-	;lda #0
-	;sta multi_ans_low
-	;lda draw_loop_y
-	;sta multiplicand
-	;lda #16
-	;sta multiplier
-	;jsr Multi
-	; draw_loop_yを左シフト4回
-	lda draw_loop_y
+	rts
+.endproc
 
-	asl	; 左シフト
-	asl	; 左シフト
-	asl	; 左シフト
-	asl	; 左シフト
-
+.proc CalcAttributeAdressFromCoord
+	; draw_bg_x	X座標(0,0)-(7,7)
+	; draw_bg_y	Y座標
+	; attribute_pos_adress_up
+	; attribute_pos_adress_low
+	lda draw_bg_x
+	sta conv_coord_bit_x
+	lda draw_bg_y
+	sta conv_coord_bit_y
+;;;;;↓ 座標をアドレス空間に変換 ;;;;;
+	;jsr ConvertCoordToBit
+	; y * 8 ; Y座標を一つ下にずらすとX方向に8動かしたこと
+	lda #0
+	sta multi_ans_up
 	sta multi_ans_low
 
-;	lda draw_loop_y
-;	cmp #0
-;	beq no_plus
-;	lda multi_ans_low
-;	clc
-;	adc #16
-;	sta multi_ans_low
-;no_plus:
+	lda conv_coord_bit_y
+	sta multi_ans_low
 
-	; + y
+	; 8倍
 	clc
-	lda draw_bg_tile
-	adc multi_ans_low
+	asl multi_ans_low		; 下位は左シフト
+	rol multi_ans_up		; 上位は左ローテート
+
+	asl multi_ans_low
+	rol multi_ans_up
+
+	asl multi_ans_low
+	rol multi_ans_up
+	
+	; 画面１か画面２か
+	lda #$27
+	sta draw_bg_display
+
+	lda current_draw_display_no
+	beq set_skip
+	lda #$23
+	sta draw_bg_display
+
+set_skip:
+
+
+jmp noset24
+	clc
+	lda conv_coord_bit_x
+	asl	; 左シフト
+	asl	; 左シフト
+	bcs set24
+	jmp noset24
+	
+set24:
+;	lda #$24
+;	sta draw_bg_display
+;	sec
+;	lda conv_coord_bit_x;
+;	sbc #32;
+;	sta conv_coord_bit_x
+noset24:
 
 	; + x
+	lda multi_ans_low
+	adc conv_coord_bit_x
+	sta multi_ans_low
+
+	; 下位＋下位
 	clc
-	adc draw_loop_x
-	;lda draw_bg_tile
+	lda multi_ans_low
+	adc #$c0
+	sta conv_coord_bit_low
+	; 上位＋上位
+	lda multi_ans_up
+	adc draw_bg_display;#$27
+	sta conv_coord_bit_up
+;;;;;↑ 座標をアドレス空間に変換 ;;;;;
 
-	sta $2007
-	
-	inc draw_loop_x
-	lda draw_loop_x
-	cmp draw_bg_w
-	bne loop_x
-
-	inc draw_loop_y
-	lda draw_loop_y
-	cmp draw_bg_h
-	bne	loop_y
+	lda conv_coord_bit_up
+	sta attribute_pos_adress_up
+	lda conv_coord_bit_low
+	sta attribute_pos_adress_low
 
 	rts
 .endproc
+
+.proc DrawMapChip
+	; draw_bg_tile	タイル番号
+
+	lda draw_bg_tile
+	sta $2007
+
+	rts
+.endproc
+
+	; 初期データ
+X_Pos_Init:   .byte 20       ; X座標初期値
+Y_Pos_Init:   .byte 40       ; Y座標初期値
 
 ; パレットテーブル
 palette1:
@@ -917,28 +1255,107 @@ string1:
 string2:
 	.byte	$11, $12
 
-; マップチップ
-map_chip:
-;	.byte 	$03, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-;	.byte 	$01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+; マップチップ(ネームテーブル)
+map_chip: ; 26個
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $17, $07, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $18, $08, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $17, $07, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $18, $08, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $13, $03, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$06, $14, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
-	.byte 	$01, $01, $00, $00, $00, $07, $00, $00, $00, $00, $00, $00, $00
-	.byte 	$01, $00, $00, $00, $00, $07, $00, $00, $00, $00, $00, $00, $00
-	.byte 	$01, $01, $00, $00, $00, $07, $00, $00, $00, $00, $00, $00, $00
+; 属性テーブル
+map_chip_attribute:
+	.byte 	$05, $50, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $50, $00, $00, $00, $00, $00, $00
+	.byte 	$05, $50, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$00, $00, $00, $00, $00, $00, $00, $00
 
 .segment "VECINFO"
 	.word	VBlank

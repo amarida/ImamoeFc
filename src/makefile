@@ -11,7 +11,7 @@ OBJECTS	=	$(CSOURCES:.c=.o) $(ASMSOURCES:.asm=.o)
 LIBRARIES =
 #-------------------------------------------------------------------------------
 all :	$(OBJECTS) $(LIBRARIES)
-	LD65 -o sample1.nes --config sample1.cfg --obj $(OBJECTS)
+	LD65 -o sample1.nes --config sample1.cfg --obj $(OBJECTS) -m sample1.map
 
 .SUFFIXES : .asm .o
 
