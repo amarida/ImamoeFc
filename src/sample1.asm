@@ -49,6 +49,7 @@
 	sta	player_x_up
 	lda	#207		; 112(10êi)
 	sta	player_y
+
 	lda #207
 	sta FIELD_HEIGHT	; ínñ ÇÃçÇÇ≥
 

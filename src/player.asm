@@ -42,6 +42,14 @@ End:
 
 ; 左移動
 .proc	PlayerMoveLeft
+
+	; 画面の左端なら左移動しない
+	sec
+	lda player_x_low
+	sbc field_scrool_x_low
+	sbc #9
+	bcc skip; キャリーフラグがクリアされている時
+
 	sec					; キャリーフラグON
 	lda	player_x_low	; 下位
 	sbc	#1
@@ -51,43 +59,11 @@ End:
 	sbc	#0
 	sta	player_x_up
 
-	; 上位が0かつ下位が127以下
-	;lda #0
-	;cmp player_x_up
-;	lda player_x_up
-;	bne no_skip
-	
-	;sec
-	;lda player_x_low
-	;sbc #127
-;	clc
-;	lda player_x_low
-;	asl	; 左シフト
-;	bcs no_skip
-
-;	jmp skip
-no_skip:
-
-	; スクロール情報
-;	sec
-;	lda scrool_x
-;	sbc #1
-;	sta scrool_x
-
-	; フィールドスクロール情報
-;	sec
-;	lda field_scrool_x_low
-;	sbc #1
-;	sta field_scrool_x_low
-;	lda field_scrool_x_up
-;	sbc #1
-;	sta field_scrool_x_up
+	lda #1
+	sta chr_lr
 
 skip:
 
-;	dec player_x;
-	lda #1
-	sta chr_lr
 	rts
 .endproc
 
@@ -109,8 +85,7 @@ skip:
 	sbc field_scrool_x_low
 	sec
 	sbc #127
-	sta window_player_x_low
-	bcc skip
+	bcc skip	; キャリーフラグがクリアされている時
 
 	; 上位が0かつ下位が127以下
 	;lda #0
@@ -375,6 +350,12 @@ ContinueLR:
 
 	lda	#10
 	sta	pat_change_frame
+
+	rts
+.endproc
+
+; あたり判定
+.proc collision
 
 	rts
 .endproc
