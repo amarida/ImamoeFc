@@ -71,8 +71,8 @@ loop_count				EQU $47	; ループカウント
 vblank_count			EQU $48 ; VBlankのカウント
 test_toggle_update		EQU $49 ; テストトグル
 test_toggle_vblank		EQU $4A ; テストトグル
-map_table_low			EQU $4B ; 
-map_table_hi			EQU $4C ;
+map_table_outside_screen_low	EQU $4B ; 
+map_table_outside_screen_hi		EQU $4C ;
 bg_already_draw_attribute	EQU $4D ; BG属性設定済み変数（4ブロック単位）
 map_table_attribute_low		EQU $4E ; 
 map_table_attribute_hi		EQU $4F ;
@@ -80,6 +80,10 @@ offset_y_attribute		EQU $50	; 属性テーブルオフセットY
 attribute_pos_adress_up	EQU $51 ; 属性テーブルの位置アドレス上位
 attribute_pos_adress_low	EQU $52 ; 属性テーブルの位置アドレス下位
 current_draw_display_no	EQU $53 ; 現在の描画画面番号（0 or 1）
+map_table_now_low			EQU $54 ; 
+map_table_now_hi			EQU $55 ;
+bg_already_draw_pos			EQU $56	; BG描画位置（ブロック単位）
+bg_already_draw_attribute_pos	EQU $57 ; BG属性設定位置（4ブロック単位）
 
 ; スプライトDMA用$0700～$07ff
 player1_y	EQU	$0700	; 
