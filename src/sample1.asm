@@ -13,10 +13,6 @@
 .include "inosisi.asm"
 .include "utility.asm"
 
-
-
-
-
 ; iNESヘッダ
 .segment "HEADER"
 	.byte	$4E, $45, $53, $1A	; "NES" Header
@@ -47,10 +43,10 @@
 	sta	player_x_low
 	lda	#0			; 0(10進)
 	sta	player_x_up
-	lda	#207		; 112(10進)
+	lda	#175		; (10進)
 	sta	player_y
 
-	lda #207
+	lda #175
 	sta FIELD_HEIGHT	; 地面の高さ
 
 	lda #0
@@ -61,11 +57,53 @@
 	jsr PlayerInit	; プレイヤー初期化
 	jsr InosisiInit	; イノシシ初期化
 
+	;map_diff_x+1 = 0
+	;map_diff_x = 25
+	;for(int i = 0; i < 31; i++) {
+	;	map_diff_x+2+(i*2) = map_diff_x+(i*2) + 25
+	;	(map_diff_x+2+1+(i*2)) = (map_diff_x+1+(i*2)) + 0
+	;}
+	lda #0
+	sta map_diff_x_index
+	sta map_diff_x+1	; 上位
+	lda #25
+	sta map_diff_x		; 下位
+	ldx #0
+loop_diff:
+	clc
+	lda #< map_diff_x	; アドレスを取得
+	adc map_diff_x_index	; アドレスずらす
+	sta REG0
+	lda #0
+	sta REG1
+
+	ldy #0
+	clc
+	lda (REG0), y
+	adc #25
+	ldy #2
+	sta (REG0), y
+	ldy #1
+	lda (REG0), y
+	adc #0
+	ldy #3
+	sta (REG0), y
+
+	clc
+	lda map_diff_x_index
+	adc #2
+	sta map_diff_x_index
+	inx
+	sec
+	txa
+	sbc #31
+	bne loop_diff	; ゼロフラグがクリアされている時にブランチ
+
 	; マップチップ位置初期設定
 	lda #< map_chip
-	sta map_table_outside_screen_low
+	sta map_table_screen_low
 	lda #> map_chip
-	sta map_table_outside_screen_hi
+	sta map_table_screen_hi
 
 	lda #< map_chip_attribute
 	sta map_table_attribute_low
@@ -130,7 +168,7 @@ loop_first_x:
 	ldy #24	; 25個
 
 draw_loop:
-	lda (map_table_outside_screen_low), y
+	lda (map_table_screen_low), y
 	sta $2007
 
 	dey
@@ -142,12 +180,12 @@ draw_loop:
 
 	; マップチップの起点を25ずらす
 	clc
-	lda map_table_outside_screen_low
+	lda map_table_screen_low
 	adc #25
-	sta map_table_outside_screen_low
-	lda map_table_outside_screen_hi
+	sta map_table_screen_low
+	lda map_table_screen_hi
 	adc #0
-	sta map_table_outside_screen_hi
+	sta map_table_screen_hi
 
 	dex
 	bpl loop_first_x
@@ -308,6 +346,15 @@ skip:
 	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
 	sta $2003  ; AのスプライトRAMのアドレスをストア
 
+	lda #00
+	sta $2004		;Y
+	lda #01
+	sta $2004		;番号
+	lda #0
+	sta $2004
+	lda #8
+	sta $2004		;X
+
 ;	jsr change_palette1	; パレット差し替え
 	;jsr	sprite_draw	; スプライト描画関数
 	jsr	player_draw	; プレイヤー描画関数
@@ -361,90 +408,6 @@ not_toggle_jmp:
 	inc vblank_count
 	rti			; 割り込みから復帰命令
 
-
-	; タイル番号
-	lda #$01
-	sta draw_bg_tile
-
-	lda scrool_x
-	and #1
-	bne skip
-	lda #$03
-	sta draw_bg_tile
-skip:
-	; X座標
-	lda #10
-	sta draw_bg_x
-	; Y座標
-	lda #20
-	sta draw_bg_y
-
-	jsr SetPosition
-	jsr DrawMapChip
-
-
-	; X座標
-	lda #5
-	sta draw_bg_x
-	; Y座標
-	lda #0
-	sta draw_bg_y
-	jsr SetPosition
-
-	; タイル番号
-	lda #$30
-	sta draw_bg_tile
-
-;	lda	spd_vec
-;	cmp	#0
-;	bne	AddSpdSkip
-;	jsr	AddSpd
-;AddSpdSkip:
-;	lda	spd_vec
-;	cmp	#0
-;	beq	SubSpdSkip
-;	jsr	SubSpd
-;SubSpdSkip:
-	
-	jsr	sprite_update	; スプライト更新
-
-	; 描画
-
-	; 画面外背景の描画
-	jsr draw_bg				; ネームテーブル
-
-
-;	lda	0
-;	sta	REG0
-	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
-	sta $2003  ; AのスプライトRAMのアドレスをストア
-
-;	jsr change_palette1	; パレット差し替え
-	;jsr	sprite_draw	; スプライト描画関数
-	jsr	player_draw	; プレイヤー描画関数
-	jsr InosisiDraw	; イノシシ描画関数
-;	lda	1
-;	sta	REG0
-;	jsr change_palette2
-	;jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
-
-	; スクロール位置更新
-	lda scrool_x
-	sta	$2005		; X方向スクロール
-	lda	#0		; Yは固定
-	sta	$2005
-
-	lda	#%10001100	; VBlank割り込みあり
-	sta	$2000
-
-;loop:
-;	jmp loop
-		
-	; スプライト描画(DMAを利用)
-	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
-	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
-
-	rti			; 割り込みから復帰命令
 .endproc
 
 .proc	AddSpd
@@ -568,7 +531,7 @@ not_skip:
 
 	ldy #24
 draw_loop:
-	lda (map_table_outside_screen_low), y
+	lda (map_table_screen_low), y
 	sta $2007
 
 	dey	; 25個
@@ -588,12 +551,12 @@ skip_reset:
 
 	; マップチップの起点を25ずらす
 	clc
-	lda map_table_outside_screen_low
+	lda map_table_screen_low
 	adc #25
-	sta map_table_outside_screen_low
-	lda map_table_outside_screen_hi
+	sta map_table_screen_low
+	lda map_table_screen_hi
 	adc #0
-	sta map_table_outside_screen_hi
+	sta map_table_screen_hi
 
 skip:
 
@@ -1084,7 +1047,7 @@ string2:
 
 ; マップチップ(ネームテーブル)
 map_chip: ; 25個
-	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01
 	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
