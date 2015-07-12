@@ -18,7 +18,7 @@ player_x_decimal	=	$10	; プレイヤ位置X（小数部）
 player_y			=	$11	; プレイヤ位置Y（+1は小数部）
 screen_x			=	$13	; スクリーン位置
 spd_y				=	$14	; Y方向速度（+1は小数部）
-spd_vec				=	$16	; 速度方向（0プラス、1マイナス）
+spd_vec				=	$16	; 速度方向（0下方向、1上方向）
 is_jump				=	$17
 p_pat				= $18 ; プレイヤ描画パターン
 pat_change_frame	=	$19
@@ -108,6 +108,7 @@ map_chip_collision_index_right_bottom_low = $AC
 map_chip_collision_index_right_bottom_hi = $AD
 map_chip_collision_index_right_top_low = $AE
 map_chip_collision_index_right_top_hi = $AF
+collision_type						= $B0	; 当たったタイプ(0～3)
 
 ; スプライトDMA用$0700～$07ff
 player1_y	=	$0700	; 

@@ -7,11 +7,8 @@
 ; A
 .proc	PlayerJump
 	; ジャンプ中なら抜ける
-	;lda	#1
-	;cmp	is_jump
 	lda is_jump
 	bne	End
-	;inc	player_y
 
 	; ジャンプフラグON
 	lda	#1
@@ -21,8 +18,8 @@
 	lda	#10
 	sta	spd_y
 
-	;lda	#1
-	;sta	spd_vec
+	lda	#1		; 速度上方向
+	sta	spd_vec
 
 End:
 	rts
@@ -30,13 +27,11 @@ End:
 
 ; 上移動
 .proc	PlayerMoveUp
-	;dec player_y;
 	rts
 .endproc
 
 ; 下移動
 .proc	PlayerMoveDown
-	;inc player_y;
 	rts
 .endproc
 
@@ -147,23 +142,64 @@ skip:
 ; 更新
 .proc	PlayerUpdate
 	; ジャンプ中確認
-;	lda	#1
-;	cmp	is_jump
-;	bne	End
 	lda	is_jump
-	beq	End
+	beq	skip_jump
 	; ジャンプ中処理
 	jsr	PlayerUpdateJump
-
-
-End:
+	jmp exit
+skip_jump:
+	; 重力
+	clc
+	lda #1
+	adc player_y
+	sta player_y
 	; あたり判定
 	jsr collision
+	lda collision_result
+	beq roll_skip
+	; 当たった処理
+
+	; 小数部は0
+	lda #0
+	sta player_y+1
+
+	;下の処理
+	sec
+	lda player_y
+	and #%11111000
+	sta player_y
+	; ジャンプフラグを落とす
+	lda	#0
+	sta	is_jump
+
+	lda #0
+	sta spd_y
+	sta spd_y+1
+	jmp exit
+	
+roll_skip:
+	; 戻さない＝自由落下開始
+	lda #1
+	sta is_jump
+	; 速度と方向をセット
+	lda	#0
+	sta	spd_y
+	sta spd_y+1
+
+	lda	#0		; 速度下方向
+	sta	spd_vec
+
+
+exit:
 	rts
 .endproc
 
 ; ジャンプ中処理
 .proc	PlayerUpdateJump
+	lda spd_vec
+	; 0なら足し算へ
+	beq tashizan
+	;; 引き算 begin
 	; 小数部の引き算
 	sec			; キャリーフラグON
 	lda	player_y+1	; メモリからAにロードします
@@ -175,28 +211,7 @@ End:
 	sbc	spd_y
 	sta	player_y
 
-	; あたり判定
-	jsr collision
-	lda collision_result
-	;lda #0
-	beq roll_skip
-	; 当たったら、座標を戻し、速度を0にする
-	clc			; 
-	lda	player_y+1	; メモリからAにロードします
-	adc	spd_y+1		; 
-	sta	player_y+1	; Aからメモリにストアします
-	lda	player_y
-	adc	spd_y
-	sta	player_y
-
-	lda #0
-	sta spd_y
-	sta spd_y+1
-	
-roll_skip:
-
-
-	; 速度の減速
+	; 速度の減算
 	; 小数部の減速
 	sec			; キャリーフラグON
 	lda	spd_y+1
@@ -206,19 +221,106 @@ roll_skip:
 	lda	spd_y
 	sbc	#$0
 	sta	spd_y
+	; 実数部がマイナスになったら
+	bpl	skip_negative_proc; ネガティブフラグがクリアされている
+	; 速度がマイナスになったので、速度方向を下にする
+	lda #0
+	sta spd_vec
+	sta spd_y
+	sta spd_y+1
 
-	; ジャンプ終了判定、地面の位置
-	lda	FIELD_HEIGHT
-	sbc	player_y
-	bpl	End			; ネガティブフラグがクリアされている時
+skip_negative_proc:
 
+	jmp skip_tashizan
+	;; 引き算 end
+
+	;; 足し算
+tashizan:
+	; 小数部の足し算
+	clc			; キャリーフラグOFF
+	lda	player_y+1	; メモリからAにロードします
+	adc	spd_y+1		; 加算
+	sta	player_y+1	; Aからメモリにストアします
+
+	; 実数部の足し算
+	lda	player_y
+	adc	spd_y
+	sta	player_y
+
+	; 速度も足し算
+	; 小数部の加算
+	clc			; キャリーフラグOFF
+	lda	spd_y+1
+	adc	#$80
+	sta	spd_y+1
+	; 実数部の加算
+	lda	spd_y
+	adc	#$0
+	sta	spd_y
+
+	; 速度の上限を8とする
+	lda spd_y
+	cmp #8
+	bne skip_an_upper_limit
+	lda #8
+	sta spd_y
+	lda #0
+	sta spd_y+1
+skip_an_upper_limit:
+
+skip_tashizan:
+
+	; あたり判定
+	jsr collision
+	lda collision_result
+	;lda #0
+	beq roll_skip
+	; 上で当たったら、8の余剰を切り捨てて7加える、速度を0にする
+	; 下で当たったら、8の余剰を切り捨てて1引く、速度を0にする
+
+	; 小数部は0
+	lda #0
+	sta player_y+1
+
+	; 上で当たったか、下で当たったか
+	lda collision_type
+	beq shita
+	;上の処理
+	clc
+	lda player_y
+	and #%11111000
+	adc #8
+	sta player_y
+	jmp end
+shita:
+	;下の処理
+	sec
+	lda player_y
+	and #%11111000
+	sta player_y
 	; ジャンプフラグを落とす
 	lda	#0
 	sta	is_jump
+end:
+	lda #0
+	sta spd_y
+	sta spd_y+1
+	
+roll_skip:
+
+
+	; ジャンプ終了判定、地面の位置
+;	lda	FIELD_HEIGHT
+;	sbc	player_y
+;	bpl	End			; ネガティブフラグがクリアされている時
+
+	; ジャンプフラグを落とす
+;	lda	#0
+;	sta	is_jump
 
 	; プレイヤーの位置を地面に合わせる
-	lda FIELD_HEIGHT
-	sta player_y
+;	lda FIELD_HEIGHT
+;	sta player_y
 
 End:
 
@@ -284,7 +386,7 @@ ContinueLR:
 
 	clc			; キャリーフラグOFF
 	lda player_y
-	;adc #0
+	adc #7
 	sta player1_y;
 	sta player2_y;
 	clc
@@ -318,7 +420,7 @@ ContinueLR:
 
 	clc			; キャリーフラグOFF
 	lda player_y
-	adc #8
+	adc #15
 	sta player3_y;
 	sta player4_y;
 	clc
@@ -333,7 +435,7 @@ ContinueLR:
 
 	clc			; キャリーフラグOFF
 	lda player_y
-	adc #16
+	adc #23
 	sta player5_y;
 	sta player6_y;
 	clc
@@ -348,7 +450,7 @@ ContinueLR:
 
 	clc			; キャリーフラグOFF
 	lda player_y
-	adc #24
+	adc #31
 	sta player7_y;
 	sta player8_y;
 	clc
@@ -394,6 +496,7 @@ ContinueLR:
 	;		右下の下は左下の下を流用する
 	;		右上は左上の上と右下の右を流用する
 	; あたり判定用の4隅を格納
+	clc
 	lda player_y
 	sta player_y_top_for_collision		; あたり判定用上Y座標（Y座標）
 	clc
@@ -488,9 +591,9 @@ ContinueLR:
 	lsr REG0	; 右シフト
 	lsr REG0	; 右シフト	; 8で割る
 
-	; 28から引く
+	; 27から引く
 	sec
-	lda #28
+	lda #27
 	sbc REG0
 	sta REG0	; 一番下からのブロック数
 
@@ -534,6 +637,8 @@ ContinueLR:
 	beq skip0
 	lda #1
 	sta collision_result
+	lda #0	; あたり判定0番
+	sta collision_type
 	rts
 skip0:
 
@@ -578,9 +683,9 @@ skip0:
 	lsr REG0	; 右シフト
 	lsr REG0	; 右シフト	; 8で割る
 
-	; 28から引く
+	; 27から引く
 	sec
-	lda #28
+	lda #27
 	sbc REG0
 	sta REG0	; 一番下からのブロック数
 
@@ -618,6 +723,8 @@ skip0:
 	beq skip1
 	lda #1
 	sta collision_result
+	lda #1	; あたり判定1番
+	sta collision_type
 	rts
 skip1:
 
@@ -704,9 +811,9 @@ skip1:
 	lsr REG0	; 右シフト
 	lsr REG0	; 右シフト	; 8で割る
 
-	; 28から引く
+	; 27から引く
 	sec
-	lda #28
+	lda #27
 	sbc REG0
 	sta REG0	; 一番下からのブロック数
 
@@ -744,6 +851,8 @@ skip1:
 	beq skip2
 	lda #1
 	sta collision_result
+	lda #0	; あたり判定0番
+	sta collision_type
 	rts
 skip2:
 
@@ -764,9 +873,9 @@ skip2:
 	lsr REG0	; 右シフト
 	lsr REG0	; 右シフト	; 8で割る
 
-	; 28から引く
+	; 27から引く
 	sec
-	lda #28
+	lda #27
 	sbc REG0
 	sta REG0	; 一番下からのブロック数
 
@@ -804,120 +913,11 @@ skip2:
 	beq skip3
 	lda #1
 	sta collision_result
+	lda #1	; あたり判定1番
+	sta collision_type
 	rts
 skip3:
 
-
-
-
-
-
-;	ldy #1
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip1
-;	lda #1
-;	sta collision_result
-;	rts
-;skip1:
-
-
-;	ldy #2
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip2
-;	lda #1
-;	sta collision_result
-;	rts
-;skip2:
-
-
-;	ldy #3
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip3
-;	lda #1
-;	sta collision_result
-;	rts
-;skip3:
-
-;	ldy #50
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip4
-;	lda #1
-;	sta collision_result
-;	rts
-;skip4:
-
-;	ldy #51
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip5
-;	lda #1
-;	sta collision_result
-;	rts
-;skip5:
-
-;	ldy #52
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip6
-;	lda #1
-;	sta collision_result
-;	rts
-;skip6:
-
-;	ldy #53
-;	lda (map_table_char_pos_offset_low), y
-;	sta map_table_char_pos_value
-;	; collision_resultを戻り値として使用する
-;	; 0ならfalse
-;	; 1ならtrue
-;	lda #0
-;	sta collision_result
-;	lda map_table_char_pos_value
-;	beq skip7
-;	lda #1
-;	sta collision_result
-;	rts
-;skip7:
 
 	; プレイヤーのウィンドウ内位置(ピクセルからブロック)
 	; それを8で割った値を32から引いた値(x)が

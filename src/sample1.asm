@@ -43,10 +43,10 @@
 	sta	player_x_low
 	lda	#0			; 0(10進)
 	sta	player_x_up
-	lda	#175		; (10進)
+	lda	#168		; (10進)
 	sta	player_y
 
-	lda #175
+	lda #168
 	sta FIELD_HEIGHT	; 地面の高さ
 
 	lda #0
@@ -57,47 +57,6 @@
 	jsr PlayerInit	; プレイヤー初期化
 	jsr InosisiInit	; イノシシ初期化
 
-	;map_diff_x+1 = 0
-	;map_diff_x = 25
-	;for(int i = 0; i < 31; i++) {
-	;	map_diff_x+2+(i*2) = map_diff_x+(i*2) + 25
-	;	(map_diff_x+2+1+(i*2)) = (map_diff_x+1+(i*2)) + 0
-	;}
-	lda #0
-	sta map_diff_x_index
-	sta map_diff_x+1	; 上位
-	lda #25
-	sta map_diff_x		; 下位
-	ldx #0
-loop_diff:
-	clc
-	lda #< map_diff_x	; アドレスを取得
-	adc map_diff_x_index	; アドレスずらす
-	sta REG0
-	lda #0
-	sta REG1
-
-	ldy #0
-	clc
-	lda (REG0), y
-	adc #25
-	ldy #2
-	sta (REG0), y
-	ldy #1
-	lda (REG0), y
-	adc #0
-	ldy #3
-	sta (REG0), y
-
-	clc
-	lda map_diff_x_index
-	adc #2
-	sta map_diff_x_index
-	inx
-	sec
-	txa
-	sbc #31
-	bne loop_diff	; ゼロフラグがクリアされている時にブランチ
 
 	; マップチップ位置初期設定
 	lda #< map_chip
@@ -374,16 +333,6 @@ skip:
 	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
 	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
 
-;	lda	spd_vec
-;	cmp	#0
-;	bne	AddSpdSkip
-;	jsr	AddSpd
-;AddSpdSkip:
-;	lda	spd_vec
-;	cmp	#0
-;	beq	SubSpdSkip
-;	jsr	SubSpd
-;SubSpdSkip:
 
 	clc
 	lda	#%10001100	; VBlank割り込みあり
