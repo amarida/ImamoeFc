@@ -4,14 +4,14 @@ LD65	= ld65
 #-------------------------------------------------------------------------------
 CSOURCES =
 
-ASMSOURCES =	sample1.asm
+ASMSOURCES =	ImamoeFc.asm
 
 OBJECTS	=	$(CSOURCES:.c=.o) $(ASMSOURCES:.asm=.o)
 
 LIBRARIES =
 #-------------------------------------------------------------------------------
 all :	$(OBJECTS) $(LIBRARIES)
-	LD65 -o sample1.nes --config sample1.cfg --obj $(OBJECTS) -m sample1.map
+	LD65 -o ‚¢‚Ü‚¢‚¿–G‚¦‚È‚¢–º.nes --config ImamoeFc.cfg --obj $(OBJECTS) -m ImamoeFc.map
 
 .SUFFIXES : .asm .o
 

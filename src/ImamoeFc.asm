@@ -13,6 +13,10 @@
 .include "inosisi.asm"
 .include "utility.asm"
 
+.include "scene_title.asm"
+.include "scene_maingame.asm"
+.include "scene_gameover.asm"
+
 ; iNESヘッダ
 .segment "HEADER"
 	.byte	$4E, $45, $53, $1A	; "NES" Header
@@ -22,9 +26,6 @@
 	.byte	$00			; 
 	.byte	$00, $00, $00, $00	; 
 	.byte	$00, $00, $00, $00	; 
-
-;.segment "STARTUP"
-;	.byte	$AA
 
 .segment "STARTUP"
 ; リセット割り込み
@@ -57,6 +58,100 @@
 	jsr PlayerInit	; プレイヤー初期化
 	jsr InosisiInit	; イノシシ初期化
 
+	lda #1			; メインゲーム
+	sta scene_type
+
+	lda #0
+	sta key_state_on
+	sta key_state_push
+
+	lda #4
+	sta pow_two
+	lda #9
+	sta pow_two+1
+	lda #16
+	sta pow_two+2
+	lda #25
+	sta pow_two+3
+	lda #36
+	sta pow_two+4
+	lda #49
+	sta pow_two+5
+	lda #64
+	sta pow_two+6
+	lda #81
+	sta pow_two+7
+	lda #100
+	sta pow_two+8
+	lda #121
+	sta pow_two+9
+	lda #144
+	sta pow_two+10
+	lda #169
+	sta pow_two+11
+	lda #196
+	sta pow_two+12
+	lda #225
+	sta pow_two+13
+
+	lda #< command_jt
+	sta test_address_low
+	lda #> command_jt
+	sta test_address_hi
+
+	ldx #4
+command_jmp:
+	lda	command_jt+1,X		;: A ← ｢ジャンプテーブル ( RTS で飛ぶので、目的のアドレス-1 にしている )｣の上位ﾊﾞｲﾄ.X
+	pha				;: Push A
+	lda	command_jt+0,X		;: A ← ｢ジャンプテーブル ( RTS で飛ぶので、目的のアドレス-1 にしている )｣の下位ﾊﾞｲﾄ.X
+	pha				;: Push A
+check_end:
+	rts				;: サブルーチンから復帰
+
+command_jt: ; ジャンプテーブル ( RTS で飛ぶので、目的のアドレス-1 にしている )
+	.word	cmd_test1-1	; "IF"
+	.word	cmd_test2-1	; "IF"
+	.word	cmd_test3-1	; "IF"
+
+;	jsr map_table_screen_hi
+jmp break;
+cmd_test1:
+	; test1の処理
+mugen:
+jmp mugen
+
+	jmp break
+cmd_test2:
+	; test2の処理
+
+	jmp break
+cmd_test3:
+	; test3の処理
+
+	jmp break
+
+
+break:
+
+
+;;;;; 二乗の計算結果の取得方法 ;;;;;
+	lda #1
+	sta map_diff_x_index
+
+	lda #< pow_two	; アドレスを取得
+	adc map_diff_x_index	; アドレスずらす
+	sta REG0
+	lda #0
+	sta REG1
+
+	ldy #0
+	clc
+	lda (REG0), y
+
+	sta REG2
+;;;;; 二乗の計算結果の取得方法 ;;;;;
+
+
 
 	; マップチップ位置初期設定
 	lda #< map_chip
@@ -78,7 +173,7 @@
 	ldy	#$16
 copypal:
 	lda	palettes_bg, x
-	sta	$2007
+	sta $2007
 	inx				; Xをインクリメントする
 	dey				; Yをデクリメントする
 	bne	copypal
@@ -92,7 +187,7 @@ copypal:
 	ldy	#$8
 copypal2:
 	lda	palette1, x
-	sta	$2007
+	sta $2007
 	inx
 	dey
 	bne	copypal2
@@ -235,113 +330,40 @@ skip_reset:
 	lda	#%10001100	; VBlank割り込みあり　VRAM増加量32byte
 	sta	$2000
 
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; メインループ
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 mainloop:
-;	jmp	mainloop
 
 vblank_wait:
 	lda	$2002
 	and	#%10000000
 	beq	vblank_wait
 
-	lda test_toggle_update
-	beq test_toggle_jmp
-	lda #0
-	sta test_toggle_update
-	;jmp not_toggle_jmp
-test_toggle_jmp:
-	lda #1
-	sta test_toggle_update
+	lda scene_type
+	cmp #0
+	beq case_title
+	cmp #1
+	beq case_maingame
+	cmp #2
+	beq case_gameover
 
-	; タイル番号
-	lda #$01
-	sta draw_bg_tile
-
-	lda scrool_x
-	and #1
-	bne skip	; ゼロフラグがクリアされている時
-	lda #$03
-	sta draw_bg_tile
-skip:
-	; X座標
-	lda #10
-	sta draw_bg_x
-	; Y座標
-	lda #20
-	sta draw_bg_y
-
-	jsr SetPosition
-	jsr DrawMapChip
-
-
-	; X座標
-	lda #5
-	sta draw_bg_x
-	; Y座標
-	lda #0
-	sta draw_bg_y
-	jsr SetPosition
-
-	; タイル番号
-	lda #$30
-	sta draw_bg_tile
-
-
-	; 描画
-
-	; 画面外背景の描画
-	jsr draw_bg				; ネームテーブル
-;	lda #$27
-;	sta $2006
-;	lda #$c0
-;	sta $2006
-	jsr draw_bg_attribute	; 属性テーブル
-
-
-;	lda	0
-;	sta	REG0
-	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
-	sta $2003  ; AのスプライトRAMのアドレスをストア
-
-	lda #00
-	sta $2004		;Y
-	lda #01
-	sta $2004		;番号
-	lda #0
-	sta $2004
-	lda #8
-	sta $2004		;X
-
-;	jsr change_palette1	; パレット差し替え
-	;jsr	sprite_draw	; スプライト描画関数
-	jsr	player_draw	; プレイヤー描画関数
-	jsr InosisiDraw	; イノシシ描画関数
-;	lda	1
-;	sta	REG0
-;	jsr change_palette2
-	;jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
-
-	; スクロール位置更新
-	lda scrool_x
-	sta	$2005		; X方向スクロール
-	lda	#0		; Yは固定
-	sta	$2005
-	
-	; スプライト描画(DMAを利用)
-	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
-	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
-
-
-	clc
-	lda	#%10001100	; VBlank割り込みあり
-	adc current_draw_display_no	; 画面０か１
-	sta	$2000
-	
-	jsr	sprite_update	; スプライト更新
-
-not_toggle_jmp:
+case_title:
+	; 処理0
+	jsr scene_title
+	jmp scene_break;
+case_maingame:
+	; 処理1
+	jsr scene_maingame
+	jmp scene_break;
+case_gameover:
+	; 処理2
+	jsr scene_gameover
+	jmp scene_break;
+scene_break:
 
 		;VBLANK終了待ち
 ;vblank_in_wait:
@@ -392,14 +414,21 @@ End:
 	rts
 .endproc
 
-; スプライト更新
-.proc	sprite_update
+; 更新
+.proc	Update
+	; キー入力
 	inc loop_count;
+	; 初期化
 	lda #$01
 	sta $4016
 	lda #$00
 	sta $4016
 
+	; 前回の状態を格納
+	lda key_state_on
+	sta key_state_on_old
+
+	; A,B,SELECT,START,UP,DOWN,LEFT,RIGHTの順番
 	lda $4016	; A
 	and #1
 	beq SkipPushA
@@ -429,11 +458,16 @@ SkipKeyLeft:
 	jsr PlayerMoveRight
 SkipKeyRight:
 
+	lda key_state_on
+	eor key_state_on_old
+	and key_state_on
+	sta key_state_push
+
 	jmp Nothing
 
 Nothing:
 
-	jsr PlayerUpdate
+	jsr Player_Update
 	jsr	InosisiUpdate
 
 	rts	; サブルーチンから復帰します。
@@ -596,8 +630,7 @@ draw_loop:
 
 
 
-;mugen:
-;jmp mugen
+
 	lda attribute_pos_adress_low
 	clc
 	adc #$8
@@ -757,7 +790,7 @@ skip:
 	ldy	#$4
 copypal2:
 	lda	palette1, x
-	sta	$2007
+	sta $2007
 	inx
 	dey
 	bne	copypal2
@@ -775,7 +808,7 @@ copypal2:
 	ldy	#$4
 copypal2:
 	lda	palette2, x
-	sta	$2007
+	sta $2007
 	inx
 	dey
 	bne	copypal2
@@ -962,6 +995,96 @@ noset24:
 	rts
 .endproc
 
+.proc DrawGameOver
+	ldx #0
+	lda #10
+	sta REG0
+	;current_draw_display_no ; スクロール画面が１か２か
+	;scrool_x				; スクロール位置
+	; スクロール位置から(8ピクセルx10ブロック)
+	; 80ピクセル加えて
+	; キャリーフラグが立ったら隣の画面
+	clc
+	lda scrool_x
+	adc #80
+	bcs display2
+	bcc display1
+	
+	; キャリーフラグが立たないかつ
+	; 152(80+72)ピクセル加えてキャリーフラグが
+	; 立たなければ、今の画面のみ
+;	clc
+;	lda scrool_x
+;	adc #152
+;	bcc display1
+
+	; キャリーフラグが立たないかつ
+	; 152(80+72)ピクセル加えてキャリーフラグが
+	; 立つ場合、2画面に分かれる
+	; 分割する位置
+	; 255-scrool_xの8で割った値が
+	; その画面で表示する文字数
+;	sec
+;	lda #255
+;	sbc scrool_x
+;	sta REG1
+;	clc
+;	lsr REG1	; 右ローテート
+;	lsr REG1	; 右ローテート
+;	lsr REG1	; 右ローテート
+;	
+;	jmp display1and2
+
+display1:
+	; スクロール位置÷８に10加える
+	lda scrool_x
+	sta REG1
+	lsr REG1	; 右シフト
+	lsr REG1	; 右シフト
+	lsr REG1	; 右シフト
+	clc
+	lda #10
+	adc REG1
+	sta REG0
+	
+
+jmp skip_ready
+display2:
+	; なにかから10引く
+
+jmp skip_ready
+display1and2:
+
+skip_ready:
+
+	lda current_draw_display_no
+	sta REG2
+	lda #1
+	sta current_draw_display_no
+
+loop_x:
+	lda #10
+	sta draw_bg_y	; Y座標（ブロック）
+	lda REG0	; X座標（ブロック）
+	sta draw_bg_x	; X座標（ブロック）
+	jsr SetPosition
+
+	lda string_game_over, x
+	sta $2007
+
+	inc REG0
+	
+	inx
+	cpx #9
+	bne loop_x
+
+	; 画面１か２の設定を戻す
+	lda REG2
+	sta current_draw_display_no
+
+	rts
+.endproc
+
 	; 初期データ
 X_Pos_Init:   .byte 20       ; X座標初期値
 Y_Pos_Init:   .byte 40       ; Y座標初期値
@@ -994,8 +1117,11 @@ string1:
 string2:
 	.byte	$11, $12
 
+string_game_over:
+	.byte	"GAME OVER"
+
 ; マップチップ(ネームテーブル)
-map_chip: ; 25個
+map_chip: ; 25個(上3個空き)240ライン表示なら上下＋１づつ
 	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01
 	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -1134,4 +1260,3 @@ map_chip_attribute:
 ; パターンテーブル
 .segment "CHARS"
 	.incbin	"character.chr"
-

@@ -1,6 +1,8 @@
 .proc	PlayerInit
 	lda #0
 	sta chr_lr
+	sta is_dead
+	sta update_dead_step
 	rts
 .endproc
 
@@ -59,8 +61,8 @@ End:
 	sta chr_lr
 
 	; あたり判定
-	jsr collision
-	lda collision_result
+	jsr collision_object
+	lda obj_collision_result
 	beq skip
 
 	clc
@@ -87,8 +89,8 @@ skip:
 	sta	player_x_up
 
 	; あたり判定
-	jsr collision
-	lda collision_result
+	jsr collision_object
+	lda obj_collision_result
 	beq roll_skip
 
 	sec
@@ -116,6 +118,17 @@ roll_skip:
 	adc #1
 	sta scrool_x
 
+	; スクロール情報の更新とともに
+	; イノシシ座標ずらす
+	sec
+	lda inosisi_x
+	sbc #1
+	sta inosisi_x
+	bne skip_inosisi_reset
+	lda #255
+	sta inosisi_x
+skip_inosisi_reset:
+
 	clc
 	lda field_scrool_x_low
 	adc #1
@@ -139,23 +152,52 @@ skip:
 	rts
 .endproc
 
+.proc	PlayerDead
+	; 死亡フラグON
+	lda	#1
+	sta	is_dead
+
+	rts
+.endproc
+
 ; 更新
-.proc	PlayerUpdate
+.proc	Player_Update
+	; 死亡中
+	;	ステップ
+	;	止まる
+	;	上に飛ぶ
+	; ジャンプ中
+	; ジャンプ中じゃない処理
+
+	; 上記にかかわらず通る処理
+
+
+	; 死亡中の処理
+	lda is_dead
+	beq skip_dead
+	jsr Player_UpdateDead
+skip_dead:
+
 	; ジャンプ中確認
 	lda	is_jump
 	beq	skip_jump
 	; ジャンプ中処理
-	jsr	PlayerUpdateJump
-	jmp exit
+	jsr	Player_UpdateJump
 skip_jump:
+
+	; ジャンプ中じゃない
+	lda	is_jump
+	bne	skip_not_jump
+	lda is_dead
+	bne skip_not_jump
 	; 重力
 	clc
 	lda #1
 	adc player_y
 	sta player_y
 	; あたり判定
-	jsr collision
-	lda collision_result
+	jsr collision_object
+	lda obj_collision_result
 	beq roll_skip
 	; 当たった処理
 
@@ -175,12 +217,13 @@ skip_jump:
 	lda #0
 	sta spd_y
 	sta spd_y+1
-	jmp exit
+	jmp not_jump_exit
 	
 roll_skip:
 	; 戻さない＝自由落下開始
 	lda #1
 	sta is_jump
+
 	; 速度と方向をセット
 	lda	#0
 	sta	spd_y
@@ -189,13 +232,30 @@ roll_skip:
 	lda	#0		; 速度下方向
 	sta	spd_vec
 
+not_jump_exit:
+skip_not_jump:
 
-exit:
+	; その他の必ず通る処理
+
+
+	; 敵とのあたり判定
+	jsr collision_char
+	lda is_dead					; 死亡フラグ
+	eor #1						; is_deadを反転
+	and char_collision_result	; 当たり判定とand
+	; 当たりかつ生きている場合
+	; 初回処理と死亡フラグを立てる
+	beq skip_first_hit
+	jsr PlayerDead
+	
+skip_first_hit:
+
+
 	rts
 .endproc
 
 ; ジャンプ中処理
-.proc	PlayerUpdateJump
+.proc	Player_UpdateJump
 	lda spd_vec
 	; 0なら足し算へ
 	beq tashizan
@@ -271,8 +331,8 @@ skip_an_upper_limit:
 skip_tashizan:
 
 	; あたり判定
-	jsr collision
-	lda collision_result
+	jsr collision_object
+	lda obj_collision_result
 	;lda #0
 	beq roll_skip
 	; 上で当たったら、8の余剰を切り捨てて7加える、速度を0にする
@@ -283,7 +343,7 @@ skip_tashizan:
 	sta player_y+1
 
 	; 上で当たったか、下で当たったか
-	lda collision_type
+	lda obj_collision_type
 	beq shita
 	;上の処理
 	clc
@@ -308,21 +368,93 @@ end:
 	
 roll_skip:
 
+	; 死んでたら224で止める
+	lda is_dead
+	cmp #1
+	bne dead_stop_skip
+	sec
+	lda #224
+	sbc player_y
+	bcs dead_stop_skip	; キャリーフラグセットされている
+	lda #224
+	sta player_y
+dead_stop_skip:
 
-	; ジャンプ終了判定、地面の位置
-;	lda	FIELD_HEIGHT
-;	sbc	player_y
-;	bpl	End			; ネガティブフラグがクリアされている時
+	rts
+.endproc
 
-	; ジャンプフラグを落とす
-;	lda	#0
-;	sta	is_jump
+; 死亡時更新
+.proc	Player_UpdateDead
+;	enum {
+;		step_init,
+;		step_stop,
+;		step_jump,
+;		step_wait,
+;	};
+;	switch(m_step) {
+;	case step_init:
+;		m_step++;
+;		break;
+;	case step_stop:
+;		m_step++;
+;		break;
+;	case step_jump:
+;		m_step++;
+;		break;
+;	case step_wait:
+;		m_step++;
+;		break;
+;	}
 
-	; プレイヤーの位置を地面に合わせる
-;	lda FIELD_HEIGHT
-;	sta player_y
+	lda update_dead_step
+	cmp #0
+	beq case_init
+	cmp #1
+	beq case_stop
+	cmp #2
+	beq case_jump
+	cmp #3
+	beq case_wait
 
-End:
+case_init:
+	; 処理0
+	inc update_dead_step
+	jmp break;
+case_stop:
+	; 処理1
+	lda #30
+	sta wait_frame
+	inc update_dead_step
+	jmp break;
+case_jump:
+	; 処理2
+	dec wait_frame
+	bne break
+	lda #1
+	sta is_jump
+
+	; 速度と方向をセット
+	lda	#10
+	sta	spd_y
+
+	lda	#1		; 速度上方向
+	sta	spd_vec
+	inc update_dead_step
+	jmp break;
+case_wait:
+	; 処理3
+	sec
+	lda #224
+	cmp player_y
+	bne break
+	lda #2
+	sta scene_type
+	inc update_dead_step
+	jmp break;
+
+break:
+
+
 
 	rts
 .endproc
@@ -339,13 +471,22 @@ Pat1:
 	stx REG0
 
 
-	; REG0 = (is_jump == 0) ? #$40 : #0;
+	; REG0 = (is_jump == 1) ? #$40 : #0;
 	; ジャンプ中
 	ldx #$40
 	lda is_jump
 	bne ContinueJmp
 	ldx REG0
 ContinueJmp:
+	stx REG0
+
+	; REG0 = (is_dead == 1) ? #$42 : #0;
+	; 死亡中
+	ldx #$42
+	lda is_dead
+	bne ContinueDead
+	ldx REG0
+ContinueDead:
 	stx REG0
 
 	; フィールドプレイヤー位置 - フィールドスクロール位置
@@ -490,8 +631,16 @@ ContinueLR:
 	rts
 .endproc
 
-; あたり判定
-.proc collision
+; オブジェクトとのあたり判定
+.proc collision_object
+	; 死亡中は判定しない
+	lda is_dead
+	beq skip_return
+	lda #0
+	sta obj_collision_result
+	rts
+skip_return:
+
 	; TODO:	左上の左は左下の左を流用する
 	;		右下の下は左下の下を流用する
 	;		右上は左上の上と右下の右を流用する
@@ -628,17 +777,17 @@ ContinueLR:
 	lda (map_table_char_pos_offset_low), y
 	sta map_table_char_pos_value
 
-	; collision_resultを戻り値として使用する
+	; obj_collision_resultを戻り値として使用する
 	; 0ならfalse
 	; 1ならtrue
 	lda #0
-	sta collision_result
+	sta obj_collision_result
 	lda map_table_char_pos_value
 	beq skip0
 	lda #1
-	sta collision_result
+	sta obj_collision_result
 	lda #0	; あたり判定0番
-	sta collision_type
+	sta obj_collision_type
 	rts
 skip0:
 
@@ -714,17 +863,17 @@ skip0:
 	lda (map_table_char_pos_offset_low), y
 	sta map_table_char_pos_value
 
-	; collision_resultを戻り値として使用する
+	; obj_collision_resultを戻り値として使用する
 	; 0ならfalse
 	; 1ならtrue
 	lda #0
-	sta collision_result
+	sta obj_collision_result
 	lda map_table_char_pos_value
 	beq skip1
 	lda #1
-	sta collision_result
+	sta obj_collision_result
 	lda #1	; あたり判定1番
-	sta collision_type
+	sta obj_collision_type
 	rts
 skip1:
 
@@ -842,17 +991,17 @@ skip1:
 	lda (map_table_char_pos_offset_low), y
 	sta map_table_char_pos_value
 
-	; collision_resultを戻り値として使用する
+	; obj_collision_resultを戻り値として使用する
 	; 0ならfalse
 	; 1ならtrue
 	lda #0
-	sta collision_result
+	sta obj_collision_result
 	lda map_table_char_pos_value
 	beq skip2
 	lda #1
-	sta collision_result
+	sta obj_collision_result
 	lda #0	; あたり判定0番
-	sta collision_type
+	sta obj_collision_type
 	rts
 skip2:
 
@@ -908,13 +1057,13 @@ skip2:
 	; 0ならfalse
 	; 1ならtrue
 	lda #0
-	sta collision_result
+	sta obj_collision_result
 	lda map_table_char_pos_value
 	beq skip3
 	lda #1
-	sta collision_result
+	sta obj_collision_result
 	lda #1	; あたり判定1番
-	sta collision_type
+	sta obj_collision_type
 	rts
 skip3:
 
@@ -929,5 +1078,56 @@ skip3:
 	;		525, 550, 575, 600, 625, 650, 675, 700, 725, 750
 	;		750, 775
 	; int map[主人公の位置,y] = map_table_attribute_low - diff[x]
+	rts
+.endproc
+
+; キャラとのあたり判定
+.proc collision_char
+	; プレイヤのX座標とイノシシのX座標と
+	; プレイヤのY座標とイノシシのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+	
+	; プレイヤのXとイノシシのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc inosisi_x
+	bpl big_player	; プレイヤの方が大きい
+	; イノシシの方が大きい
+	sec
+	lda inosisi_x
+	sbc window_player_x_low
+big_player:
+	sta REG0	; X差分
+
+	; プレイヤのXとイノシシのYの大きい方
+	sec
+	lda player_y
+	sbc inosisi_y
+	bpl big_player_y	; プレイヤの方が大きい
+	; イノシシの方が大きい
+	sec
+	lda inosisi_y
+	sbc player_y
+big_player_y:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	exit	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #17
+	bpl	exit	; 差分が16より大きい
+
+	lda #1
+	sta char_collision_result
+
+exit:
 	rts
 .endproc
