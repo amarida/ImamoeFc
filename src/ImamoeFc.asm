@@ -16,6 +16,7 @@
 .include "scene_title.asm"
 .include "scene_maingame.asm"
 .include "scene_gameover.asm"
+.include "defineDMA.asm"
 
 ; iNESヘッダ
 .segment "HEADER"
@@ -29,6 +30,7 @@
 
 .segment "STARTUP"
 ; リセット割り込み
+.org $8000
 .proc	Reset
 	sei			; IRQ割り込みを禁止します。
 ;	ldx	#$ff		; メモリからXにロードします。
