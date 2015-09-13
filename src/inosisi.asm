@@ -21,6 +21,22 @@
 	sta inosisi26_s
 	sta inosisi27_s
 	sta inosisi28_s
+	sta inosisi1_s2
+	sta inosisi2_s2
+	sta inosisi3_s2
+	sta inosisi4_s2
+	sta inosisi5_s2
+	sta inosisi6_s2
+	sta inosisi7_s2
+	sta inosisi8_s2
+	sta inosisi21_s2
+	sta inosisi22_s2
+	sta inosisi23_s2
+	sta inosisi24_s2
+	sta inosisi25_s2
+	sta inosisi26_s2
+	sta inosisi27_s2
+	sta inosisi28_s2
 
 	rts
 .endproc
@@ -49,7 +65,7 @@ End:
 
 
 ; 描画
-.proc	InosisiDraw
+.proc	InosisiDrawDma7
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
 
@@ -175,3 +191,129 @@ Pat1:
 
 .endproc
 
+; 描画
+.proc	InosisiDrawDma6
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$20 : #0;
+
+	ldx #$20
+	lda p_pat
+	bne	Pat1
+	ldx #0
+Pat1:
+	stx REG0
+
+	clc			; キャリーフラグOFF
+	lda inosisi_y
+	adc #7
+	sta inosisi1_y2
+	sta inosisi2_y2
+	sta inosisi3_y2
+	sta inosisi4_y2
+	sta inosisi21_y2
+	sta inosisi22_y2
+	sta inosisi23_y2
+	sta inosisi24_y2
+	clc
+	lda #$84     ; 
+	adc REG0
+	sta inosisi1_t2
+	sta inosisi21_t2
+;	sec			; キャリーフラグON
+	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+;	sbc scrool_x;
+	sta inosisi1_x2
+	sta inosisi5_x2
+	clc
+	adc #64
+	sta inosisi21_x2
+	sta inosisi25_x2
+
+	clc
+	lda #$85     ; 21をAにロード
+	adc REG0
+	sta inosisi2_t2
+	sta inosisi22_t2
+;	sec			; キャリーフラグON
+	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+;	sbc scrool_x;
+	clc			; キャリーフラグOFF
+	adc #8
+	sta inosisi2_x2
+	sta inosisi6_x2
+	adc #64
+	sta inosisi22_x2
+	sta inosisi26_x2
+
+	clc
+	lda #$86     ; 21をAにロード
+	adc REG0
+	sta inosisi3_t2
+	sta inosisi23_t2
+;	sec			; キャリーフラグON
+	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+;	sbc scrool_x;
+	clc			; キャリーフラグOFF
+	adc #16
+	sta inosisi3_x2
+	sta inosisi7_x2
+	adc #64
+	sta inosisi23_x2
+	sta inosisi27_x2
+
+	clc
+	lda #$87     ; 21をAにロード
+	adc REG0
+	sta inosisi4_t2
+	sta inosisi24_t2
+;	sec			; キャリーフラグON
+	lda inosisi_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+;	sbc scrool_x;
+	clc			; キャリーフラグOFF
+	adc #24
+	sta inosisi4_x2
+	sta inosisi8_x2
+	adc #64
+	sta inosisi24_x2
+	sta inosisi28_x2
+
+	clc			; キャリーフラグOFF
+	lda inosisi_y
+	adc #15
+	sta inosisi5_y2
+	sta inosisi6_y2
+	sta inosisi7_y2
+	sta inosisi8_y2
+	sta inosisi25_y2
+	sta inosisi26_y2
+	sta inosisi27_y2
+	sta inosisi28_y2
+	clc
+	lda #$94     ; 21をAにロード
+	adc REG0
+	sta inosisi5_t2
+	sta inosisi25_t2
+
+	clc
+	lda #$95     ; 21をAにロード
+	adc REG0
+	sta inosisi6_t2
+	sta inosisi26_t2
+
+	clc
+	lda #$96     ; 21をAにロード
+	adc REG0
+	sta inosisi7_t2
+	sta inosisi27_t2
+
+	clc
+	lda #$97     ; 21をAにロード
+	adc REG0
+	sta inosisi8_t2
+	sta inosisi28_t2
+
+
+;End:
+	rts
+
+.endproc

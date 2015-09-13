@@ -120,4 +120,3 @@ test_address_low					= $B8
 test_address_hi						= $B9
 scene_type							= $BA	; シーン（0:TITLE 2:メイン 4:ゲームオーバー）
 
-

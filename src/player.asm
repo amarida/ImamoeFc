@@ -460,7 +460,7 @@ break:
 .endproc
 
 ; 描画
-.proc	player_draw
+.proc	player_draw_dma7
 	;REG0 = (p_pat == 0) ? 2 : 0;
 
 	ldx #2
@@ -543,6 +543,7 @@ ContinueLR:
 	sta player6_s
 	sta player7_s
 	sta player8_s
+
 	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sta player1_x
 	sta player3_x
@@ -610,7 +611,170 @@ ContinueLR:
 	;lda	#10
 	;cmp pat_change_frame
 	lda pat_change_frame
-	beq change_pat
+	bne change_pat_skip
+	jsr change_pat
+
+change_pat_skip:
+;End:
+	rts
+
+.endproc
+; 描画
+.proc	player_draw_dma6
+	;REG0 = (p_pat == 0) ? 2 : 0;
+
+	ldx #2
+	lda p_pat
+	bne	Pat1
+	ldx #0
+Pat1:
+	stx REG0
+
+
+	; REG0 = (is_jump == 1) ? #$40 : #0;
+	; ジャンプ中
+	ldx #$40
+	lda is_jump
+	bne ContinueJmp
+	ldx REG0
+ContinueJmp:
+	stx REG0
+
+	; REG0 = (is_dead == 1) ? #$42 : #0;
+	; 死亡中
+	ldx #$42
+	lda is_dead
+	bne ContinueDead
+	ldx REG0
+ContinueDead:
+	stx REG0
+
+	; フィールドプレイヤー位置 - フィールドスクロール位置
+	sec
+	lda player_x_low
+	sbc field_scrool_x_low
+	sta window_player_x_low
+	;lda player_x_up
+	;sbc field_scrool_x_up
+	;sta window_player_x_up
+	clc
+	lda window_player_x_low
+	adc #8
+	sta window_player_x_low8
+
+	; REG1 = (chr_lr == 0) ? #%00000000 : #%01000000;
+	; REG2 = (chr_lr == 0) ? window_player_x_low8 : window_player_x_low;
+	; REG3 = (chr_lr == 0) ? window_player_x_low : window_player_x_low8;
+	; 左右判定
+	lda #%01000000
+	sta REG1
+	lda window_player_x_low
+	sta REG2
+	lda window_player_x_low8
+	sta REG3
+
+	lda chr_lr
+	bne ContinueLR
+
+	lda #%00000000
+	sta REG1
+	lda window_player_x_low8
+	sta REG2
+	lda window_player_x_low
+	sta REG3
+
+ContinueLR:
+
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #7
+	sta player1_y2;
+	sta player2_y2;
+	clc
+	lda #$80     ; 21をAにロード
+	adc REG0
+	sta player1_t2
+	lda REG1;#%00000000     ; 0(10進数)をAにロード
+	sta player1_s2
+	sta player2_s2
+	sta player3_s2
+	sta player4_s2
+	sta player5_s2
+	sta player6_s2
+	sta player7_s2
+	sta player8_s2
+
+	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	sta player1_x2
+	sta player3_x2
+	sta player5_x2
+	sta player7_x2
+
+	clc
+	lda #$81     ; 21をAにロード
+	adc REG0
+	sta player2_t2
+	lda REG2; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	sta player2_x2
+	sta player4_x2
+	sta player6_x2
+	sta player8_x2
+
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #15
+	sta player3_y2;
+	sta player4_y2;
+	clc
+	lda #$90     ; 21をAにロード
+	adc REG0
+	sta player3_t2
+
+	clc
+	lda #$91     ; 21をAにロード
+	adc REG0
+	sta player4_t2
+
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #23
+	sta player5_y2;
+	sta player6_y2;
+	clc
+	lda #$A0     ; 21をAにロード
+	adc REG0
+	sta player5_t2
+
+	clc
+	lda #$A1     ; 21をAにロード
+	adc REG0
+	sta player6_t2
+
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #31
+	sta player7_y2;
+	sta player8_y2;
+	clc
+	lda #$B0     ; 21をAにロード
+	adc REG0
+	sta player7_t2
+
+	clc
+	lda #$B1     ; 21をAにロード
+	adc REG0
+	sta player8_t2
+	lda REG1     ; 0(10進数)をAにロード
+	sta player8_s2
+
+	dec pat_change_frame
+	;lda	#10
+	;cmp pat_change_frame
+	lda pat_change_frame
+	bne change_pat_skip
+	jsr change_pat
+
+change_pat_skip:
 
 ;End:
 	rts

@@ -30,8 +30,21 @@
 
 	jsr change_palette1	; パレット差し替え
 	;jsr	sprite_draw	; スプライト描画関数
-	jsr	player_draw	; プレイヤー描画関数
-	jsr InosisiDraw	; イノシシ描画関数
+	lda loop_count
+	and #%00000001
+	bne player_dma7
+	beq player_dma6
+player_dma7:
+	jsr	player_draw_dma7	; プレイヤー描画関数
+	jsr InosisiDrawDma7	; イノシシ描画関数
+	jmp player_dma_break
+player_dma6:
+	jsr	player_draw_dma6	; プレイヤー描画関数
+	jsr InosisiDrawDma6	; イノシシ描画関数
+	jmp player_dma_break
+player_dma_break:
+
+
 	jsr change_palette2
 	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
 
@@ -40,11 +53,21 @@
 	sta	$2005		; X方向スクロール
 	lda	#0		; Yは固定
 	sta	$2005
-
+	
+	lda loop_count
+	and #%00000001
+	bne dma7
+	beq dma6
+dma7:
 	; スプライト描画(DMAを利用)
 	lda #$7  ; スプライトデータは$0700番地からなので、7をロードする。
 	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
-
+	jmp dma_break
+dma6:
+	lda #$6  ; スプライトデータは$0700番地からなので、7をロードする。
+	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
+	jmp dma_break
+dma_break:
 
 	clc
 	lda	#%10001100	; VBlank割り込みあり

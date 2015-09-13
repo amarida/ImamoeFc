@@ -469,10 +469,19 @@ SkipKeyRight:
 
 Nothing:
 
+	; ちらつき制御
+	jsr Blink
+
 	jsr Player_Update
 	jsr	InosisiUpdate
 
 	rts	; サブルーチンから復帰します。
+.endproc
+
+; ちらつき制御
+.proc Blink
+
+	rts
 .endproc
 
 ; 画面外BG描画
@@ -672,8 +681,8 @@ skip:
 ; スプライト描画
 .proc	sprite_draw
 
-	jsr	player_draw	; プレイヤー描画関数
-	jsr InosisiDraw	; イノシシ描画関数
+;	jsr	player_draw	; プレイヤー描画関数
+;	jsr InosisiDraw	; イノシシ描画関数
 
 	rts	; サブルーチンから復帰します。
 .endproc
