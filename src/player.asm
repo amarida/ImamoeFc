@@ -448,7 +448,10 @@ case_wait:
 	cmp player_y
 	bne break
 	lda #2
-	sta scene_type
+	sta scene_type			; シーン
+	lda #0
+	sta scene_update_step	; シーン内ステップ
+
 	inc update_dead_step
 	jmp break;
 

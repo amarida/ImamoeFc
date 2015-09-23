@@ -118,5 +118,5 @@ update_dead_step					= $B6	; 死亡時更新ステップ
 wait_frame							= $B7	; 待つフレーム
 test_address_low					= $B8
 test_address_hi						= $B9
-scene_type							= $BA	; シーン（0:TITLE 2:メイン 4:ゲームオーバー）
-
+scene_type							= $BA	; シーン（0:TITLE 1:メイン 2:ゲームオーバー）
+scene_update_step					= $BB	; シーン用の更新ステップ

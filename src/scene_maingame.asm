@@ -28,7 +28,6 @@
 ;	lda #8
 ;	sta $2004		;X
 
-	jsr change_palette1	; パレット差し替え
 	;jsr	sprite_draw	; スプライト描画関数
 	lda loop_count
 	and #%00000001
@@ -45,7 +44,6 @@ player_dma6:
 player_dma_break:
 
 
-	jsr change_palette2
 	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
 
 	; スクロール位置更新
