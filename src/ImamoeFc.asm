@@ -41,6 +41,18 @@
 	sta	$2000
 	sta	$2001
 
+	
+	lda #0
+	sta inosisi_alive_flag	; 生存イノシシフラグ
+	lda #2
+	sta inosisi_max_count	; 最大同時登場数
+
+	; 敵情報先頭アドレス
+	lda #< map_enemy_info
+	sta map_enemy_info_address_low
+	lda #> map_enemy_info
+	sta map_enemy_info_address_hi
+
 ; 初期位置
 	lda	#128		; 128(10進)
 	sta	player_x_low
@@ -121,8 +133,6 @@ command_jt: ; ジャンプテーブル ( RTS で飛ぶので、目的のアドレス-1 にしている )
 jmp break;
 cmd_test1:
 	; test1の処理
-mugen:
-jmp mugen
 
 	jmp break
 cmd_test2:
@@ -154,8 +164,6 @@ break:
 
 	sta REG2
 ;;;;; 二乗の計算結果の取得方法 ;;;;;
-
-
 
 	; マップチップ位置初期設定
 	lda #< map_chip
@@ -418,101 +426,33 @@ End:
 	rts
 .endproc
 
-; 更新
-.proc	Update
-	; キー入力
-	inc loop_count;
-	; 初期化
-	lda #$01
-	sta $4016
-	lda #$00
-	sta $4016
-
-	; 前回の状態を格納
-	lda key_state_on
-	sta key_state_on_old
-
-	; A,B,SELECT,START,UP,DOWN,LEFT,RIGHTの順番
-	lda $4016	; A
-	and #1
-	beq SkipPushA
-	jsr PlayerJump
-SkipPushA:
-	lda $4016	; B
-	lda $4016	; SELECT
-	lda $4016	; START
-	lda $4016	; 上
-	and #1
-	beq SkipKeyUp
-	jsr PlayerMoveUp
-SkipKeyUp:
-	lda $4016	; 下
-	and #1
-	beq SkipKeyDown
-	jsr PlayerMoveDown
-SkipKeyDown:
-	lda $4016	; 左
-	and #1
-	beq SkipKeyLeft
-	jsr PlayerMoveLeft
-SkipKeyLeft:
-	lda $4016	; 右
-	and #1
-	beq SkipKeyRight
-	jsr PlayerMoveRight
-SkipKeyRight:
-
-	lda key_state_on
-	eor key_state_on_old
-	and key_state_on
-	sta key_state_push
-
-	jmp Nothing
-
-Nothing:
-
-	; ちらつき制御
-	jsr Blink
-
-	jsr Player_Update
-	jsr	InosisiUpdate
-
-	rts	; サブルーチンから復帰します。
-.endproc
-
-; ちらつき制御
-.proc Blink
-
-	rts
-.endproc
-
 ; 画面外BG描画
 .proc draw_bg
 
-	; field_scrool_x を 8で割った数が現在描画するべきBG
+	; field_scroll_x を 8で割った数が現在描画するべきBG
 	; シフトするのでテンプに一旦入れる
-	lda field_scrool_x_up
-	sta field_scrool_x_up_tmp
-	lda field_scrool_x_low
-	sta field_scrool_x_low_tmp
+	lda field_scroll_x_up
+	sta field_scroll_x_up_tmp
+	lda field_scroll_x_low
+	sta field_scroll_x_low_tmp
 
-	lda field_scrool_x_up
+	lda field_scroll_x_up
 	sta map_chip_index_up
-	lda field_scrool_x_low
+	lda field_scroll_x_low
 	sta map_chip_index_low
 	; 8で割る
 	clc
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
 
 	; bg_already_drawがその値に達していなければ描画
 	sec
 	lda bg_already_draw;
-	sbc field_scrool_x_low_tmp
+	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
@@ -561,34 +501,34 @@ skip:
 
 ; 画面外BG属性設定
 .proc draw_bg_attribute
-	; field_scrool_x を 32で割った数が現在描画するべきBG
+	; field_scroll_x を 32で割った数が現在描画するべきBG
 	; シフトするのでテンプに一旦入れる
-	lda field_scrool_x_up
-	sta field_scrool_x_up_tmp
-	lda field_scrool_x_low
-	sta field_scrool_x_low_tmp
+	lda field_scroll_x_up
+	sta field_scroll_x_up_tmp
+	lda field_scroll_x_low
+	sta field_scroll_x_low_tmp
 
-	lda field_scrool_x_up
+	lda field_scroll_x_up
 	sta map_chip_index_up
-	lda field_scrool_x_low
+	lda field_scroll_x_low
 	sta map_chip_index_low
 	; 32で割る
 	clc
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
-	lsr field_scrool_x_up_tmp	; 上位は右シフト
-	ror field_scrool_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
+	lsr field_scroll_x_up_tmp	; 上位は右シフト
+	ror field_scroll_x_low_tmp	; 下位は右ローテート
 
 	; bg_already_draw_attributeがその値に達していなければ設定
 	sec
 	lda bg_already_draw_attribute;
-	sbc field_scrool_x_low_tmp
+	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
@@ -977,12 +917,12 @@ noset24:
 	lda #10
 	sta REG0
 	;current_draw_display_no ; スクロール画面が１か２か
-	;scrool_x				; スクロール位置
+	;scroll_x				; スクロール位置
 	; スクロール位置から(8ピクセルx10ブロック)
 	; 80ピクセル加えて
 	; キャリーフラグが立ったら隣の画面
 	clc
-	lda scrool_x
+	lda scroll_x
 	adc #80
 	bcs display2
 	bcc display1
@@ -991,7 +931,7 @@ noset24:
 	; 152(80+72)ピクセル加えてキャリーフラグが
 	; 立たなければ、今の画面のみ
 ;	clc
-;	lda scrool_x
+;	lda scroll_x
 ;	adc #152
 ;	bcc display1
 
@@ -999,11 +939,11 @@ noset24:
 	; 152(80+72)ピクセル加えてキャリーフラグが
 	; 立つ場合、2画面に分かれる
 	; 分割する位置
-	; 255-scrool_xの8で割った値が
+	; 255-scroll_xの8で割った値が
 	; その画面で表示する文字数
 ;	sec
 ;	lda #255
-;	sbc scrool_x
+;	sbc scroll_x
 ;	sta REG1
 ;	clc
 ;	lsr REG1	; 右ローテート
@@ -1014,7 +954,7 @@ noset24:
 
 display1:
 	; スクロール位置÷８に10加える
-	lda scrool_x
+	lda scroll_x
 	sta REG1
 	lsr REG1	; 右シフト
 	lsr REG1	; 右シフト
@@ -1278,6 +1218,14 @@ map_chip_attribute_game_over:
 	.byte 	$aa, $aa, $aa, $aa, $aa, $aa, $aa, $aa
 	.byte 	$aa, $aa, $aa, $aa, $aa, $aa, $aa, $aa
 	.byte 	$aa, $aa, $aa, $aa, $aa, $aa, $aa, $aa
+
+; 敵の位置情報テーブル
+; x位置上位、x座標下位、y位置、敵のタイプ
+map_enemy_info:
+	.byte	$01, $10, $b8, $00
+	.byte	$01, $40, $b8, $00
+	.byte	$01, $80, $b8, $00
+	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 .segment "VECINFO"
 	.word	VBlank

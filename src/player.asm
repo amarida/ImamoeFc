@@ -43,7 +43,7 @@ End:
 	; 画面の左端なら左移動しない
 	sec
 	lda player_x_low
-	sbc field_scrool_x_low
+	sbc field_scroll_x_low
 ;	sbc #9
 ;	bcc skip; キャリーフラグがクリアされている時
 	beq skip; ゼロフラグが立っていないときスキップ
@@ -107,32 +107,32 @@ roll_skip:
 	; 127以下はスクロール座標を更新しない
 	sec
 	lda player_x_low
-	sbc field_scrool_x_low
+	sbc field_scroll_x_low
 	sec
 	sbc #127
 	bcc skip	; キャリーフラグがクリアされている時
 
 	; スクロール情報
 	clc
-	lda scrool_x
+	lda scroll_x
 	adc #1
-	sta scrool_x
+	sta scroll_x
 
-	; スクロール情報の更新とともに
-	; イノシシ座標ずらす
-	sec
-	lda inosisi_x
-	sbc #1
-	sta inosisi_x
-	bne skip_inosisi_reset
-	lda #255
-	sta inosisi_x
-skip_inosisi_reset:
+;	; スクロール情報の更新とともに
+;	; イノシシ座標ずらす
+;	sec
+;	lda inosisi0_pos_x
+;	sbc #1
+;	sta inosisi0_pos_x
+;	bne skip_inosisi_reset
+;	lda #255
+;	sta inosisi0_pos_x
+;skip_inosisi_reset:
 
 	clc
-	lda field_scrool_x_low
+	lda field_scroll_x_low
 	adc #1
-	sta field_scrool_x_low
+	sta field_scroll_x_low
 
 	bcc eor_skip
 	lda #%00000001
@@ -140,9 +140,9 @@ skip_inosisi_reset:
 	sta current_draw_display_no
 eor_skip:
 
-	lda field_scrool_x_up
+	lda field_scroll_x_up
 	adc #0
-	sta field_scrool_x_up
+	sta field_scroll_x_up
 
 skip:
 
@@ -495,10 +495,10 @@ ContinueDead:
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
 	lda player_x_low
-	sbc field_scrool_x_low
+	sbc field_scroll_x_low
 	sta window_player_x_low
 	;lda player_x_up
-	;sbc field_scrool_x_up
+	;sbc field_scroll_x_up
 	;sta window_player_x_up
 	clc
 	lda window_player_x_low
@@ -655,10 +655,10 @@ ContinueDead:
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
 	lda player_x_low
-	sbc field_scrool_x_low
+	sbc field_scroll_x_low
 	sta window_player_x_low
 	;lda player_x_up
-	;sbc field_scrool_x_up
+	;sbc field_scroll_x_up
 	;sta window_player_x_up
 	clc
 	lda window_player_x_low
@@ -1254,15 +1254,24 @@ skip3:
 	; プレイヤのY座標とイノシシのY座標を
 	; 比較して、ともに差分が一定以下なら
 	; 当たった。
-	
+	lda #1
+	sta inosisi_alive_flag_current	; フラグ参照現在位置
+	ldx #0
+loop_x:
+	; 生存しているか
+	lda inosisi_alive_flag
+	and inosisi_alive_flag_current
+	beq next_update		; 存在していない
+
+	; 存在している
 	; プレイヤのXとイノシシのXの大きい方
 	sec
 	lda window_player_x_low
-	sbc inosisi_x
+	sbc inosisi0_window_pos_x,x
 	bpl big_player	; プレイヤの方が大きい
 	; イノシシの方が大きい
 	sec
-	lda inosisi_x
+	lda inosisi0_window_pos_x,x
 	sbc window_player_x_low
 big_player:
 	sta REG0	; X差分
@@ -1270,11 +1279,11 @@ big_player:
 	; プレイヤのXとイノシシのYの大きい方
 	sec
 	lda player_y
-	sbc inosisi_y
+	sbc inosisi0_pos_y,x
 	bpl big_player_y	; プレイヤの方が大きい
 	; イノシシの方が大きい
 	sec
-	lda inosisi_y
+	lda inosisi0_pos_y,x
 	sbc player_y
 big_player_y:
 	sta REG1	; y差分
@@ -1285,15 +1294,25 @@ big_player_y:
 	sec
 	lda REG0
 	sbc #17
-	bpl	exit	; 差分が16より大きい
+	bpl	next_update	; 差分が16より大きい
 	
 	sec
 	lda REG1
 	sbc #17
-	bpl	exit	; 差分が16より大きい
+	bpl	next_update	; 差分が16より大きい
 
 	lda #1
 	sta char_collision_result
+	jmp exit
+
+
+next_update:
+	; 次
+	asl inosisi_alive_flag_current
+	inx
+	cpx inosisi_max_count	; ループ最大数
+	bne loop_x				; ループ
+	
 
 exit:
 	rts
