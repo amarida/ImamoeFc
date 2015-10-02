@@ -39,6 +39,8 @@ End:
 
 ; 左移動
 .proc	PlayerMoveLeft
+	lda is_dead
+	bne skip
 
 	; 画面の左端なら左移動しない
 	sec
@@ -79,6 +81,9 @@ skip:
 
 ; 右移動
 .proc	PlayerMoveRight
+	lda is_dead
+	bne skip
+
 	clc					; キャリーフラグOFF
 	lda	player_x_low	; 下位
 	adc	#1
