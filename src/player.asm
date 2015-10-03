@@ -11,6 +11,8 @@
 	; ジャンプ中なら抜ける
 	lda is_jump
 	bne	End
+	lda is_dead
+	bne End
 
 	; ジャンプフラグON
 	lda	#1
