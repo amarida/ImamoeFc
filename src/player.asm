@@ -164,6 +164,10 @@ skip:
 	lda	#1
 	sta	is_dead
 
+	; ジャンプフラグOFF
+	lda #0
+	sta is_jump
+
 	rts
 .endproc
 
@@ -202,8 +206,10 @@ skip_jump:
 	lda #1
 	adc player_y
 	sta player_y
-	; あたり判定
+	; あたり判定処理
 	jsr collision_object
+
+	; あたり判定フラグ
 	lda obj_collision_result
 	beq roll_skip
 	; 当たった処理
@@ -243,6 +249,17 @@ not_jump_exit:
 skip_not_jump:
 
 	; その他の必ず通る処理
+
+	; 海あたりフラグ
+	lda obj_collision_sea
+	beq skip_first_sea_hit
+	lda is_dead					; 死亡フラグ
+	bne skip_first_sea_hit
+	; 海あたりかつ生きている場合
+	; 初回処理と死亡フラグを立てる
+	jsr PlayerDead
+	
+skip_first_sea_hit:
 
 
 	; 敵とのあたり判定
@@ -815,6 +832,8 @@ change_pat_skip:
 	rts
 skip_return:
 
+	lda #0
+	sta obj_collision_sea
 	; TODO:	左上の左は左下の左を流用する
 	;		右下の下は左下の下を流用する
 	;		右上は左上の上と右下の右を流用する
@@ -981,6 +1000,18 @@ hit0:
 	sta obj_collision_pos
 	rts
 skip0:
+
+	lda map_table_char_pos_value
+	cmp #$05
+	beq hit_sea
+	cmp #$06
+	beq hit_sea
+	jmp skip_sea
+hit_sea:
+	lda #1
+	sta obj_collision_sea
+	rts
+skip_sea:
 
 	; y座標(左上)を8で割る 28からそれをひく
 	; map_chip_collision_indexにそれを足す
