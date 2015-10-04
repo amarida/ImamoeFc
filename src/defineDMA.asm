@@ -56,14 +56,6 @@ inosisi6_y:	.byte 0;	=	$0734	;
 inosisi6_t:	.byte 0;	=	$0735	; 
 inosisi6_s:	.byte 0;	=	$0736	; 
 inosisi6_x:	.byte 0;	=	$0737	; 
-inosisi7_y:	.byte 0;	=	$0738	; 
-inosisi7_t:	.byte 0;	=	$0739	; 
-inosisi7_s:	.byte 0;	=	$073A	; 
-inosisi7_x:	.byte 0;	=	$073B	; 
-inosisi8_y:	.byte 0;	=	$073C	; 
-inosisi8_t:	.byte 0;	=	$073D	; 
-inosisi8_s:	.byte 0;	=	$073E	; 
-inosisi8_x:	.byte 0;	=	$073F	; 
 
 inosisi21_y:	.byte 0;	=	$0740
 inosisi21_t:	.byte 0;	=	$0741	; 
@@ -89,14 +81,6 @@ inosisi26_y:	.byte 0;	=	$0754	;
 inosisi26_t:	.byte 0;	=	$0755	; 
 inosisi26_s:	.byte 0;	=	$0756	; 
 inosisi26_x:	.byte 0;	=	$0757	; 
-inosisi27_y:	.byte 0;	=	$0758	; 
-inosisi27_t:	.byte 0;	=	$0759	; 
-inosisi27_s:	.byte 0;	=	$075A	; 
-inosisi27_x:	.byte 0;	=	$075B	; 
-inosisi28_y:	.byte 0;	=	$075C	; 
-inosisi28_t:	.byte 0;	=	$075D	; 
-inosisi28_s:	.byte 0;	=	$075E	; 
-inosisi28_x:	.byte 0;	=	$075F	; 
 ;.org $8000
 
 .org $0600
@@ -124,14 +108,6 @@ inosisi6_y2:	.byte 0;	=	$0734	;
 inosisi6_t2:	.byte 0;	=	$0735	; 
 inosisi6_s2:	.byte 0;	=	$0736	; 
 inosisi6_x2:	.byte 0;	=	$0737	; 
-inosisi7_y2:	.byte 0;	=	$0738	; 
-inosisi7_t2:	.byte 0;	=	$0739	; 
-inosisi7_s2:	.byte 0;	=	$073A	; 
-inosisi7_x2:	.byte 0;	=	$073B	; 
-inosisi8_y2:	.byte 0;	=	$073C	; 
-inosisi8_t2:	.byte 0;	=	$073D	; 
-inosisi8_s2:	.byte 0;	=	$073E	; 
-inosisi8_x2:	.byte 0;	=	$073F	; 
 
 inosisi21_y2:	.byte 0;	=	$0740
 inosisi21_t2:	.byte 0;	=	$0741	; 
@@ -157,14 +133,6 @@ inosisi26_y2:	.byte 0;	=	$0754	;
 inosisi26_t2:	.byte 0;	=	$0755	; 
 inosisi26_s2:	.byte 0;	=	$0756	; 
 inosisi26_x2:	.byte 0;	=	$0757	; 
-inosisi27_y2:	.byte 0;	=	$0758	; 
-inosisi27_t2:	.byte 0;	=	$0759	; 
-inosisi27_s2:	.byte 0;	=	$075A	; 
-inosisi27_x2:	.byte 0;	=	$075B	; 
-inosisi28_y2:	.byte 0;	=	$075C	; 
-inosisi28_t2:	.byte 0;	=	$075D	; 
-inosisi28_s2:	.byte 0;	=	$075E	; 
-inosisi28_x2:	.byte 0;	=	$075F	; 
 
 player1_y2:	.byte 0;	=	$0700	; 
 player1_t2:	.byte 0;	=	$0701	; 

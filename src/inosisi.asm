@@ -15,32 +15,24 @@
 	sta inosisi4_s
 	sta inosisi5_s
 	sta inosisi6_s
-	sta inosisi7_s
-	sta inosisi8_s
 	sta inosisi21_s
 	sta inosisi22_s
 	sta inosisi23_s
 	sta inosisi24_s
 	sta inosisi25_s
 	sta inosisi26_s
-	sta inosisi27_s
-	sta inosisi28_s
 	sta inosisi1_s2
 	sta inosisi2_s2
 	sta inosisi3_s2
 	sta inosisi4_s2
 	sta inosisi5_s2
 	sta inosisi6_s2
-	sta inosisi7_s2
-	sta inosisi8_s2
 	sta inosisi21_s2
 	sta inosisi22_s2
 	sta inosisi23_s2
 	sta inosisi24_s2
 	sta inosisi25_s2
 	sta inosisi26_s2
-	sta inosisi27_s2
-	sta inosisi28_s2
 
 	rts
 .endproc
@@ -101,8 +93,35 @@ loop_x:
 	lda inosisi_alive_flag
 	and inosisi_alive_flag_current
 	beq next_update		; 存在していない
-
 	; 存在している
+
+	; 重力
+	clc
+	lda #1
+	adc inosisi0_pos_y,x
+	sta inosisi0_pos_y,x
+
+	; あたり判定
+	jsr inosisi_collision_object
+	; 溺れる判定
+	lda obj_collision_sea
+	
+	lda obj_collision_result
+	beq roll_skip
+	; 当たった処理
+
+
+	;下の処理
+	sec
+	lda inosisi0_pos_y,x
+	and #%11111000
+	sta inosisi0_pos_y,x
+	; 落下中フラグを立てる
+;	lda	#0
+;	sta	is_jump
+	
+roll_skip:
+
 	sec
 	lda inosisi0_world_pos_x_low,x
 	sbc #1
@@ -171,40 +190,30 @@ Pat1:
 	sta inosisi1_t
 	sta inosisi21_t
 	clc
-	lda #$85     ; 21をAにロード
+	lda #$85
 	adc REG0
 	sta inosisi2_t
 	sta inosisi22_t
 	clc
-	lda #$86     ; 21をAにロード
+	lda #$86
 	adc REG0
 	sta inosisi3_t
 	sta inosisi23_t
 	clc
-	lda #$87     ; 21をAにロード
+	lda #$94
 	adc REG0
 	sta inosisi4_t
 	sta inosisi24_t
 	clc
-	lda #$94     ; 21をAにロード
+	lda #$95
 	adc REG0
 	sta inosisi5_t
 	sta inosisi25_t
 	clc
-	lda #$95     ; 21をAにロード
+	lda #$96
 	adc REG0
 	sta inosisi6_t
 	sta inosisi26_t
-	clc
-	lda #$96     ; 21をAにロード
-	adc REG0
-	sta inosisi7_t
-	sta inosisi27_t
-	clc
-	lda #$97     ; 21をAにロード
-	adc REG0
-	sta inosisi8_t
-	sta inosisi28_t
 
 ; 生存確認準備
 	lda #1
@@ -217,15 +226,13 @@ Pat1:
 	sta inosisi1_y
 	sta inosisi2_y
 	sta inosisi3_y
-	sta inosisi4_y
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y
 	adc #15
+	sta inosisi4_y
 	sta inosisi5_y
 	sta inosisi6_y
-	sta inosisi7_y
-	sta inosisi8_y
 
 ; Y座標以外は非表示時スキップ
 
@@ -242,7 +249,7 @@ Pat1:
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sta inosisi1_x
-	sta inosisi5_x
+	sta inosisi4_x
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
@@ -251,10 +258,10 @@ Pat1:
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
 	sta inosisi2_y
-	sta inosisi6_y
+	sta inosisi5_y
 not_overflow_8:
 	sta inosisi2_x
-	sta inosisi6_x
+	sta inosisi5_x
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
@@ -263,22 +270,10 @@ not_overflow_8:
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
 	sta inosisi3_y
-	sta inosisi7_y
+	sta inosisi6_y
 not_overflow_16:
 	sta inosisi3_x
-	sta inosisi7_x
-
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	clc			; キャリーフラグOFF
-	adc #24
-	bcc not_overflow_24	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta inosisi4_y
-	sta inosisi8_y
-not_overflow_24:
-	sta inosisi4_x
-	sta inosisi8_x
+	sta inosisi6_x
 
 skip_inosisi0:
 
@@ -290,15 +285,13 @@ skip_inosisi0:
 	sta inosisi21_y
 	sta inosisi22_y
 	sta inosisi23_y
-	sta inosisi24_y
 
 	clc			; キャリーフラグOFF
 	lda inosisi1_pos_y
 	adc #15
+	sta inosisi24_y
 	sta inosisi25_y
 	sta inosisi26_y
-	sta inosisi27_y
-	sta inosisi28_y
 
 ; Y座標以外は非表示時スキップ
 
@@ -316,7 +309,7 @@ skip_inosisi0:
 
 	lda inosisi1_window_pos_x
 	sta inosisi21_x
-	sta inosisi25_x
+	sta inosisi24_x
 
 	lda inosisi1_window_pos_x
 	clc			; キャリーフラグOFF
@@ -325,10 +318,10 @@ skip_inosisi0:
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
 	sta inosisi22_y
-	sta inosisi26_y
+	sta inosisi25_y
 not_overflow2_8:
 	sta inosisi22_x
-	sta inosisi26_x
+	sta inosisi25_x
 
 	lda inosisi1_window_pos_x
 	clc			; キャリーフラグOFF
@@ -337,22 +330,10 @@ not_overflow2_8:
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
 	sta inosisi23_y
-	sta inosisi27_y
+	sta inosisi26_y
 not_overflow2_16:
 	sta inosisi23_x
-	sta inosisi27_x
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #24
-	bcc not_overflow2_24	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta inosisi24_y
-	sta inosisi28_y
-not_overflow2_24:
-	sta inosisi24_x
-	sta inosisi28_x
+	sta inosisi26_x
 
 skip_inosisi1:
 
@@ -391,30 +372,20 @@ Pat1:
 	sta inosisi3_t2
 	sta inosisi23_t2
 	clc
-	lda #$87     ; 21をAにロード
+	lda #$94     ; 21をAにロード
 	adc REG0
 	sta inosisi4_t2
 	sta inosisi24_t2
 	clc
-	lda #$94     ; 21をAにロード
+	lda #$95     ; 21をAにロード
 	adc REG0
 	sta inosisi5_t2
 	sta inosisi25_t2
 	clc
-	lda #$95     ; 21をAにロード
+	lda #$96     ; 21をAにロード
 	adc REG0
 	sta inosisi6_t2
 	sta inosisi26_t2
-	clc
-	lda #$96     ; 21をAにロード
-	adc REG0
-	sta inosisi7_t2
-	sta inosisi27_t2
-	clc
-	lda #$97     ; 21をAにロード
-	adc REG0
-	sta inosisi8_t2
-	sta inosisi28_t2
 
 ; 生存確認準備
 	lda #1
@@ -427,15 +398,13 @@ Pat1:
 	sta inosisi1_y2
 	sta inosisi2_y2
 	sta inosisi3_y2
-	sta inosisi4_y2
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y
 	adc #15
+	sta inosisi4_y2
 	sta inosisi5_y2
 	sta inosisi6_y2
-	sta inosisi7_y2
-	sta inosisi8_y2
 
 ; Y座標以外は非表示時スキップ
 
@@ -453,7 +422,7 @@ Pat1:
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sta inosisi1_x2
-	sta inosisi5_x2
+	sta inosisi4_x2
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
@@ -462,10 +431,10 @@ Pat1:
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
 	sta inosisi2_y2
-	sta inosisi6_y2
+	sta inosisi5_y2
 not_overflow_8:
 	sta inosisi2_x2
-	sta inosisi6_x2
+	sta inosisi5_x2
 
 	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
@@ -474,22 +443,10 @@ not_overflow_8:
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
 	sta inosisi3_y2
-	sta inosisi7_y2
+	sta inosisi6_y2
 not_overflow_16:
 	sta inosisi3_x2
-	sta inosisi7_x2
-
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	clc			; キャリーフラグOFF
-	adc #24
-	bcc not_overflow_24	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta inosisi4_y2
-	sta inosisi8_y2
-not_overflow_24:
-	sta inosisi4_x2
-	sta inosisi8_x2
+	sta inosisi6_x2
 
 skip_inosisi0:
 
@@ -501,15 +458,13 @@ skip_inosisi0:
 	sta inosisi21_y2
 	sta inosisi22_y2
 	sta inosisi23_y2
-	sta inosisi24_y2
 
 	clc			; キャリーフラグOFF
 	lda inosisi1_pos_y
 	adc #15
+	sta inosisi24_y2
 	sta inosisi25_y2
 	sta inosisi26_y2
-	sta inosisi27_y2
-	sta inosisi28_y2
 
 ; Y座標以外は非表示時スキップ
 
@@ -527,7 +482,7 @@ skip_inosisi0:
 
 	lda inosisi1_window_pos_x
 	sta inosisi21_x2
-	sta inosisi25_x2
+	sta inosisi24_x2
 
 	lda inosisi1_window_pos_x
 	clc			; キャリーフラグOFF
@@ -536,10 +491,10 @@ skip_inosisi0:
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
 	sta inosisi22_y2
-	sta inosisi26_y2
+	sta inosisi25_y2
 not_overflow2_8:
 	sta inosisi22_x2
-	sta inosisi26_x2
+	sta inosisi25_x2
 
 	lda inosisi1_window_pos_x
 	clc			; キャリーフラグOFF
@@ -548,22 +503,10 @@ not_overflow2_8:
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
 	sta inosisi23_y2
-	sta inosisi27_y2
+	sta inosisi26_y2
 not_overflow2_16:
 	sta inosisi23_x2
-	sta inosisi27_x2
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #24
-	bcc not_overflow2_24	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta inosisi24_y2
-	sta inosisi28_y2
-not_overflow2_24:
-	sta inosisi24_x2
-	sta inosisi28_x2
+	sta inosisi26_x2
 
 skip_inosisi1:
 
@@ -572,3 +515,525 @@ skip_inosisi1:
 	rts
 
 .endproc
+
+; イノシシとオブジェクトとのあたり判定
+.proc inosisi_collision_object
+	; 死亡中は判定しない
+	lda is_dead
+	beq skip_return
+	lda #0
+	sta obj_collision_result
+	rts
+skip_return:
+
+	lda #0
+	sta obj_collision_sea
+
+	; TODO:	左上の左は左下の左を流用する
+	;		右下の下は左下の下を流用する
+	;		右上は左上の上と右下の右を流用する
+	; あたり判定用の4隅を格納
+	clc
+	lda inosisi0_pos_y,x ;player_y
+	sta player_y_top_for_collision		; あたり判定用上Y座標（Y座標）
+	clc
+	adc #15
+	sta player_y_bottom_for_collision	; あたり判定用下Y座標（Y座標+15）
+
+	lda inosisi0_world_pos_x_hi,x ;player_x_up
+	sta player_x_left_hi_for_collision	; あたり判定用左X座標上位（X座標）
+	lda inosisi0_world_pos_x_low,x ;player_x_low
+	sta player_x_left_low_for_collision	; あたり判定用左X座標下位（X座標）
+	clc
+	adc #23
+	sta player_x_right_low_for_collision; あたり判定用右X座標下位（X座標+23）
+	lda player_x_left_hi_for_collision
+	adc #0
+	sta player_x_right_hi_for_collision	; あたり判定用右X座標上位（X座標+23）
+
+
+	; プレイヤーのフィールド上の位置(左下の左下)(player_x_left_low_for_collision, player_x_left_hi_for_collision)
+	; それを8で割った値（ｘ）が、マップチップの位置
+	; map_chipから加える値は、X*25
+	lda player_x_left_low_for_collision
+	sta map_chip_player_x_low
+	lda player_x_left_hi_for_collision
+	sta map_chip_player_x_hi
+	; 8で割る
+	clc
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	; 結果を25倍(16+8+1)する　マップチップの起点を算出する
+	; REG0を16倍のlow REG1を16倍のhiとして
+	; REG2を 8倍のlow REG3を 8倍のhiとして
+	; REG4を 1倍のlow REG5を 1倍のhiとして
+	; 16倍
+	lda map_chip_player_x_hi
+	sta REG1
+	lda map_chip_player_x_low
+	sta REG0
+	clc
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	; 8倍
+	lda map_chip_player_x_hi
+	sta REG3
+	lda map_chip_player_x_low
+	sta REG2
+	clc
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	; 1倍
+	lda map_chip_player_x_hi
+	sta REG5
+	lda map_chip_player_x_low
+	sta REG4
+	; 16倍+8倍
+	clc
+	lda REG0
+	adc REG2
+	sta map_chip_collision_index_base_low
+	lda REG1
+	adc REG3
+	sta map_chip_collision_index_base_hi
+	; (16倍+8倍) + 1倍
+	clc
+	lda map_chip_collision_index_base_low
+	adc REG4
+	sta map_chip_collision_index_base_low
+	lda map_chip_collision_index_base_hi
+	adc REG5
+	sta map_chip_collision_index_base_hi
+	; ここまででキャラの左列の一番下（画面的に）を指す。
+
+	; 左下
+	clc
+	lda player_y_bottom_for_collision
+	sta REG0
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト	; 8で割る
+
+	; 27から引く
+	sec
+	lda #27
+	sbc REG0
+	sta REG0	; 一番下からのブロック数
+
+	clc
+	lda REG0
+	adc map_chip_collision_index_base_low			; キャラ左画面一番下
+	sta map_chip_collision_index_left_bottom_low	; キャラ左キャラ下
+	lda map_chip_collision_index_base_hi
+	adc #0
+	sta map_chip_collision_index_left_bottom_hi
+
+	; キャラクタの左下のブロックの左下
+	; □□
+	; □□
+	; □□
+	; ■□
+	; マップチップの起点
+	lda #< map_chip
+	sta map_table_char_pos_offset_low
+	lda #> map_chip
+	sta map_table_char_pos_offset_hi
+
+	clc
+	lda map_table_char_pos_offset_low
+	adc map_chip_collision_index_left_bottom_low
+	sta map_table_char_pos_offset_low
+	lda map_table_char_pos_offset_hi
+	adc map_chip_collision_index_left_bottom_hi
+	sta map_table_char_pos_offset_hi
+
+	ldy #0	; ずらし終わっているのでyは0
+	lda (map_table_char_pos_offset_low), y
+	sta map_table_char_pos_value
+
+	; obj_collision_resultを戻り値として使用する
+	; 0ならfalse
+	; 1ならtrue
+	lda #0
+	sta obj_collision_result
+	lda map_table_char_pos_value
+	cmp #$01
+	beq hit0
+	cmp #$02
+	beq hit0
+	cmp #$11
+	beq hit0
+	cmp #$12
+	beq hit0
+	cmp #$07
+	beq hit0
+	cmp #$08
+	beq hit0
+	cmp #$17
+	beq hit0
+	cmp #$18
+	beq hit0
+	jmp skip0
+hit0:
+	lda #1
+	sta obj_collision_result
+	lda #0	; あたり判定0番
+	sta obj_collision_pos
+	rts
+skip0:
+
+	lda map_table_char_pos_value
+	cmp #$05
+	beq hit_sea
+	cmp #$06
+	beq hit_sea
+	jmp skip_sea
+hit_sea:
+	lda #1
+	sta obj_collision_sea
+skip_sea:
+
+	; y座標(左上)を8で割る 28からそれをひく
+	; map_chip_collision_indexにそれを足す
+
+	; 左下
+;	clc
+;	lda player_y_top_for_collision
+;	sta REG0
+;	lsr REG0	; 右シフト
+;	lsr REG0	; 右シフト
+;	lsr REG0	; 右シフト
+;
+;	sec
+;	lda #28
+;	sbc REG0
+;	sta REG0
+;
+;	clc
+;	lda REG0
+;	adc map_chip_collision_index_base_low
+;	sta map_chip_collision_index_base_low
+;	lda map_chip_collision_index_base_hi
+;	adc #0
+;	sta map_chip_collision_index_base_hi
+
+	; キャラクタの左上のブロックの左上
+	; ■□
+	; □□
+	; □□
+	; □□
+	; マップチップの起点
+	; プレイヤーのフィールド上の位置(左上の左上)(player_x_left_low_for_collision, player_x_left_hi_for_collision)
+	; それを8で割った値（ｘ）が、マップチップの位置
+
+	; 左上
+	clc
+	lda player_y_top_for_collision
+	sta REG0
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト	; 8で割る
+
+	; 27から引く
+	sec
+	lda #27
+	sbc REG0
+	sta REG0	; 一番下からのブロック数
+
+	clc
+	lda REG0
+	adc map_chip_collision_index_base_low			; キャラ左画面一番下
+	sta map_chip_collision_index_left_top_low		; キャラ左キャラ上
+	lda map_chip_collision_index_base_hi
+	adc #0
+	sta map_chip_collision_index_left_top_hi
+
+	lda #< map_chip
+	sta map_table_char_pos_offset_low
+	lda #> map_chip
+	sta map_table_char_pos_offset_hi
+
+	clc
+	lda map_table_char_pos_offset_low
+	adc map_chip_collision_index_left_top_low
+	sta map_table_char_pos_offset_low
+	lda map_table_char_pos_offset_hi
+	adc map_chip_collision_index_left_top_hi
+	sta map_table_char_pos_offset_hi
+
+	ldy #0	; ずらし終わっているのでyは0
+	lda (map_table_char_pos_offset_low), y
+	sta map_table_char_pos_value
+
+	; obj_collision_resultを戻り値として使用する
+	; 0ならfalse
+	; 1ならtrue
+	lda #0
+	sta obj_collision_result
+	lda map_table_char_pos_value
+	cmp #$01
+	beq hit1
+	cmp #$02
+	beq hit1
+	cmp #$11
+	beq hit1
+	cmp #$12
+	beq hit1
+	cmp #$07
+	beq hit1
+	cmp #$08
+	beq hit1
+	cmp #$17
+	beq hit1
+	cmp #$18
+	beq hit1
+	jmp skip1
+hit1:
+	lda #1
+	sta obj_collision_result
+	lda #1	; あたり判定1番
+	sta obj_collision_pos
+	rts
+skip1:
+
+
+	; キャラクタの右下のブロックの右下
+	; □□
+	; □□
+	; □□
+	; □■
+	; マップチップの起点
+	; プレイヤーのフィールド上の位置(右下の右下)(player_x_right_low_for_collision, player_x_right_hi_for_collision)
+	; それを8で割った値（ｘ）が、マップチップの位置
+	lda player_x_right_low_for_collision
+	sta map_chip_player_x_low
+	lda player_x_right_hi_for_collision
+	sta map_chip_player_x_hi
+	; 8で割る
+	clc
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	lsr map_chip_player_x_hi	; 上位は右シフト
+	ror map_chip_player_x_low	; 下位は右ローテート
+	; 結果を25倍(16+8+1)する　マップチップの起点を算出する
+	; REG0を16倍のlow REG1を16倍のhiとして
+	; REG2を 8倍のlow REG3を 8倍のhiとして
+	; REG4を 1倍のlow REG5を 1倍のhiとして
+	; 16倍
+	lda map_chip_player_x_hi
+	sta REG1
+	lda map_chip_player_x_low
+	sta REG0
+	clc
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	asl REG0		; 下位は左シフト
+	rol REG1		; 上位は左ローテート
+	; 8倍
+	lda map_chip_player_x_hi
+	sta REG3
+	lda map_chip_player_x_low
+	sta REG2
+	clc
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	asl REG2		; 下位は左シフト
+	rol REG3		; 上位は左ローテート
+	; 1倍
+	lda map_chip_player_x_hi
+	sta REG5
+	lda map_chip_player_x_low
+	sta REG4
+	; 16倍+8倍
+	clc
+	lda REG0
+	adc REG2
+	sta map_chip_collision_index_base_low
+	lda REG1
+	adc REG3
+	sta map_chip_collision_index_base_hi
+	; (16倍+8倍) + 1倍
+	clc
+	lda map_chip_collision_index_base_low
+	adc REG4
+	sta map_chip_collision_index_base_low
+	lda map_chip_collision_index_base_hi
+	adc REG5
+	sta map_chip_collision_index_base_hi
+	; ここまででキャラの左列の一番下（画面的に）を指す。
+
+
+	; 右下
+	clc
+	lda player_y_bottom_for_collision
+	sta REG0
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト	; 8で割る
+
+	; 27から引く
+	sec
+	lda #27
+	sbc REG0
+	sta REG0	; 一番下からのブロック数
+
+	clc
+	lda REG0
+	adc map_chip_collision_index_base_low			; キャラ左画面一番下
+	sta map_chip_collision_index_right_bottom_low		; キャラ右キャラ下
+	lda map_chip_collision_index_base_hi
+	adc #0
+	sta map_chip_collision_index_right_bottom_hi
+
+	lda #< map_chip
+	sta map_table_char_pos_offset_low
+	lda #> map_chip
+	sta map_table_char_pos_offset_hi
+
+	clc
+	lda map_table_char_pos_offset_low
+	adc map_chip_collision_index_right_bottom_low
+	sta map_table_char_pos_offset_low
+	lda map_table_char_pos_offset_hi
+	adc map_chip_collision_index_right_bottom_hi
+	sta map_table_char_pos_offset_hi
+
+	ldy #0	; ずらし終わっているのでyは0
+	lda (map_table_char_pos_offset_low), y
+	sta map_table_char_pos_value
+
+	; obj_collision_resultを戻り値として使用する
+	; 0ならfalse
+	; 1ならtrue
+	lda #0
+	sta obj_collision_result
+	lda map_table_char_pos_value
+	cmp #$01
+	beq hit2
+	cmp #$02
+	beq hit2
+	cmp #$11
+	beq hit2
+	cmp #$12
+	beq hit2
+	cmp #$07
+	beq hit2
+	cmp #$08
+	beq hit2
+	cmp #$17
+	beq hit2
+	cmp #$18
+	beq hit2
+	jmp skip2
+hit2:
+	lda #1
+	sta obj_collision_result
+	lda #0	; あたり判定0番
+	sta obj_collision_pos
+	rts
+skip2:
+
+	; キャラクタの右上のブロックの右上
+	; □■
+	; □□
+	; □□
+	; □□
+	; マップチップの起点
+	; プレイヤーのフィールド上の位置(右上の右上)(player_x_right_low_for_collision, player_x_right_hi_for_collision)
+	; それを8で割った値（ｘ）が、マップチップの位置
+
+	; 右上
+	clc
+	lda player_y_top_for_collision
+	sta REG0
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト
+	lsr REG0	; 右シフト	; 8で割る
+
+	; 27から引く
+	sec
+	lda #27
+	sbc REG0
+	sta REG0	; 一番下からのブロック数
+
+	clc
+	lda REG0
+	adc map_chip_collision_index_base_low			; キャラ左画面一番下
+	sta map_chip_collision_index_right_top_low		; キャラ左キャラ上
+	lda map_chip_collision_index_base_hi
+	adc #0
+	sta map_chip_collision_index_right_top_hi
+
+	lda #< map_chip
+	sta map_table_char_pos_offset_low
+	lda #> map_chip
+	sta map_table_char_pos_offset_hi
+
+	clc
+	lda map_table_char_pos_offset_low
+	adc map_chip_collision_index_right_top_low
+	sta map_table_char_pos_offset_low
+	lda map_table_char_pos_offset_hi
+	adc map_chip_collision_index_right_top_hi
+	sta map_table_char_pos_offset_hi
+
+	ldy #0	; ずらし終わっているのでyは0
+	lda (map_table_char_pos_offset_low), y
+	sta map_table_char_pos_value
+
+	; collision_resultを戻り値として使用する
+	; 0ならfalse
+	; 1ならtrue
+	lda #0
+	sta obj_collision_result
+	lda map_table_char_pos_value
+	cmp #$01
+	beq hit3
+	cmp #$02
+	beq hit3
+	cmp #$11
+	beq hit3
+	cmp #$12
+	beq hit3
+	cmp #$07
+	beq hit3
+	cmp #$08
+	beq hit3
+	cmp #$17
+	beq hit3
+	cmp #$18
+	beq hit3
+	jmp skip3
+hit3:
+	lda #1
+	sta obj_collision_result
+	lda #1	; あたり判定1番
+	sta obj_collision_pos
+	rts
+skip3:
+
+	rts
+.endproc
+

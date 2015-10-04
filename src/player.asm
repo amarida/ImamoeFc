@@ -350,7 +350,7 @@ skip_tashizan:
 	sta player_y+1
 
 	; è„Ç≈ìñÇΩÇ¡ÇΩÇ©ÅAâ∫Ç≈ìñÇΩÇ¡ÇΩÇ©
-	lda obj_collision_type
+	lda obj_collision_pos
 	beq shita
 	;è„ÇÃèàóù
 	clc
@@ -957,11 +957,28 @@ skip_return:
 	lda #0
 	sta obj_collision_result
 	lda map_table_char_pos_value
-	beq skip0
+	cmp #$01
+	beq hit0
+	cmp #$02
+	beq hit0
+	cmp #$11
+	beq hit0
+	cmp #$12
+	beq hit0
+	cmp #$07
+	beq hit0
+	cmp #$08
+	beq hit0
+	cmp #$17
+	beq hit0
+	cmp #$18
+	beq hit0
+	jmp skip0
+hit0:
 	lda #1
 	sta obj_collision_result
 	lda #0	; Ç†ÇΩÇËîªíË0î‘
-	sta obj_collision_type
+	sta obj_collision_pos
 	rts
 skip0:
 
@@ -1043,11 +1060,28 @@ skip0:
 	lda #0
 	sta obj_collision_result
 	lda map_table_char_pos_value
-	beq skip1
+	cmp #$01
+	beq hit1
+	cmp #$02
+	beq hit1
+	cmp #$11
+	beq hit1
+	cmp #$12
+	beq hit1
+	cmp #$07
+	beq hit1
+	cmp #$08
+	beq hit1
+	cmp #$17
+	beq hit1
+	cmp #$18
+	beq hit1
+	jmp skip1
+hit1:
 	lda #1
 	sta obj_collision_result
 	lda #1	; Ç†ÇΩÇËîªíË1î‘
-	sta obj_collision_type
+	sta obj_collision_pos
 	rts
 skip1:
 
@@ -1171,11 +1205,28 @@ skip1:
 	lda #0
 	sta obj_collision_result
 	lda map_table_char_pos_value
-	beq skip2
+	cmp #$01
+	beq hit2
+	cmp #$02
+	beq hit2
+	cmp #$11
+	beq hit2
+	cmp #$12
+	beq hit2
+	cmp #$07
+	beq hit2
+	cmp #$08
+	beq hit2
+	cmp #$17
+	beq hit2
+	cmp #$18
+	beq hit2
+	jmp skip2
+hit2:
 	lda #1
 	sta obj_collision_result
 	lda #0	; Ç†ÇΩÇËîªíË0î‘
-	sta obj_collision_type
+	sta obj_collision_pos
 	rts
 skip2:
 
@@ -1233,11 +1284,28 @@ skip2:
 	lda #0
 	sta obj_collision_result
 	lda map_table_char_pos_value
-	beq skip3
+	cmp #$01
+	beq hit3
+	cmp #$02
+	beq hit3
+	cmp #$11
+	beq hit3
+	cmp #$12
+	beq hit3
+	cmp #$07
+	beq hit3
+	cmp #$08
+	beq hit3
+	cmp #$17
+	beq hit3
+	cmp #$18
+	beq hit3
+	jmp skip3
+hit3:
 	lda #1
 	sta obj_collision_result
 	lda #1	; Ç†ÇΩÇËîªíË1î‘
-	sta obj_collision_type
+	sta obj_collision_pos
 	rts
 skip3:
 
