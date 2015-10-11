@@ -144,8 +144,6 @@ SkipJump:
 .proc confirm_appear_enemy
 	; スクロール位置が達していたら
 	; 敵を登場させて、登場済みフラグを立てる
-;	field_scroll_x_up
-;	field_scroll_x_low
 
 	lda field_scroll_x_up
 	sta field_scroll_x_up_tmp

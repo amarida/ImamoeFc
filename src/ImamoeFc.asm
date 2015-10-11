@@ -1222,9 +1222,9 @@ map_chip_attribute_game_over:
 ; 敵の位置情報テーブル
 ; x位置上位、x座標下位、y位置、敵のタイプ
 map_enemy_info:
-	.byte	$01, $80, $b8, $00
 	.byte	$01, $c0, $b8, $00
 	.byte	$01, $e0, $b8, $00
+	.byte	$02, $00, $b8, $00
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 .segment "VECINFO"

@@ -4,6 +4,12 @@
 	sta inosisi1_world_pos_x_low
 	sta inosisi0_world_pos_x_hi
 	sta inosisi1_world_pos_x_hi
+	sta inosisi00_status
+	sta inosisi01_status
+	sta inosisi00_wait
+	sta inosisi01_wait
+	sta inosisi00_update_dead_step
+	sta inosisi01_update_dead_step
 	lda #224	; 画面外;#184
 	sta inosisi0_pos_y
 	sta inosisi1_pos_y
@@ -68,6 +74,14 @@ set_inosisi:
 	lda enemy_pos_y
 	sta inosisi0_pos_y,x
 	
+	; 色々初期化
+	lda #0
+	sta inosisi00_status,x
+	sta inosisi00_update_dead_step,x
+	; イノシシ属性を通常に変える
+	lda #%00000001
+	sta REG0
+	jsr Inosisi_SetAttribute
 
 	; フラグを立てる
 	clc
@@ -78,7 +92,7 @@ set_inosisi:
 skip_inosisi:
 	; スキップ
 	rts
-.endproc
+.endproc	; appear_inosisi
 
 ; 更新
 .proc	InosisiUpdate
@@ -95,6 +109,37 @@ loop_x:
 	beq next_update		; 存在していない
 	; 存在している
 
+	; 状態
+	lda inosisi00_status,x
+	cmp #0
+	beq case_normal
+	jmp case_dead	;	(1～3)
+
+; 通常
+case_normal:
+	jsr Inosisi_UpdateNormal
+	jmp break;
+
+; 死亡
+case_dead:
+	jsr Inosisi_UpdateDead
+	jmp break;
+
+break:
+
+next_update:
+	; 次
+	asl inosisi_alive_flag_current
+	inx
+	cpx inosisi_max_count	; ループ最大数
+	bne loop_x				; ループ
+
+skip_inosisi:
+	rts
+.endproc	; InosisiUpdate
+
+; 通常更新
+.proc	Inosisi_UpdateNormal
 	; 重力
 	clc
 	lda #1
@@ -105,6 +150,10 @@ loop_x:
 	jsr inosisi_collision_object
 	; 溺れる判定
 	lda obj_collision_sea
+	beq skip_sea
+	lda #1
+	sta inosisi00_status,x
+skip_sea:
 	
 	lda obj_collision_result
 	beq roll_skip
@@ -122,6 +171,7 @@ loop_x:
 	
 roll_skip:
 
+	; 左移動
 	sec
 	lda inosisi0_world_pos_x_low,x
 	sbc #1
@@ -129,12 +179,6 @@ roll_skip:
 	lda inosisi0_world_pos_x_hi,x
 	sbc #0
 	sta inosisi0_world_pos_x_hi,x
-;	dec inosisi0_pos_x,x
-
-;	sec
-;	lda scroll_x;
-;	sbc inosisi0_pos_x,x
-;	bne next_update 
 
 	; 画面外判定
 	sec
@@ -154,21 +198,80 @@ roll_skip:
 
 skip_dead:
 
-;	clc
-;	lda scroll_x
-;	adc #255
-;	sta inosisi0_pos_x
-
-next_update:
-	; 次
-	asl inosisi_alive_flag_current
-	inx
-	cpx inosisi_max_count	; ループ最大数
-	bne loop_x				; ループ
-
-skip_inosisi:
 	rts
-.endproc
+.endproc	; Inosisi_UpdateNormal
+
+; 溺れる更新
+.proc	Inosisi_UpdateDead
+
+	lda inosisi00_update_dead_step,x
+	cmp #0
+	beq case_init
+	cmp #1
+	beq case_drown_wait
+	cmp #2
+	beq case_splash1_wait
+	cmp #3
+	beq case_splash2_wait
+	cmp #4
+	beq case_release
+
+case_init:
+	; 処理0
+	lda #60
+	sta inosisi00_wait,x
+
+	inc inosisi00_update_dead_step,x
+	jmp break;
+
+case_drown_wait:
+	; 溺れ
+	dec inosisi00_wait,x
+	bne break
+	inc inosisi00_update_dead_step,x
+	lda #30
+	sta inosisi00_wait,x
+	lda #2
+	sta inosisi00_status,x
+	; イノシシ属性を水しぶきに変える
+	lda #%00000000
+	sta REG0
+	jsr Inosisi_SetAttribute
+	jmp break
+
+case_splash1_wait:
+	; 水しぶき1
+	dec inosisi00_wait,x
+	bne break
+	inc inosisi00_update_dead_step,x
+	lda #30
+	sta inosisi00_wait,x
+	lda #3
+	sta inosisi00_status,x
+	jmp break;
+
+case_splash2_wait:
+	; 水しぶき2
+	dec inosisi00_wait,x
+	bne break
+	inc inosisi00_update_dead_step,x
+	jmp break;
+
+case_release:
+	; 処理2
+	lda inosisi_alive_flag
+	eor inosisi_alive_flag_current
+	sta inosisi_alive_flag
+	lda #224	; 画面外
+	sta inosisi0_pos_y,x
+
+	inc update_dead_step
+	jmp break;
+
+break:
+
+	rts
+.endproc	; Inosisi_UpdateDead
 
 
 ; 描画
@@ -183,39 +286,101 @@ skip_inosisi:
 Pat1:
 	stx REG0
 
-; タイル
+	lda inosisi00_status
+	cmp #1
+	beq drown_tail
+	cmp #2
+	beq splash1_tail
+	cmp #3
+	beq splash2_tail
+; 生存タイル
 	clc
 	lda #$84     ; 
 	adc REG0
 	sta inosisi1_t
-	sta inosisi21_t
 	clc
 	lda #$85
 	adc REG0
 	sta inosisi2_t
-	sta inosisi22_t
 	clc
 	lda #$86
 	adc REG0
 	sta inosisi3_t
-	sta inosisi23_t
 	clc
 	lda #$94
 	adc REG0
 	sta inosisi4_t
-	sta inosisi24_t
 	clc
 	lda #$95
 	adc REG0
 	sta inosisi5_t
-	sta inosisi25_t
 	clc
 	lda #$96
 	adc REG0
 	sta inosisi6_t
-	sta inosisi26_t
+	
+	jmp break_tile
+; 溺れタイル
+drown_tail:
+	clc
+	lda #$87     ; 
+	adc REG0
+	sta inosisi1_t
+	clc
+	lda #$88
+	adc REG0
+	sta inosisi2_t
+	clc
+	lda #$97
+	adc REG0
+	sta inosisi4_t
+	clc
+	lda #$98
+	adc REG0
+	sta inosisi5_t
 
-; 生存確認準備
+	lda #$03	; ブランク
+	sta inosisi3_t
+	sta inosisi6_t
+
+	jmp break_tile
+; 水しぶき1タイル
+splash1_tail:
+	lda #$89     ; 
+	sta inosisi1_t
+	lda #$8A
+	sta inosisi2_t
+	lda #$99
+	sta inosisi4_t
+	lda #$9A
+	sta inosisi5_t
+
+	lda #$03	; ブランク
+	sta inosisi3_t
+	sta inosisi6_t
+
+	jmp break_tile
+
+; 水しぶき2タイル
+splash2_tail:
+	lda #$A9     ; 
+	sta inosisi1_t
+	lda #$AA
+	sta inosisi2_t
+	lda #$B9
+	sta inosisi4_t
+	lda #$BA
+	sta inosisi5_t
+
+	lda #$03	; ブランク
+	sta inosisi3_t
+	sta inosisi6_t
+
+	jmp break_tile
+
+break_tile:
+
+; 表示確認準備
 	lda #1
 	sta inosisi_alive_flag_current	; フラグ参照現在位置
 
@@ -276,6 +441,112 @@ not_overflow_16:
 	sta inosisi6_x
 
 skip_inosisi0:
+
+; タイル
+	;REG0 = (p_pat == 0) ? #$20 : #0;
+
+	ldx #$20
+	lda p_pat
+	bne	skip_pat2
+	ldx #0
+skip_pat2:
+	stx REG0
+
+	lda inosisi01_status
+	cmp #1
+	beq drown_tail2
+	cmp #2
+	beq splash1_tail2
+	cmp #3
+	beq splash2_tail2
+; 生存タイル
+	clc
+	lda #$84     ; 
+	adc REG0
+	sta inosisi21_t
+	clc
+	lda #$85
+	adc REG0
+	sta inosisi22_t
+	clc
+	lda #$86
+	adc REG0
+	sta inosisi23_t
+	clc
+	lda #$94
+	adc REG0
+	sta inosisi24_t
+	clc
+	lda #$95
+	adc REG0
+	sta inosisi25_t
+	clc
+	lda #$96
+	adc REG0
+	sta inosisi26_t
+	
+	jmp break_tile2
+; 溺れタイル
+drown_tail2:
+	clc
+	lda #$87     ; 
+	adc REG0
+	sta inosisi21_t
+	clc
+	lda #$88
+	adc REG0
+	sta inosisi22_t
+	clc
+	lda #$97
+	adc REG0
+	sta inosisi24_t
+	clc
+	lda #$98
+	adc REG0
+	sta inosisi25_t
+
+	lda #$03	; ブランク
+	sta inosisi23_t
+	sta inosisi26_t
+
+	jmp break_tile2
+
+; 水しぶき1タイル
+splash1_tail2:
+	lda #$89     ; 
+	sta inosisi21_t
+	lda #$8A
+	sta inosisi22_t
+	lda #$99
+	sta inosisi24_t
+	lda #$9A
+	sta inosisi25_t
+
+	lda #$03	; ブランク
+	sta inosisi3_t
+	sta inosisi6_t
+
+	jmp break_tile2
+
+; 水しぶき2タイル
+splash2_tail2:
+	lda #$A9     ; 
+	sta inosisi21_t
+	lda #$AA
+	sta inosisi22_t
+	lda #$B9
+	sta inosisi24_t
+	lda #$BA
+	sta inosisi25_t
+
+	lda #$03	; ブランク
+	sta inosisi23_t
+	sta inosisi26_t
+
+	jmp break_tile2
+
+
+break_tile2:
 
 ; Y座標は更新必須
 
@@ -341,7 +612,7 @@ skip_inosisi1:
 ;End:
 	rts
 
-.endproc
+.endproc	; InosisiDrawDma7
 
 ; 描画
 .proc	InosisiDrawDma6
@@ -355,37 +626,99 @@ skip_inosisi1:
 Pat1:
 	stx REG0
 
-; タイル
+	lda inosisi00_status
+	cmp #1
+	beq drown_tail
+	cmp #2
+	beq splash1_tail
+	cmp #3
+	beq splash2_tail
+; 生存タイル
 	clc
 	lda #$84     ; 
 	adc REG0
 	sta inosisi1_t2
-	sta inosisi21_t2
 	clc
 	lda #$85     ; 21をAにロード
 	adc REG0
 	sta inosisi2_t2
-	sta inosisi22_t2
 	clc
 	lda #$86     ; 21をAにロード
 	adc REG0
 	sta inosisi3_t2
-	sta inosisi23_t2
 	clc
 	lda #$94     ; 21をAにロード
 	adc REG0
 	sta inosisi4_t2
-	sta inosisi24_t2
 	clc
 	lda #$95     ; 21をAにロード
 	adc REG0
 	sta inosisi5_t2
-	sta inosisi25_t2
 	clc
 	lda #$96     ; 21をAにロード
 	adc REG0
 	sta inosisi6_t2
-	sta inosisi26_t2
+
+	jmp break_tile
+; 溺れタイル
+drown_tail:
+	clc
+	lda #$87     ; 
+	adc REG0
+	sta inosisi1_t2
+	clc
+	lda #$88
+	adc REG0
+	sta inosisi2_t2
+	clc
+	lda #$97
+	adc REG0
+	sta inosisi4_t2
+	clc
+	lda #$98
+	adc REG0
+	sta inosisi5_t2
+
+	lda #$03	; ブランク
+	sta inosisi3_t2
+	sta inosisi6_t2
+
+	jmp break_tile
+; 水しぶき1タイル
+splash1_tail:
+	lda #$89     ; 
+	sta inosisi1_t2
+	lda #$8A
+	sta inosisi2_t2
+	lda #$99
+	sta inosisi4_t2
+	lda #$9A
+	sta inosisi5_t2
+
+	lda #$03	; ブランク
+	sta inosisi3_t2
+	sta inosisi6_t2
+
+	jmp break_tile
+
+; 水しぶき2タイル
+splash2_tail:
+	lda #$A9     ; 
+	sta inosisi1_t2
+	lda #$AA
+	sta inosisi2_t2
+	lda #$B9
+	sta inosisi4_t2
+	lda #$BA
+	sta inosisi5_t2
+
+	lda #$03	; ブランク
+	sta inosisi3_t2
+	sta inosisi6_t2
+
+	jmp break_tile
+
+break_tile:
 
 ; 生存確認準備
 	lda #1
@@ -450,6 +783,110 @@ not_overflow_16:
 
 skip_inosisi0:
 
+; タイル
+	;REG0 = (p_pat == 0) ? #$20 : #0;
+
+	ldx #$20
+	lda p_pat
+	bne	skip_pat2
+	ldx #0
+skip_pat2:
+	stx REG0
+
+	lda inosisi01_status
+	cmp #1
+	beq drown_tail2
+	cmp #2
+	beq splash1_tail2
+	cmp #3
+	beq splash2_tail2
+; 生存タイル
+	clc
+	lda #$84     ; 
+	adc REG0
+	sta inosisi21_t2
+	clc
+	lda #$85
+	adc REG0
+	sta inosisi22_t2
+	clc
+	lda #$86
+	adc REG0
+	sta inosisi23_t2
+	clc
+	lda #$94
+	adc REG0
+	sta inosisi24_t2
+	clc
+	lda #$95
+	adc REG0
+	sta inosisi25_t2
+	clc
+	lda #$96
+	adc REG0
+	sta inosisi26_t2
+	
+	jmp break_tile2
+; 溺れタイル
+drown_tail2:
+	clc
+	lda #$87     ; 
+	adc REG0
+	sta inosisi21_t2
+	clc
+	lda #$88
+	adc REG0
+	sta inosisi22_t2
+	clc
+	lda #$97
+	adc REG0
+	sta inosisi24_t2
+	clc
+	lda #$98
+	adc REG0
+	sta inosisi25_t2
+
+	lda #$03	; ブランク
+	sta inosisi23_t2
+	sta inosisi26_t2
+
+	jmp break_tile2
+
+; 水しぶき1タイル
+splash1_tail2:
+	lda #$89     ; 
+	sta inosisi21_t2
+	lda #$8A
+	sta inosisi22_t2
+	lda #$99
+	sta inosisi24_t2
+	lda #$9A
+	sta inosisi25_t2
+
+	lda #$03	; ブランク
+	sta inosisi3_t2
+	sta inosisi6_t2
+
+	jmp break_tile2
+
+; 水しぶき2タイル
+splash2_tail2:
+	lda #$A9     ; 
+	sta inosisi21_t2
+	lda #$AA
+	sta inosisi22_t2
+	lda #$B9
+	sta inosisi24_t2
+	lda #$BA
+	sta inosisi25_t2
+
+	lda #$03	; ブランク
+	sta inosisi23_t2
+	sta inosisi26_t2
+
+	jmp break_tile2
+
+break_tile2:
 ; Y座標は更新必須
 
 	clc			; キャリーフラグOFF
@@ -514,7 +951,7 @@ skip_inosisi1:
 ;End:
 	rts
 
-.endproc
+.endproc	; InosisiDrawDma6
 
 ; イノシシとオブジェクトとのあたり判定
 .proc inosisi_collision_object
@@ -1035,5 +1472,48 @@ hit3:
 skip3:
 
 	rts
-.endproc
+.endproc	; inosisi_collision_object
 
+.proc Inosisi_SetAttribute
+	; 引数REG0：属性(0か1)
+	; 引数x：イノシシ１かイノシシ２
+	; xが0か1かで変える属性を判定する
+	txa
+	cmp #0
+	beq inosisi1
+	cmp #1
+	beq inosisi2
+inosisi1:
+	lda REG0
+	sta inosisi1_s
+	sta inosisi2_s
+	sta inosisi3_s
+	sta inosisi4_s
+	sta inosisi5_s
+	sta inosisi6_s
+	sta inosisi1_s2
+	sta inosisi2_s2
+	sta inosisi3_s2
+	sta inosisi4_s2
+	sta inosisi5_s2
+	sta inosisi6_s2
+	
+	jmp break
+inosisi2:
+	lda REG0
+	sta inosisi21_s
+	sta inosisi22_s
+	sta inosisi23_s
+	sta inosisi24_s
+	sta inosisi25_s
+	sta inosisi26_s
+	sta inosisi21_s2
+	sta inosisi22_s2
+	sta inosisi23_s2
+	sta inosisi24_s2
+	sta inosisi25_s2
+	sta inosisi26_s2
+
+break:
+	rts
+.endproc	; Inosisi_SetSplashAttribute
