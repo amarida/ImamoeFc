@@ -196,7 +196,7 @@ copypal:
 	lda	#$10
 	sta	$2006
 	ldx	#$00
-	ldy	#$8
+	ldy	#12
 copypal2:
 	lda	palette1, x
 	sta $2007
@@ -1013,6 +1013,7 @@ Y_Pos_Init:   .byte 40       ; Y座標初期値
 palette1:
 	.byte	$21, $23, $3A, $30	; スプライト色1
 	.byte	$0f, $07, $16, $0d	; スプライト色2
+	.byte	$0f, $23, $3A, $28	; スプライト色3
 palette2:
 	.byte	$0f, $00, $10, $20
 	.byte	$0f, $00, $10, $20

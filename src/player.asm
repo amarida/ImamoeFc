@@ -3,6 +3,7 @@
 	sta chr_lr
 	sta is_dead
 	sta update_dead_step
+	sta player_draw_status
 	rts
 .endproc
 
@@ -18,6 +19,10 @@
 	lda	#1
 	sta	is_jump
 
+	; ジャンプ
+	lda #1
+	sta player_draw_status
+
 	; 速度と方向をセット
 	lda	#10
 	sta	spd_y
@@ -26,6 +31,17 @@
 	sta	spd_vec
 
 End:
+	rts
+.endproc
+
+; B
+.proc	PlayerAttack
+	; 攻撃
+	lda #2
+	sta player_draw_status
+	lda #0
+	sta attack_frame
+
 	rts
 .endproc
 
@@ -168,6 +184,10 @@ skip:
 	lda #0
 	sta is_jump
 
+	; 死亡
+	lda #4
+	sta player_draw_status
+
 	rts
 .endproc
 
@@ -214,6 +234,13 @@ skip_jump:
 	beq roll_skip
 	; 当たった処理
 
+	; ジャンプ中なら通常
+	lda is_jump
+	beq skip_nomal
+	lda #0
+	sta player_draw_status
+skip_nomal:
+
 	; 小数部は0
 	lda #0
 	sta player_y+1
@@ -227,6 +254,7 @@ skip_jump:
 	lda	#0
 	sta	is_jump
 
+
 	lda #0
 	sta spd_y
 	sta spd_y+1
@@ -236,6 +264,9 @@ roll_skip:
 	; 戻さない＝自由落下開始
 	lda #1
 	sta is_jump
+	; ジャンプ
+	lda #1
+	sta player_draw_status
 
 	; 速度と方向をセット
 	lda	#0
@@ -249,6 +280,43 @@ not_jump_exit:
 skip_not_jump:
 
 	; その他の必ず通る処理
+
+	lda player_draw_status
+	cmp #0	; 通常
+	beq case_nomal
+	cmp #1	; ジャンプ
+	beq case_jump
+	cmp #2	; 攻撃中1
+	beq case_attack1
+	cmp #3	; 攻撃中2
+	beq case_attack2
+	cmp #4	; 死亡
+	beq case_dead
+	jmp break_status
+
+case_nomal:
+	jmp break_status
+case_jump:
+	jmp break_status
+case_attack1:
+	inc attack_frame
+	lda attack_frame
+	cmp #10
+	bne break_status
+	lda #3
+	sta player_draw_status
+	jmp break_status
+case_attack2:
+	inc attack_frame
+	lda attack_frame
+	cmp #20
+	bne break_status
+	lda #0
+	sta player_draw_status
+	jmp break_status
+case_dead:
+
+break_status:
 
 	; 海あたりフラグ
 	lda obj_collision_sea
@@ -385,6 +453,9 @@ shita:
 	; ジャンプフラグを落とす
 	lda	#0
 	sta	is_jump
+	; 通常
+	lda #0
+	sta player_draw_status
 end:
 	lda #0
 	sta spd_y
@@ -486,36 +557,108 @@ break:
 	rts
 .endproc
 
+.proc player_draw_dma7_attack1
+	ldx #2
+	stx REG0
+	; 吹き戻し
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #21
+	sta playerFuki1_y
+	sta playerFuki2_y
+	lda #$C4
+	sta playerFuki1_t
+	lda #$C5
+	sta playerFuki2_t
+
+	lda chr_lr
+	cmp #0
+	beq case_attack1_right
+	cmp #1
+	beq case_attack1_left
+
+case_attack1_right:
+	lda #%00000010
+	sta playerFuki1_s
+	sta playerFuki2_s
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #12
+	sta playerFuki1_x
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #20
+	sta playerFuki2_x
+
+	jmp break_fuki_attack1
+case_attack1_left:
+	lda #%01000010
+	sta playerFuki1_s
+	sta playerFuki2_s
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #4
+	sta playerFuki1_x
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #12
+	sta playerFuki2_x
+
+	jmp break_fuki_attack1
+
+break_fuki_attack1:
+
+
+	rts
+.endproc
+
+.proc player_draw_dma7_attack2
+	ldx #0
+	stx REG0
+	; 吹き戻し
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #21
+	sta playerFuki1_y
+	lda #232	; 画面外
+	sta playerFuki2_y
+	lda #$C6
+	sta playerFuki1_t
+
+	lda chr_lr
+	cmp #0
+	beq case_attack2_right
+	cmp #1
+	beq case_attack2_left
+
+case_attack2_right:
+	lda #%00000010
+	sta playerFuki1_s
+;	sta playerFuki2_s
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #12
+	sta playerFuki1_x
+	jmp break_fuki_attack2
+case_attack2_left:
+	lda #%01000010
+	sta playerFuki1_s
+;	sta playerFuki2_s
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #4
+	sta playerFuki1_x
+
+	jmp break_fuki_attack2
+
+break_fuki_attack2:
+
+	rts
+.endproc	; player_draw_dma7_attack2
+
+
 ; 描画
 .proc	player_draw_dma7
-	;REG0 = (p_pat == 0) ? 2 : 0;
-
-	ldx #2
-	lda p_pat
-	bne	Pat1
-	ldx #0
-Pat1:
-	stx REG0
-
-
-	; REG0 = (is_jump == 1) ? #$40 : #0;
-	; ジャンプ中
-	ldx #$40
-	lda is_jump
-	bne ContinueJmp
-	ldx REG0
-ContinueJmp:
-	stx REG0
-
-	; REG0 = (is_dead == 1) ? #$42 : #0;
-	; 死亡中
-	ldx #$42
-	lda is_dead
-	bne ContinueDead
-	ldx REG0
-ContinueDead:
-	stx REG0
-
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
 	lda player_x_low
@@ -529,6 +672,7 @@ ContinueDead:
 	adc #8
 	sta window_player_x_low8
 
+	;						右向き			左向き
 	; REG1 = (chr_lr == 0) ? #%00000000 : #%01000000;
 	; REG2 = (chr_lr == 0) ? window_player_x_low8 : window_player_x_low;
 	; REG3 = (chr_lr == 0) ? window_player_x_low : window_player_x_low8;
@@ -551,6 +695,66 @@ ContinueDead:
 	sta REG3
 
 ContinueLR:
+
+
+	lda #232	; 画面外
+	sta playerFuki1_y
+	sta playerFuki2_y
+
+
+	lda player_draw_status
+	cmp #0	; 通常
+	beq case_nomal
+	cmp #1	; ジャンプ
+	beq case_jump
+	cmp #2	; 攻撃中1
+	beq case_attack1
+	cmp #3	; 攻撃中2
+	beq case_attack2
+	cmp #4	; 死亡
+	beq case_dead
+
+; 通常
+case_nomal:
+	;REG0 = (p_pat == 0) ? 2 : 0;
+	ldx #2
+	lda p_pat
+	bne	Pat1
+	ldx #0
+Pat1:
+	stx REG0
+
+	jmp break
+
+; ジャンプ
+case_jump:
+	ldx #$40
+	stx REG0
+
+	jmp break
+
+; 攻撃中1
+case_attack1:
+	jsr player_draw_dma7_attack1
+
+	jmp break
+
+; 攻撃中2
+case_attack2:
+	jsr player_draw_dma7_attack2
+
+	jmp break
+
+; 死亡
+case_dead:
+	ldx #$42
+	stx REG0
+
+	jmp break
+break:
+
+
+
 
 	clc			; キャリーフラグOFF
 	lda player_y
@@ -631,8 +835,6 @@ ContinueLR:
 	lda #$B1     ; 21をAにロード
 	adc REG0
 	sta player8_t
-	lda REG1     ; 0(10進数)をAにロード
-	sta player8_s
 
 	dec pat_change_frame
 	;lda	#10
@@ -646,35 +848,109 @@ change_pat_skip:
 	rts
 
 .endproc
+
+.proc player_draw_dma6_attack1
+	ldx #2
+	stx REG0
+	; 吹き戻し
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #21
+	sta playerFuki1_y2
+	sta playerFuki2_y2
+	lda #$C4
+	sta playerFuki1_t2
+	lda #$C5
+	sta playerFuki2_t2
+
+	lda chr_lr
+	cmp #0
+	beq case_attack1_right
+	cmp #1
+	beq case_attack1_left
+
+case_attack1_right:
+	lda #%00000010
+	sta playerFuki1_s2
+	sta playerFuki2_s2
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #12
+	sta playerFuki1_x2
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #20
+	sta playerFuki2_x2
+
+	jmp break_fuki_attack1
+case_attack1_left:
+	lda #%01000010
+	sta playerFuki1_s2
+	sta playerFuki2_s2
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #4
+	sta playerFuki1_x2
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #12
+	sta playerFuki2_x2
+
+	jmp break_fuki_attack1
+
+break_fuki_attack1:
+
+
+	rts
+.endproc	; player_draw_dma6_attack1
+
+.proc player_draw_dma6_attack2
+	ldx #0
+	stx REG0
+	; 吹き戻し
+	clc			; キャリーフラグOFF
+	lda player_y
+	adc #21
+	sta playerFuki1_y2
+	lda #232	; 画面外
+	sta playerFuki2_y2
+	lda #$C6
+	sta playerFuki1_t2
+
+	lda chr_lr
+	cmp #0
+	beq case_attack2_right
+	cmp #1
+	beq case_attack2_left
+
+case_attack2_right:
+	lda #%00000010
+	sta playerFuki1_s2
+;	sta playerFuki2_s2
+	clc			; キャリーフラグOFF
+	lda window_player_x_low
+	adc #12
+	sta playerFuki1_x2
+	jmp break_fuki_attack2
+case_attack2_left:
+	lda #%01000010
+	sta playerFuki1_s2
+;	sta playerFuki2_s2
+	sec			; キャリーフラグON
+	lda window_player_x_low
+	sbc #4
+	sta playerFuki1_x2
+
+	jmp break_fuki_attack2
+
+break_fuki_attack2:
+
+	rts
+.endproc	; player_draw_dma6_attack2
+
+
 ; 描画
 .proc	player_draw_dma6
-	;REG0 = (p_pat == 0) ? 2 : 0;
-
-	ldx #2
-	lda p_pat
-	bne	Pat1
-	ldx #0
-Pat1:
-	stx REG0
-
-
-	; REG0 = (is_jump == 1) ? #$40 : #0;
-	; ジャンプ中
-	ldx #$40
-	lda is_jump
-	bne ContinueJmp
-	ldx REG0
-ContinueJmp:
-	stx REG0
-
-	; REG0 = (is_dead == 1) ? #$42 : #0;
-	; 死亡中
-	ldx #$42
-	lda is_dead
-	bne ContinueDead
-	ldx REG0
-ContinueDead:
-	stx REG0
 
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
@@ -711,6 +987,64 @@ ContinueDead:
 	sta REG3
 
 ContinueLR:
+
+	lda #232	; 画面外
+	sta playerFuki1_y2
+	sta playerFuki2_y2
+
+
+	lda player_draw_status
+	cmp #0	; 通常
+	beq case_nomal
+	cmp #1	; ジャンプ
+	beq case_jump
+	cmp #2	; 攻撃中1
+	beq case_attack1
+	cmp #3	; 攻撃中2
+	beq case_attack2
+	cmp #4	; 死亡
+	beq case_dead
+
+; 通常
+case_nomal:
+	;REG0 = (p_pat == 0) ? 2 : 0;
+	ldx #2
+	lda p_pat
+	bne	Pat1
+	ldx #0
+Pat1:
+	stx REG0
+
+	jmp break
+
+; ジャンプ
+case_jump:
+	ldx #$40
+	stx REG0
+
+	jmp break
+
+; 攻撃中
+case_attack1:
+	jsr player_draw_dma6_attack1
+
+	jmp break
+
+; 攻撃中
+case_attack2:
+	jsr player_draw_dma6_attack2
+
+	jmp break
+
+; 死亡
+case_dead:
+	ldx #$42
+	stx REG0
+
+	jmp break
+
+break:
+
 
 	clc			; キャリーフラグOFF
 	lda player_y
@@ -791,8 +1125,7 @@ ContinueLR:
 	lda #$B1     ; 21をAにロード
 	adc REG0
 	sta player8_t2
-	lda REG1     ; 0(10進数)をAにロード
-	sta player8_s2
+
 
 	dec pat_change_frame
 	;lda	#10

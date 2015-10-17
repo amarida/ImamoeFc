@@ -127,6 +127,24 @@ case_dead:
 
 break:
 
+	; 画面外判定
+	sec
+	lda field_scroll_x_up
+	sbc inosisi0_world_pos_x_hi,x
+	bcc skip_dead
+	sec
+	lda field_scroll_x_low
+	sbc inosisi0_world_pos_x_low,x
+	bcc skip_dead
+	; 画面外処理
+	lda inosisi_alive_flag
+	eor inosisi_alive_flag_current
+	sta inosisi_alive_flag
+	lda #224	; 画面外
+	sta inosisi0_pos_y,x
+
+skip_dead:
+
 next_update:
 	; 次
 	asl inosisi_alive_flag_current
@@ -179,24 +197,6 @@ roll_skip:
 	lda inosisi0_world_pos_x_hi,x
 	sbc #0
 	sta inosisi0_world_pos_x_hi,x
-
-	; 画面外判定
-	sec
-	lda field_scroll_x_up
-	sbc inosisi0_world_pos_x_hi,x
-	bcc skip_dead
-	sec
-	lda field_scroll_x_low
-	sbc inosisi0_world_pos_x_low,x
-	bcc skip_dead
-	; 画面外処理
-	lda inosisi_alive_flag
-	eor inosisi_alive_flag_current
-	sta inosisi_alive_flag
-	lda #224	; 画面外
-	sta inosisi0_pos_y,x
-
-skip_dead:
 
 	rts
 .endproc	; Inosisi_UpdateNormal

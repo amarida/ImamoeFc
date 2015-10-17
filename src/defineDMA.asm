@@ -1,5 +1,13 @@
 ; スプライトDMA用$0700～$07ff
 .org $0700
+playerFuki1_y: .byte 0
+playerFuki1_t: .byte 0
+playerFuki1_s: .byte 0
+playerFuki1_x: .byte 0
+playerFuki2_y: .byte 0
+playerFuki2_t: .byte 0
+playerFuki2_s: .byte 0
+playerFuki2_x: .byte 0
 player1_y:	.byte 0;	=	$0700	; 
 player1_t:	.byte 0;	=	$0701	; 
 player1_s:	.byte 0;	=	$0702	; 
@@ -32,6 +40,7 @@ player8_y:	.byte 0;	=	$071C	;
 player8_t:	.byte 0;	=	$071D	; 
 player8_s:	.byte 0;	=	$071E	; 
 player8_x:	.byte 0;	=	$071F	; 
+
 inosisi1_y:	.byte 0;	=	$0720	; 
 inosisi1_t:	.byte 0;	=	$0721	; 
 inosisi1_s:	.byte 0;	=	$0722	; 属性
@@ -134,6 +143,14 @@ inosisi26_t2:	.byte 0;	=	$0755	;
 inosisi26_s2:	.byte 0;	=	$0756	; 
 inosisi26_x2:	.byte 0;	=	$0757	; 
 
+playerFuki1_y2: .byte 0
+playerFuki1_t2: .byte 0
+playerFuki1_s2: .byte 0
+playerFuki1_x2: .byte 0
+playerFuki2_y2: .byte 0
+playerFuki2_t2: .byte 0
+playerFuki2_s2: .byte 0
+playerFuki2_x2: .byte 0
 player1_y2:	.byte 0;	=	$0700	; 
 player1_t2:	.byte 0;	=	$0701	; 
 player1_s2:	.byte 0;	=	$0702	; 

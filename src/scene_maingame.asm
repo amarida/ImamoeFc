@@ -98,6 +98,12 @@ dma_break:
 	;jsr PlayerJump
 SkipPushA:
 	lda $4016	; B
+	and #1
+	beq SkipPusyB
+	lda key_state_on
+	ora #%00000010
+	sta key_state_on
+SkipPusyB:
 	lda $4016	; SELECT
 	lda $4016	; START
 	lda $4016	; è„
@@ -128,9 +134,20 @@ SkipKeyRight:
 
 	lda key_state_push
 	and #%00000001
-	beq SkipJump
+	bne Jump
+	lda key_state_push
+	and #%00000010
+	bne Attack
+	jmp break
+	
+Jump:
 	jsr PlayerJump
-SkipJump:
+	jmp break
+Attack:
+	jsr PlayerAttack
+	jmp break
+
+break:
 
 	jsr Player_Update
 	jsr	InosisiUpdate
