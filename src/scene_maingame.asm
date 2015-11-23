@@ -6,35 +6,6 @@
 	jsr draw_bg_attribute	; 属性テーブル
 	jsr DrawStatus
 
-
-	; スクロール位置更新
-;	lda $2002		; スクロール値クリア
-;	lda scroll_x
-;	sta	$2005		; X方向スクロール
-;	lda	#0		; Yは固定
-;	sta	$2005
-
-
-
-
-;skip_end_draw:
-	; 描画
-
-;	lda	0
-;	sta	REG0
-;	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
-;	sta $2003  ; AのスプライトRAMのアドレスをストア
-
-;	lda #00
-;	sta $2004		;Y
-;	lda #01
-;	sta $2004		;番号
-;	lda #0
-;	sta $2004
-;	lda #8
-;	sta $2004		;X
-
-	;jsr	sprite_draw	; スプライト描画関数
 	lda loop_count
 	and #%00000001
 	bne player_dma7
@@ -319,25 +290,6 @@ appear_skip:
 	inx
 	lda string_life, x
 	sta $2007
-
-;loop_x:
-;
-;	lda string_life, x
-;	sta $2007
-;
-;	;inc REG0
-;	
-;	inx
-;	cpx #4
-;	bne loop_x
-
-;	lda #3
-;	sta draw_bg_y	; Y座標（ブロック）
-;	lda #0	; X座標（ブロック）
-;	sta draw_bg_x	; X座標（ブロック）
-;	jsr SetPosition
-;	lda #$10
-;	sta $2007
 
 	; 画面１か２の設定を戻す
 	lda REG2

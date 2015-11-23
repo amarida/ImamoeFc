@@ -462,26 +462,6 @@ End:
 	cmp #0
 	bne skip;
 
-	; field_scroll_x を 8で割った数が現在描画するべきBG
-	; シフトするのでテンプに一旦入れる
-;	lda field_scroll_x_up
-;	sta field_scroll_x_up_tmp
-;	lda field_scroll_x_low
-;	sta field_scroll_x_low_tmp
-;
-;	lda field_scroll_x_up
-;	sta map_chip_index_up
-;	lda field_scroll_x_low
-;	sta map_chip_index_low
-;	; 8で割る
-;	clc
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-
 	; bg_already_drawがその値に達していなければ描画
 	sec
 	lda bg_already_draw;
@@ -540,30 +520,6 @@ skip:
 	cmp #0
 	bne skip
 
-	; field_scroll_x を 32で割った数が現在描画するべきBG
-	; シフトするのでテンプに一旦入れる
-;	lda field_scroll_x_up
-;	sta field_scroll_x_up_tmp
-;	lda field_scroll_x_low
-;	sta field_scroll_x_low_tmp
-;
-;	lda field_scroll_x_up
-;	sta map_chip_index_up
-;	lda field_scroll_x_low
-;	sta map_chip_index_low
-;	; 32で割る
-;	clc
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-;	lsr field_scroll_x_up_tmp	; 上位は右シフト
-;	ror field_scroll_x_low_tmp	; 下位は右ローテート
-
 	; bg_already_draw_attributeがその値に達していなければ設定
 	sec
 	lda bg_already_draw_attribute;
@@ -589,39 +545,13 @@ not_skip:
 
 	ldy #7
 draw_loop:
-;	sty REG0
-;	sec
-;	lda map_chip_offset_low
-;	sbc REG0
-;	sta map_chip_offset_start
-	;ldy map_chip_offset_start
-;	ldx map_chip_offset_start
-	; lda map_chip, x
-;	lda bg_already_draw_attribute
-;	sta draw_bg_x
-;	sty draw_bg_y
-;	jsr SetAttributePosition
-
-;	ldy #0
-;	lda offset_y_attribute
-;	sta draw_bg_y	; Y座標
-;	lda bg_already_draw_attribute
-;	sta draw_bg_x	; X座標（ブロック）
-;	jsr SetAttributePosition
 
 	lda attribute_pos_adress_up
 	sta $2006
 	lda attribute_pos_adress_low
 	sta $2006
 	lda (map_table_attribute_low), y
-;lda	map_chip_offset_start, y
-	;sta draw_bg_tile	; タイル番号
-	
-	;jsr DrawMapChip
-	;lda draw_bg_tile
 	sta $2007
-
-
 
 
 	lda attribute_pos_adress_low
@@ -658,15 +588,6 @@ skip_reset:
 skip:
 
 	rts
-.endproc
-
-; スプライト描画
-.proc	sprite_draw
-
-;	jsr	player_draw	; プレイヤー描画関数
-;	jsr InosisiDraw	; イノシシ描画関数
-
-	rts	; サブルーチンから復帰します。
 .endproc
 
 .proc	sprite_draw2
