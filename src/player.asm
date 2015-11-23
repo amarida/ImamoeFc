@@ -141,6 +141,24 @@ roll_skip:
 	adc #1
 	sta scroll_x
 
+	inc scroll_count_8dot
+	lda scroll_count_8dot
+	cmp #8
+	bne skip_scroll_count_8dot_off
+	lda #0
+	sta scroll_count_8dot
+	inc scroll_count_8dot_count	
+skip_scroll_count_8dot_off:
+
+	inc scroll_count_32dot
+	lda scroll_count_32dot
+	cmp #32
+	bne skip_scroll_count_32dot_off
+	lda #0
+	sta scroll_count_32dot
+	inc scroll_count_32dot_count
+skip_scroll_count_32dot_off:
+
 ;	; スクロール情報の更新とともに
 ;	; イノシシ座標ずらす
 ;	sec

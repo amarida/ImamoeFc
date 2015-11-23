@@ -146,4 +146,6 @@ inosisi01_wait								= $91	; イノシシ01待ち
 inosisi00_update_dead_step					= $92	; イノシシ00死亡時更新処理ステップ
 inosisi01_update_dead_step					= $93	; イノシシ01死亡時更新処理ステップ
 scroll_count_8dot							= $94	; スクロール用カウンタ
-pow_two										= $95	; make通し用
+scroll_count_8dot_count						= $95	; スクロール用カウンタ
+scroll_count_32dot							= $96	; スクロール用カウンタ
+scroll_count_32dot_count					= $97	; スクロール用カウンタ

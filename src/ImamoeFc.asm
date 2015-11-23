@@ -37,9 +37,9 @@
 ;	txs			; XをSへコピーします。
 
 ; スクリーンオフ
-	lda	#$00
-	sta	$2000
-	sta	$2001
+	lda #$00
+	sta $2000
+	sta $2001
 
 	
 	lda #0
@@ -52,6 +52,26 @@
 	sta map_enemy_info_address_low
 	lda #> map_enemy_info
 	sta map_enemy_info_address_hi
+
+;counter_hit: .byte 1
+;DoubleRAM: .word 2
+;
+;lda	counter_hit
+;asl	a
+;tax
+;lda	Table_hit, x
+;sta	DoubleRAM
+;lda	Table_hit +1,x
+;sta	DoubleRAM +1
+;jmp  (DoubleRAM)
+;
+;Table_hit:
+; .word hit0
+; .word hit1
+; .word hit2
+; .word hit3
+; .word hit4
+
 
 ; 初期位置
 	lda	#128		; 128(10進)
@@ -81,34 +101,27 @@
 	sta key_state_on
 	sta key_state_push
 
-	lda #4
-	sta pow_two
-	lda #9
-	sta pow_two+1
-	lda #16
-	sta pow_two+2
-	lda #25
-	sta pow_two+3
-	lda #36
-	sta pow_two+4
-	lda #49
-	sta pow_two+5
-	lda #64
-	sta pow_two+6
-	lda #81
-	sta pow_two+7
-	lda #100
-	sta pow_two+8
-	lda #121
-	sta pow_two+9
-	lda #144
-	sta pow_two+10
-	lda #169
-	sta pow_two+11
-	lda #196
-	sta pow_two+12
-	lda #225
-	sta pow_two+13
+	lda #0
+	sta scroll_count_32dot
+
+	lda #7
+	sta scroll_count_8dot
+	lda #$FF
+	sta scroll_count_8dot_count
+
+	; スプライト0番の情報
+	lda #23
+	sta spriteZero_y
+	sta spriteZero_y2
+	lda #01
+	sta spriteZero_t
+	sta spriteZero_t2
+	lda #0
+	sta spriteZero_s
+	sta spriteZero_s2
+	lda #48
+	sta spriteZero_x
+	sta spriteZero_x2
 
 	lda #< command_jt
 	sta test_address_low
@@ -147,23 +160,6 @@ cmd_test3:
 
 break:
 
-
-;;;;; 二乗の計算結果の取得方法 ;;;;;
-	lda #1
-	sta map_diff_x_index
-
-	lda #< pow_two	; アドレスを取得
-	adc map_diff_x_index	; アドレスずらす
-	sta REG0
-	lda #0
-	sta REG1
-
-	ldy #0
-	clc
-	lda (REG0), y
-
-	sta REG2
-;;;;; 二乗の計算結果の取得方法 ;;;;;
 
 	; マップチップ位置初期設定
 	lda #< map_chip
@@ -207,13 +203,13 @@ copypal2:
 ; ネームテーブルへ転送
 	lda #1
 	sta current_draw_display_no
-	lda	#%00001000	; VBlank割り込みなし、スプライトが1、
-	sta	$2000
+	lda #%00001000	; VBlank割り込みなし、スプライトが1、
+	sta $2000
 
 ; スクリーンオン
-	lda	#%00001100	; VBlank割り込みなし、スプライトが1、VRAM増加量32byte
-;	lda	#%00001000
-	sta	$2000
+	lda #%00001100	; VBlank割り込みなし、スプライトが1、VRAM増加量32byte
+;	lda #%00001000
+	sta $2000
 
 ; スクロール設定
 	lda	#$00
@@ -326,6 +322,19 @@ skip_reset:
 	sta bg_already_draw_attribute
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+	jsr DrawStatus
+	jsr SetStatus
+
+; ラスタスクロール用(BG)
+	lda #2
+	sta draw_bg_y	; Y座標（ブロック）
+	lda #6	; X座標（ブロック）
+	sta draw_bg_x	; X座標（ブロック）
+	jsr SetPosition
+
+	lda #$10
+	sta $2007
+
 	lda #0
 	sta current_draw_display_no
 
@@ -339,9 +348,21 @@ skip_reset:
 	sta	$2005
 
 ; 割り込み開始
-	lda	#%10001100	; VBlank割り込みあり　VRAM増加量32byte
-	sta	$2000
+	lda #%10001100	; VBlank割り込みあり　VRAM増加量32byte
+	sta $2000
 
+; ラスタスクロール用(スプライト)
+;	lda #00
+;	sta $2003
+;
+;	lda #31	; スキャンラインの真ん中(ラスタースクロール開始点)
+;	sta $2004   ; Y座標をレジスタにストアする
+;	lda #01
+;	sta $2004   ; 0をストアして0番のスプライトを指定する
+;	lda #00
+;	sta $2004   ; 反転や優先順位は操作しないので、再度$00をストアする
+;	lda #0
+;	sta $2004   ; X座標をレジスタにストアする
 
 
 
@@ -354,6 +375,12 @@ vblank_wait:
 	lda	$2002
 	and	#%10000000
 	beq	vblank_wait
+
+;	lda $2002		; スクロール値クリア
+;	lda #$00
+;	sta $2005		; X方向スクロール
+;	lda #$00		; Y方向固定
+;	sta $2005
 
 	lda scene_type
 	cmp #0
@@ -387,6 +414,7 @@ scene_break:
 
 ; VBlank割り込み
 .proc	VBlank
+
 
 	inc vblank_count
 	rti			; 割り込みから復帰命令
@@ -429,36 +457,42 @@ End:
 ; 画面外BG描画
 .proc draw_bg
 
+	; scroll_count_8dotが0の時描画
+	lda scroll_count_8dot
+	cmp #0
+	bne skip;
+
 	; field_scroll_x を 8で割った数が現在描画するべきBG
 	; シフトするのでテンプに一旦入れる
-	lda field_scroll_x_up
-	sta field_scroll_x_up_tmp
-	lda field_scroll_x_low
-	sta field_scroll_x_low_tmp
-
-	lda field_scroll_x_up
-	sta map_chip_index_up
-	lda field_scroll_x_low
-	sta map_chip_index_low
-	; 8で割る
-	clc
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lda field_scroll_x_up
+;	sta field_scroll_x_up_tmp
+;	lda field_scroll_x_low
+;	sta field_scroll_x_low_tmp
+;
+;	lda field_scroll_x_up
+;	sta map_chip_index_up
+;	lda field_scroll_x_low
+;	sta map_chip_index_low
+;	; 8で割る
+;	clc
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
 
 	; bg_already_drawがその値に達していなければ描画
 	sec
 	lda bg_already_draw;
-	sbc field_scroll_x_low_tmp
+	sbc scroll_count_8dot_count
+
+;	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
 
 ; 描画
-
 	lda #3
 	sta draw_bg_y	; Y座標
 	lda bg_already_draw_pos
@@ -501,34 +535,40 @@ skip:
 
 ; 画面外BG属性設定
 .proc draw_bg_attribute
+
+	lda scroll_count_32dot
+	cmp #0
+	bne skip
+
 	; field_scroll_x を 32で割った数が現在描画するべきBG
 	; シフトするのでテンプに一旦入れる
-	lda field_scroll_x_up
-	sta field_scroll_x_up_tmp
-	lda field_scroll_x_low
-	sta field_scroll_x_low_tmp
-
-	lda field_scroll_x_up
-	sta map_chip_index_up
-	lda field_scroll_x_low
-	sta map_chip_index_low
-	; 32で割る
-	clc
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
-	lsr field_scroll_x_up_tmp	; 上位は右シフト
-	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lda field_scroll_x_up
+;	sta field_scroll_x_up_tmp
+;	lda field_scroll_x_low
+;	sta field_scroll_x_low_tmp
+;
+;	lda field_scroll_x_up
+;	sta map_chip_index_up
+;	lda field_scroll_x_low
+;	sta map_chip_index_low
+;	; 32で割る
+;	clc
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
+;	lsr field_scroll_x_up_tmp	; 上位は右シフト
+;	ror field_scroll_x_low_tmp	; 下位は右ローテート
 
 	; bg_already_draw_attributeがその値に達していなければ設定
 	sec
 	lda bg_already_draw_attribute;
-	sbc field_scroll_x_low_tmp
+	sbc scroll_count_32dot_count
+;	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
@@ -1042,10 +1082,17 @@ string2:
 string_game_over:
 	.byte	"GAME OVER"
 
+string_life:
+	.byte	"LIFE"
+string_score:
+	.byte	"SCORE"
+string_time:
+	.byte	"TIME"
+
 ; マップチップ(ネームテーブル)
 map_chip: ; 25個(上3個空き)240ライン表示なら上下＋１づつ
-	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01
-	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $01
+	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $01
 	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte 	$02, $12, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte 	$01, $11, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00

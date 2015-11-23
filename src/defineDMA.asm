@@ -1,5 +1,9 @@
 ; スプライトDMA用$0700～$07ff
 .org $0700
+spriteZero_y:		.byte 0
+spriteZero_t:		.byte 0
+spriteZero_s:		.byte 0
+spriteZero_x:		.byte 0
 playerFuki1_y: .byte 0
 playerFuki1_t: .byte 0
 playerFuki1_s: .byte 0
@@ -90,9 +94,12 @@ inosisi26_y:	.byte 0;	=	$0754	;
 inosisi26_t:	.byte 0;	=	$0755	; 
 inosisi26_s:	.byte 0;	=	$0756	; 
 inosisi26_x:	.byte 0;	=	$0757	; 
-;.org $8000
 
 .org $0600
+spriteZero_y2:		.byte 0
+spriteZero_t2:		.byte 0
+spriteZero_s2:		.byte 0
+spriteZero_x2:		.byte 0
 inosisi1_y2:	.byte 0;	=	$0720	; 
 inosisi1_t2:	.byte 0;	=	$0721	; 
 inosisi1_s2:	.byte 0;	=	$0722	; 属性

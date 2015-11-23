@@ -1,17 +1,29 @@
 .proc scene_maingame
-	; 描画
+
 
 	; 画面外背景の描画
 	jsr draw_bg				; ネームテーブル
 	jsr draw_bg_attribute	; 属性テーブル
-	
-;skip_end_draw:
+	jsr DrawStatus
 
+
+	; スクロール位置更新
+;	lda $2002		; スクロール値クリア
+;	lda scroll_x
+;	sta	$2005		; X方向スクロール
+;	lda	#0		; Yは固定
+;	sta	$2005
+
+
+
+
+;skip_end_draw:
+	; 描画
 
 ;	lda	0
 ;	sta	REG0
-	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
-	sta $2003  ; AのスプライトRAMのアドレスをストア
+;	lda #$00   ; $00(スプライトRAMのアドレスは8ビット長)をAにロード
+;	sta $2003  ; AのスプライトRAMのアドレスをストア
 
 ;	lda #00
 ;	sta $2004		;Y
@@ -38,13 +50,8 @@ player_dma6:
 player_dma_break:
 
 
-	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
+;	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
 
-	; スクロール位置更新
-	lda scroll_x
-	sta	$2005		; X方向スクロール
-	lda	#0		; Yは固定
-	sta	$2005
 	
 	lda loop_count
 	and #%00000001
@@ -56,18 +63,52 @@ dma7:
 	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
 	jmp dma_break
 dma6:
-	lda #$6  ; スプライトデータは$0700番地からなので、7をロードする。
+	lda #$6  ; スプライトデータは$0600番地からなので、6をロードする。
 	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
 	jmp dma_break
 dma_break:
 
+	lda $2002		; スクロール値クリア
+	lda #$00
+	sta $2005		; X方向スクロール
+	lda #$00		; Y方向固定
+	sta $2005
+
+;jmp r_skip
+waitZeroSpriteClear:
+	lda $2002
+	and #$40
+	bne waitZeroSpriteClear
+waitZeroSpriteHit:
+	lda $2002
+	and #$40
+	beq waitZeroSpriteHit
+r_skip:
+
+	jsr waitScan
+
+	; スクロール位置更新
+	lda $2002		; スクロール値クリア
+	lda scroll_x
+	sta	$2005		; X方向スクロール
+	lda	#0		; Yは固定
+	sta	$2005
+
 	clc
-	lda	#%10001100	; VBlank割り込みあり
+	lda #%10001100	; VBlank割り込みあり
 	adc current_draw_display_no	; 画面０か１
-	sta	$2000
+	sta $2000
 	
 	jsr	Update	; 更新
 
+	rts
+.endproc
+
+.proc waitScan			; 何もせず待つ
+	ldx #167
+waitScanSub:
+	dex
+	bne waitScanSub
 	rts
 .endproc
 
@@ -228,3 +269,139 @@ appear_skip:
 	rts
 .endproc
 
+; ステータス情報の描画
+.proc DrawStatus
+
+	lda current_draw_display_no
+	sta REG2
+	lda #1
+	sta current_draw_display_no
+
+	lda #1
+	sta REG0
+
+	lda $2000
+	sta REG1
+;	and #%11111011
+;	sta $2000
+
+;	lda #2
+;	sta draw_bg_y	; Y座標（ブロック）
+;	lda #1	; X座標（ブロック）
+;	sta draw_bg_x	; X座標（ブロック）
+;	jsr SetPosition
+	; LIFE
+	lda #$20
+	sta $2006
+	lda #$61
+	sta $2006
+	ldx #0
+	lda string_life, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$62
+	sta $2006
+	inx
+	lda string_life, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$63
+	sta $2006
+	inx
+	lda string_life, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$64
+	sta $2006
+	inx
+	lda string_life, x
+	sta $2007
+
+;loop_x:
+;
+;	lda string_life, x
+;	sta $2007
+;
+;	;inc REG0
+;	
+;	inx
+;	cpx #4
+;	bne loop_x
+
+;	lda #3
+;	sta draw_bg_y	; Y座標（ブロック）
+;	lda #0	; X座標（ブロック）
+;	sta draw_bg_x	; X座標（ブロック）
+;	jsr SetPosition
+;	lda #$10
+;	sta $2007
+
+	; 画面１か２の設定を戻す
+	lda REG2
+	sta current_draw_display_no
+
+	; 制御レジスタを戻す
+	lda REG1
+	;sta $2000
+
+
+	rts
+.endproc
+
+; 固定ステータス情報の描画
+.proc SetStatus
+
+	lda current_draw_display_no
+	sta REG2
+	lda #1
+	sta current_draw_display_no
+
+	lda #1
+	sta REG0
+
+	lda $2000
+	sta REG1
+
+	; SCORE
+	lda #$20
+	sta $2006
+	lda #$6A
+	sta $2006
+	ldx #0
+	lda string_score, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$6B
+	sta $2006
+	inx
+	lda string_score, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$6C
+	sta $2006
+	inx
+	lda string_score, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$6D
+	sta $2006
+	inx
+	lda string_score, x
+	sta $2007
+	lda #$20
+	sta $2006
+	lda #$6E
+	sta $2006
+	inx
+	lda string_score, x
+	sta $2007
+
+
+	rts
+.endproc
