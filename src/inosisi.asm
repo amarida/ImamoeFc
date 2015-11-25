@@ -160,7 +160,7 @@ skip_inosisi:
 .proc	Inosisi_UpdateNormal
 	; d—Í
 	clc
-	lda #1
+	lda #2
 	adc inosisi0_pos_y,x
 	sta inosisi0_pos_y,x
 
@@ -218,7 +218,7 @@ roll_skip:
 
 case_init:
 	; ˆ—0
-	lda #60
+	lda #25
 	sta inosisi00_wait,x
 
 	inc inosisi00_update_dead_step,x
@@ -229,7 +229,7 @@ case_drown_wait:
 	dec inosisi00_wait,x
 	bne break
 	inc inosisi00_update_dead_step,x
-	lda #30
+	lda #15
 	sta inosisi00_wait,x
 	lda #2
 	sta inosisi00_status,x
@@ -244,7 +244,7 @@ case_splash1_wait:
 	dec inosisi00_wait,x
 	bne break
 	inc inosisi00_update_dead_step,x
-	lda #30
+	lda #15
 	sta inosisi00_wait,x
 	lda #3
 	sta inosisi00_status,x
