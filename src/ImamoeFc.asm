@@ -109,6 +109,20 @@
 	lda #$FF
 	sta scroll_count_8dot_count
 
+	lda #0
+	sta timer_count
+
+	; タイマー初期値(400)
+	lda #%00000001
+	sta timer_b1
+	lda #%10010000
+	sta timer_b0
+
+	lda #%11110011
+	sta score_b1
+	lda #%11110011
+	sta score_b0
+
 	; スプライト0番の情報
 	lda #23
 	sta spriteZero_y
@@ -321,9 +335,12 @@ skip_reset:
 	sta bg_already_draw_attribute_pos
 	sta bg_already_draw_attribute
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	lda #%00001000	; VBlank割り込みなし、スプライトが1、VRAM増加量1byte
+	sta $2000
 
 	jsr DrawStatus
-	jsr SetStatus
+	; 画面上部の固定情報の描画と属性設定
+	jsr SetStatusNameAttribute
 
 ; ラスタスクロール用(BG)
 	lda #2
@@ -375,12 +392,6 @@ vblank_wait:
 	lda	$2002
 	and	#%10000000
 	beq	vblank_wait
-
-;	lda $2002		; スクロール値クリア
-;	lda #$00
-;	sta $2005		; X方向スクロール
-;	lda #$00		; Y方向固定
-;	sta $2005
 
 	lda scene_type
 	cmp #0
@@ -1009,6 +1020,10 @@ string_score:
 	.byte	"SCORE"
 string_time:
 	.byte	"TIME"
+string_zero_score:
+	.byte	"000000"
+string_first_time:
+	.byte	"400"
 
 ; マップチップ(ネームテーブル)
 map_chip: ; 25個(上3個空き)240ライン表示なら上下＋１づつ

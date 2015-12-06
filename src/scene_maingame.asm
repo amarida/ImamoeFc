@@ -85,8 +85,11 @@ waitScanSub:
 
 ; 更新
 .proc	Update
+	inc loop_count
+
+	inc timer_count
+
 	; キー入力
-	inc loop_count;
 	; 初期化
 	lda #$01
 	sta $4016
@@ -166,8 +169,46 @@ break:
 
 	jsr confirm_appear_enemy
 
+	jsr UpdateTimer
+	jsr ConvertTimerBinaryToBCD
+	jsr ConvertBinaryToBCD
+
 	rts	; サブルーチンから復帰します。
 .endproc
+
+; タイマー更新
+.proc UpdateTimer
+
+	lda is_dead
+	bne skip
+
+	lda timer_count
+	cmp #24
+	bne skip
+	lda #0
+	sta timer_count
+
+
+
+	sec
+	lda timer_b0
+	sbc #1
+	sta timer_b0
+	lda timer_b1
+	sbc #0
+	sta timer_b1
+
+break:
+	lda timer_b0
+	bne skip
+	lda timer_b1
+	bne skip
+
+	jsr PlayerDead	; プレイヤー死亡
+
+skip:
+	rts
+.endproc	; UpdateTimer
 
 ; 敵登場確認
 .proc confirm_appear_enemy
@@ -243,79 +284,97 @@ appear_skip:
 ; ステータス情報の描画
 .proc DrawStatus
 
-	lda current_draw_display_no
-	sta REG2
-	lda #1
-	sta current_draw_display_no
+	; タイム
+	lda #$20
+	sta $2006
+	lda #$7C
+	sta $2006
+	lda timer_bcd1
+	and #%00001111
+	clc
+	adc #$30
+	sta $2007
 
-	lda #1
-	sta REG0
+	lda #$20
+	sta $2006
+	lda #$7D
+	sta $2006
+	lda timer_bcd0
+	lsr
+	lsr
+	lsr
+	lsr
+	clc
+	adc #$30
+	sta $2007
 
-	lda $2000
-	sta REG1
-;	and #%11111011
-;	sta $2000
+	lda #$20
+	sta $2006
+	lda #$7E
+	sta $2006
+	lda timer_bcd0
+	and #%00001111
+	clc
+	adc #$30
+	sta $2007
 
-;	lda #2
-;	sta draw_bg_y	; Y座標（ブロック）
-;	lda #1	; X座標（ブロック）
-;	sta draw_bg_x	; X座標（ブロック）
-;	jsr SetPosition
+rts
+	; スコア
+	lda #$20
+	sta $2006
+	lda #$70
+	sta $2006
+	lda score_bcd2
+	lsr
+	lsr
+	lsr
+	lsr
+	adc #$30
+	sta $2007
+
+	lda #$20
+	sta $2006
+	lda #$71
+	sta $2006
+	lda score_bcd2
+	and #%00001111
+	adc #$30
+	sta $2007
+
+	rts
+.endproc
+
+; 固定ステータス情報の描画BG
+.proc SetStatusNameAttribute
+
+	; 属性
+	lda #$23
+	sta $2006
+	lda #$C0
+	sta $2006
+	lda #$AA
+	sta $2007
+	sta $2007
+	sta $2007
+	sta $2007
+	sta $2007
+	sta $2007
+	sta $2007
+	sta $2007
+
+	; ネームテーブル
 	; LIFE
 	lda #$20
 	sta $2006
 	lda #$61
 	sta $2006
 	ldx #0
+life_loop_x:
 	lda string_life, x
 	sta $2007
-	lda #$20
-	sta $2006
-	lda #$62
-	sta $2006
 	inx
-	lda string_life, x
-	sta $2007
-	lda #$20
-	sta $2006
-	lda #$63
-	sta $2006
-	inx
-	lda string_life, x
-	sta $2007
-	lda #$20
-	sta $2006
-	lda #$64
-	sta $2006
-	inx
-	lda string_life, x
-	sta $2007
-
-	; 画面１か２の設定を戻す
-	lda REG2
-	sta current_draw_display_no
-
-	; 制御レジスタを戻す
-	lda REG1
-	;sta $2000
-
-
-	rts
-.endproc
-
-; 固定ステータス情報の描画
-.proc SetStatus
-
-	lda current_draw_display_no
-	sta REG2
-	lda #1
-	sta current_draw_display_no
-
-	lda #1
-	sta REG0
-
-	lda $2000
-	sta REG1
+	cpx #4
+	bne life_loop_x
 
 	; SCORE
 	lda #$20
@@ -323,37 +382,242 @@ appear_skip:
 	lda #$6A
 	sta $2006
 	ldx #0
+score_loop_x:
 	lda string_score, x
 	sta $2007
-	lda #$20
-	sta $2006
-	lda #$6B
-	sta $2006
 	inx
-	lda string_score, x
-	sta $2007
-	lda #$20
-	sta $2006
-	lda #$6C
-	sta $2006
-	inx
-	lda string_score, x
-	sta $2007
-	lda #$20
-	sta $2006
-	lda #$6D
-	sta $2006
-	inx
-	lda string_score, x
-	sta $2007
-	lda #$20
-	sta $2006
-	lda #$6E
-	sta $2006
-	inx
-	lda string_score, x
-	sta $2007
+	cpx #5
+	bne score_loop_x
 
+	; TIME
+	lda #$20
+	sta $2006
+	lda #$77
+	sta $2006
+	ldx #0
+time_loop_x:
+	lda string_time, x
+	sta $2007
+	inx
+	cpx #4
+	bne time_loop_x
+
+	; SCORE zero
+	lda #$20
+	sta $2006
+	lda #$70
+	sta $2006
+	ldx #0
+score_loop_zero_x:
+	lda string_zero_score, x
+	sta $2007
+	inx
+	cpx #6
+	bne score_loop_zero_x
+
+	; TIME 255
+	lda #$20
+	sta $2006
+	lda #$7C
+	sta $2006
+	ldx #0
+time_loop_first_x:
+	lda string_first_time, x
+	sta $2007
+	inx
+	cpx #3
+	bne time_loop_first_x
+
+	rts
+.endproc
+
+; スコアのBCDへの変換
+.proc ConvertBinaryToBCD
+
+	lda score_b0
+	sta REG1
+	lda score_b1
+	sta REG2
+
+	lda #0
+	sta score_bcd0
+	sta score_bcd1
+	sta score_bcd2
+
+	ldy #16
+
+loop_bcd:
+
+	clc
+	lda score_bcd0
+	adc #3
+	sta REG0
+	and #%00001000
+	beq skip_bcd0low	; 0ならスキップ
+	lda REG0
+	sta score_bcd0		; 3加えた値を設定
+skip_bcd0low:
+
+	lda score_bcd0
+	adc #%00110000
+	sta REG0
+	and #%10000000
+	beq skip_bcd0hi		; 0ならスキップ
+	lda REG0
+	sta score_bcd0		; #%00110000加えた値を設定
+skip_bcd0hi:
+
+	lda score_bcd1
+	adc #3
+	sta REG0
+	and #%00001000
+	beq skip_bcd1low	; 0ならスキップ
+	lda REG0
+	sta score_bcd1			; 3加えた値を設定
+skip_bcd1low:
+
+	lda score_bcd1
+	adc #%00110000
+	sta REG0
+	and #%10000000
+	beq skip_bcd1hi		; 0ならスキップ
+	lda REG0
+	sta score_bcd1			; #%00110000加えた値を設定
+skip_bcd1hi:
+
+	lda score_bcd2
+	adc #3
+	sta REG0
+	and #%00001000
+	beq skip_bcd2low	; 0ならスキップ
+	lda REG0
+	sta score_bcd2			; 3加えた値を設定
+skip_bcd2low:
+
+	lda score_bcd2
+	adc #%00110000
+	sta REG0
+	and #%10000000
+	beq skip_bcd2hi		; 0ならスキップ
+	lda REG0
+	sta score_bcd2			; #%00110000加えた値を設定
+skip_bcd2hi:
+	
+	clc
+	rol score_b0
+	rol score_b1
+	rol score_bcd0
+	rol score_bcd1
+	rol score_bcd2
+
+	dey
+	bne loop_bcd
+
+	lda REG1
+	sta score_b0
+	lda REG2
+	sta score_b1
+
+	rts
+.endproc
+
+; タイマーのBCDへの変換
+.proc ConvertTimerBinaryToBCD
+
+	lda timer_b0
+	sta REG1
+	lda timer_b1
+	sta REG2
+
+	lda #0
+	sta timer_bcd0
+	sta timer_bcd1
+
+	; 最初の7回はシフトのみ
+	clc
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+
+	ldy #9
+
+loop_bcd:
+
+	clc
+	lda timer_bcd0
+	adc #3
+	sta REG0
+	and #%00001000
+	beq skip_bcd0low	; 0ならスキップ
+	lda REG0
+	sta timer_bcd0		; 3加えた値を設定
+skip_bcd0low:
+
+	lda timer_bcd0
+	adc #%00110000
+	sta REG0
+	and #%10000000
+	beq skip_bcd0hi		; 0ならスキップ
+	lda REG0
+	sta timer_bcd0		; #%00110000加えた値を設定
+skip_bcd0hi:
+
+	lda timer_bcd1
+	adc #3
+	sta REG0
+	and #%00001000
+	beq skip_bcd1low	; 0ならスキップ
+	lda REG0
+	sta timer_bcd1			; 3加えた値を設定
+skip_bcd1low:
+
+	lda timer_bcd1
+	adc #%00110000
+	sta REG0
+	and #%10000000
+	beq skip_bcd1hi		; 0ならスキップ
+	lda REG0
+	sta timer_bcd1			; #%00110000加えた値を設定
+skip_bcd1hi:
+	
+	clc
+	rol timer_b0
+	rol timer_b1
+	rol timer_bcd0
+	rol timer_bcd1
+
+	dey
+	bne loop_bcd
+
+	lda REG1
+	sta timer_b0
+	lda REG2
+	sta timer_b1
 
 	rts
 .endproc
