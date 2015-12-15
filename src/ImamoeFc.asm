@@ -112,6 +112,10 @@
 	lda #0
 	sta timer_count
 
+	lda #0
+	sta debug_var
+
+
 	; タイマー初期値(400)
 	lda #%00000001
 	sta timer_b1
@@ -467,6 +471,16 @@ End:
 
 ; 画面外BG描画
 .proc draw_bg
+
+; デバッグ
+	lda #$20
+	sta $2006
+	lda #$00
+	sta $2006
+	clc
+	lda debug_var
+	adc #$30
+	sta $2007
 
 	; scroll_count_8dotが0の時描画
 	lda scroll_count_8dot

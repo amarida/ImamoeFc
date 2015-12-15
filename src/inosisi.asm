@@ -216,6 +216,8 @@ roll_skip:
 	cmp #4
 	beq case_release
 
+	jmp break;
+
 case_init:
 	; ˆ—0
 	lda #25
@@ -265,7 +267,7 @@ case_release:
 	lda #224	; ‰æ–ÊŠO
 	sta inosisi0_pos_y,x
 
-	inc update_dead_step
+	inc inosisi00_update_dead_step,x
 	jmp break;
 
 break:

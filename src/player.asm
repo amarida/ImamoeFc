@@ -269,8 +269,12 @@ skip_nomal:
 	and #%11111000
 	sta player_y
 	; ジャンプフラグを落とす
+	lda is_jump
+	beq skip_jump_off
 	lda	#0
 	sta	is_jump
+skip_jump_off:
+
 
 
 	lda #0
@@ -471,6 +475,7 @@ shita:
 	; ジャンプフラグを落とす
 	lda	#0
 	sta	is_jump
+
 	; 通常
 	lda #0
 	sta player_draw_status

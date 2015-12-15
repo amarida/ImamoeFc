@@ -29,6 +29,7 @@ FIELD_HEIGHT								= $1B	; 地面の高さ
 multiplicand								= $1C	; 被乗数（かけられる数）
 multiplier									= $1D	; 乗数（かける数）
 multi_ans_up								= $1E	; 乗算結果　上位ビット
+
 multi_ans_low								= $20	; 乗算結果　下位ビット
 multi_loop_cnt								= $21	; 乗算用ループカウンタ
 conv_coord_bit_x							= $22	; X座標
@@ -160,3 +161,4 @@ score_b1									= $9F	; スコア2進数用2バイト目
 score_b0									= $A0	; スコア2進数用1バイト目
 count_up8									= $A1	; ループカウント
 timer_count									= $A2	; タイマー用カウンタ
+debug_var									= $FF	; デバッグ用
