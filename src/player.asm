@@ -30,6 +30,7 @@
 	lda	#1		; ‘¬“xã•ûŒü
 	sta	spd_vec
 
+	jsr Sound_PlayJump
 End:
 	rts
 .endproc
@@ -41,6 +42,9 @@ End:
 	sta player_draw_status
 	lda #0
 	sta attack_frame
+
+	; ‚«–ß‚µSE
+	jsr Sound_PlayFukimodoshi
 
 	rts
 .endproc

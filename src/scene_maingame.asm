@@ -85,6 +85,13 @@ waitScanSub:
 
 ; çXêV
 .proc	Update
+	lda scene_maingame_init
+	bne first_skip
+	lda #1
+	sta scene_maingame_init
+	jsr PlayBgmIntroduction
+
+first_skip:
 	inc loop_count
 
 	inc timer_count
@@ -168,6 +175,16 @@ break:
 	jsr	InosisiUpdate
 
 	jsr confirm_appear_enemy
+
+	lda bgm_type
+	beq skip_bgm
+	jsr UpdateBgm
+	skip_bgm:
+
+	lda se_type
+	beq skip_se
+	jsr UpdateSe
+	skip_se:
 
 	jsr UpdateTimer
 	jsr ConvertTimerBinaryToBCD
