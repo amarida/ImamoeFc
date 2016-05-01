@@ -70,6 +70,23 @@ inosisi6_t:	.byte 0;	=	$0735	;
 inosisi6_s:	.byte 0;	=	$0736	; 
 inosisi6_x:	.byte 0;	=	$0737	; 
 
+tako1_y:	.byte 0;	=	$0720	; 
+tako1_t:	.byte 0;	=	$0721	; 
+tako1_s:	.byte 0;	=	$0722	; ‘®«
+tako1_x:	.byte 0;	=	$0723	; 
+tako2_y:	.byte 0;	=	$0724	; 
+tako2_t:	.byte 0;	=	$0725	; 
+tako2_s:	.byte 0;	=	$0726	; 
+tako2_x:	.byte 0;	=	$0727	; 
+tako3_y:	.byte 0;	=	$0728	; 
+tako3_t:	.byte 0;	=	$0729	; 
+tako3_s:	.byte 0;	=	$072A	; 
+tako3_x:	.byte 0;	=	$072B	; 
+tako4_y:	.byte 0;	=	$072C	; 
+tako4_t:	.byte 0;	=	$072D	; 
+tako4_s:	.byte 0;	=	$072A	; 
+tako4_x:	.byte 0;	=	$072B	; 
+
 inosisi21_y:	.byte 0;	=	$0740
 inosisi21_t:	.byte 0;	=	$0741	; 
 inosisi21_s:	.byte 0;	=	$0742	; ‘®«
@@ -94,6 +111,23 @@ inosisi26_y:	.byte 0;	=	$0754	;
 inosisi26_t:	.byte 0;	=	$0755	; 
 inosisi26_s:	.byte 0;	=	$0756	; 
 inosisi26_x:	.byte 0;	=	$0757	; 
+
+tako21_y:	.byte 0;	=	$0740
+tako21_t:	.byte 0;	=	$0741	; 
+tako21_s:	.byte 0;	=	$0742	; ‘®«
+tako21_x:	.byte 0;	=	$0743	; 
+tako22_y:	.byte 0;	=	$0744	; 
+tako22_t:	.byte 0;	=	$0745	; 
+tako22_s:	.byte 0;	=	$0746	; 
+tako22_x:	.byte 0;	=	$0747	; 
+tako23_y:	.byte 0;	=	$0748	; 
+tako23_t:	.byte 0;	=	$0749	; 
+tako23_s:	.byte 0;	=	$074A	; 
+tako23_x:	.byte 0;	=	$074B	; 
+tako24_y:	.byte 0;	=	$074C	; 
+tako24_t:	.byte 0;	=	$074D	; 
+tako24_s:	.byte 0;	=	$074E	; 
+tako24_x:	.byte 0;	=	$074F	; 
 
 .org $0600
 spriteZero_y2:		.byte 0
@@ -125,6 +159,23 @@ inosisi6_t2:	.byte 0;	=	$0735	;
 inosisi6_s2:	.byte 0;	=	$0736	; 
 inosisi6_x2:	.byte 0;	=	$0737	; 
 
+tako1_y2:	.byte 0;	=	$0720	; 
+tako1_t2:	.byte 0;	=	$0721	; 
+tako1_s2:	.byte 0;	=	$0722	; ‘®«
+tako1_x2:	.byte 0;	=	$0723	; 
+tako2_y2:	.byte 0;	=	$0724	; 
+tako2_t2:	.byte 0;	=	$0725	; 
+tako2_s2:	.byte 0;	=	$0726	; 
+tako2_x2:	.byte 0;	=	$0727	; 
+tako3_y2:	.byte 0;	=	$0728	; 
+tako3_t2:	.byte 0;	=	$0729	; 
+tako3_s2:	.byte 0;	=	$072A	; 
+tako3_x2:	.byte 0;	=	$072B	; 
+tako4_y2:	.byte 0;	=	$072C	; 
+tako4_t2:	.byte 0;	=	$072D	; 
+tako4_s2:	.byte 0;	=	$072E	; 
+tako4_x2:	.byte 0;	=	$072F	; 
+
 inosisi21_y2:	.byte 0;	=	$0740
 inosisi21_t2:	.byte 0;	=	$0741	; 
 inosisi21_s2:	.byte 0;	=	$0742	; ‘®«
@@ -149,6 +200,23 @@ inosisi26_y2:	.byte 0;	=	$0754	;
 inosisi26_t2:	.byte 0;	=	$0755	; 
 inosisi26_s2:	.byte 0;	=	$0756	; 
 inosisi26_x2:	.byte 0;	=	$0757	; 
+
+tako21_y2:	.byte 0;	=	$0740
+tako21_t2:	.byte 0;	=	$0741	; 
+tako21_s2:	.byte 0;	=	$0742	; ‘®«
+tako21_x2:	.byte 0;	=	$0743	; 
+tako22_y2:	.byte 0;	=	$0744	; 
+tako22_t2:	.byte 0;	=	$0745	; 
+tako22_s2:	.byte 0;	=	$0746	; 
+tako22_x2:	.byte 0;	=	$0747	; 
+tako23_y2:	.byte 0;	=	$0748	; 
+tako23_t2:	.byte 0;	=	$0749	; 
+tako23_s2:	.byte 0;	=	$074A	; 
+tako23_x2:	.byte 0;	=	$074B	; 
+tako24_y2:	.byte 0;	=	$074C	; 
+tako24_t2:	.byte 0;	=	$074D	; 
+tako24_s2:	.byte 0;	=	$074E	; 
+tako24_x2:	.byte 0;	=	$074F	; 
 
 playerFuki1_y2: .byte 0
 playerFuki1_t2: .byte 0

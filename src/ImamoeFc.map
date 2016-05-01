@@ -1,0 +1,29 @@
+Modules list:
+-------------
+ImamoeFc.o:
+    CODE              Offs=000000  Size=001FF9  Align=00001  Fill=0000
+    HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=00130C  Align=00001  Fill=0000
+    VECINFO           Offs=000000  Size=000006  Align=00001  Fill=0000
+    CHARS             Offs=000000  Size=002000  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+CHARS                 000000  001FFF  002000  00001
+HEADER                000000  00000F  000010  00001
+STARTUP               008000  00930B  00130C  00001
+CODE                  00930C  00B304  001FF9  00001
+VECINFO               00FFFA  00FFFF  000006  00001
+
+
+Exports list:
+-------------
+
+
+
+Imports list:
+-------------
+

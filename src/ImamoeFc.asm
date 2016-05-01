@@ -11,6 +11,7 @@
 .include "define.asm"
 .include "player.asm"
 .include "inosisi.asm"
+.include "tako.asm"
 .include "utility.asm"
 .include "sound.asm"
 
@@ -45,8 +46,10 @@
 	
 	lda #0
 	sta inosisi_alive_flag	; 生存イノシシフラグ
+	sta tako_alive_flag		; 生存タコフラグ
 	lda #2
 	sta inosisi_max_count	; 最大同時登場数
+	sta tako_max_count		; 最大同時登場数タコ
 
 	; 敵情報先頭アドレス
 	lda #< map_enemy_info
@@ -92,6 +95,7 @@
 
 	jsr PlayerInit	; プレイヤー初期化
 	jsr InosisiInit	; イノシシ初期化
+	jsr TakoInit	; タコ初期化
 
 	lda #1			; メインゲーム
 	sta scene_type	; シーン
@@ -1073,8 +1077,8 @@ Y_Pos_Init:   .byte 40       ; Y座標初期値
 ; パレットテーブル
 palette1:
 	.byte	$21, $23, $3A, $30	; スプライト色1
-	.byte	$0f, $07, $16, $0d	; スプライト色2
-	.byte	$0f, $23, $3A, $28	; スプライト色3
+	.byte	$0f, $06, $16, $0d	; スプライト色2
+	.byte	$0f, $30, $16, $0e	; スプライト色3
 palette2:
 	.byte	$0f, $00, $10, $20
 	.byte	$0f, $00, $10, $20
@@ -1306,7 +1310,7 @@ map_chip_attribute_game_over:
 map_enemy_info:
 	.byte	$01, $a0, $b8, $00
 	.byte	$01, $e0, $b8, $00
-	.byte	$02, $00, $b8, $00
+	.byte	$02, $00, $b8, $01
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 ; BGM情報テーブル

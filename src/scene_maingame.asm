@@ -12,11 +12,13 @@
 	beq player_dma6
 player_dma7:
 	jsr	player_draw_dma7	; プレイヤー描画関数
-	jsr InosisiDrawDma7	; イノシシ描画関数
+	jsr InosisiDrawDma7		; イノシシ描画関数
+	jsr TakoDrawDma7		; タコ描画関数
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6	; プレイヤー描画関数
-	jsr InosisiDrawDma6	; イノシシ描画関数
+	jsr InosisiDrawDma6		; イノシシ描画関数
+	jsr TakoDrawDma6		; タコ描画関数
 	jmp player_dma_break
 player_dma_break:
 
@@ -173,6 +175,7 @@ break:
 
 	jsr Player_Update
 	jsr	InosisiUpdate
+	jsr	TakoUpdate
 
 	jsr confirm_appear_enemy
 
@@ -293,7 +296,21 @@ appear_skip:
 ;enemy_pos_x_hi						= $C3
 ;enemy_pos_y							= $C4
 ;enemy_type							= $C5
+
+	lda enemy_type
+	cmp #0
+	beq case_inosisi
+	cmp #1
+	beq case_tako
+
+case_inosisi:
 	jsr appear_inosisi
+	jmp break
+case_tako:
+	jsr appear_tako
+	jmp break
+
+break:
 	
 	rts
 .endproc

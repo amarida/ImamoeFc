@@ -605,7 +605,7 @@ break:
 	beq case_attack1_left
 
 case_attack1_right:
-	lda #%00000010
+	lda #%00000000
 	sta playerFuki1_s
 	sta playerFuki2_s
 	clc			; キャリーフラグOFF
@@ -619,7 +619,7 @@ case_attack1_right:
 
 	jmp break_fuki_attack1
 case_attack1_left:
-	lda #%01000010
+	lda #%01000000
 	sta playerFuki1_s
 	sta playerFuki2_s
 	sec			; キャリーフラグON
@@ -659,7 +659,7 @@ break_fuki_attack1:
 	beq case_attack2_left
 
 case_attack2_right:
-	lda #%00000010
+	lda #%00000000
 	sta playerFuki1_s
 ;	sta playerFuki2_s
 	clc			; キャリーフラグOFF
@@ -668,7 +668,7 @@ case_attack2_right:
 	sta playerFuki1_x
 	jmp break_fuki_attack2
 case_attack2_left:
-	lda #%01000010
+	lda #%01000000
 	sta playerFuki1_s
 ;	sta playerFuki2_s
 	sec			; キャリーフラグON
@@ -897,7 +897,7 @@ change_pat_skip:
 	beq case_attack1_left
 
 case_attack1_right:
-	lda #%00000010
+	lda #%00000000
 	sta playerFuki1_s2
 	sta playerFuki2_s2
 	clc			; キャリーフラグOFF
@@ -911,7 +911,7 @@ case_attack1_right:
 
 	jmp break_fuki_attack1
 case_attack1_left:
-	lda #%01000010
+	lda #%01000000
 	sta playerFuki1_s2
 	sta playerFuki2_s2
 	sec			; キャリーフラグON
@@ -951,7 +951,7 @@ break_fuki_attack1:
 	beq case_attack2_left
 
 case_attack2_right:
-	lda #%00000010
+	lda #%00000000
 	sta playerFuki1_s2
 ;	sta playerFuki2_s2
 	clc			; キャリーフラグOFF
@@ -960,7 +960,7 @@ case_attack2_right:
 	sta playerFuki1_x2
 	jmp break_fuki_attack2
 case_attack2_left:
-	lda #%01000010
+	lda #%01000000
 	sta playerFuki1_s2
 ;	sta playerFuki2_s2
 	sec			; キャリーフラグON
@@ -1780,6 +1780,73 @@ next_update:
 	bne loop_x				; ループ
 	
 
+;exit:
+
+	; プレイヤのX座標とタコのX座標と
+	; プレイヤのY座標とタコのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+	lda #1
+	sta tako_alive_flag_current	; フラグ参照現在位置
+	ldx #0
+loop_x_tako:
+	; 生存しているか
+	lda tako_alive_flag
+	and tako_alive_flag_current
+	beq next_update_tako	; 存在していない
+
+	; 存在している
+	; プレイヤのXとタコのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc tako0_window_pos_x,x
+	bpl big_player_tako	; プレイヤの方が大きい
+	; タコの方が大きい
+	sec
+	lda tako0_window_pos_x,x
+	sbc window_player_x_low
+big_player_tako:
+	sta REG0	; X差分
+
+	; プレイヤのXとタコのYの大きい方
+	sec
+	lda player_y
+	sbc tako0_pos_y,x
+	bpl big_player_y_tako	; プレイヤの方が大きい
+	; タコの方が大きい
+	sec
+	lda tako0_pos_y,x
+	sbc player_y
+big_player_y_tako:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	next_update_tako	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #17
+	bpl	next_update_tako	; 差分が16より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+
+next_update_tako:
+	; 次
+	asl tako_alive_flag_current
+	inx
+	cpx tako_max_count	; ループ最大数
+	bne loop_x_tako				; ループ
+	
+
 exit:
+
 	rts
 .endproc
