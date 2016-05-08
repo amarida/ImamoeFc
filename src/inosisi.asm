@@ -45,6 +45,30 @@
 
 ; 登場
 .proc appear_inosisi
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+; パレット2をイノシシ色にする
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#$4
+	ldy	#4
+copypal2_test:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal2_test
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
 	; 空いているイノシシを探す
 
 	lda #1
@@ -98,6 +122,10 @@ skip_inosisi:
 .proc	InosisiUpdate
 	lda is_dead
 	bne skip_inosisi
+
+	; そもそも一体も居ない
+	lda inosisi_alive_flag
+	beq skip_inosisi
 
 	lda #1
 	sta inosisi_alive_flag_current	; フラグ参照現在位置
@@ -278,6 +306,12 @@ break:
 
 ; 描画
 .proc	InosisiDrawDma7
+	; そもそも一体も居ない
+;	lda inosisi_alive_flag
+;	bne not_skip_inosisi
+;	jmp skip_inosisi
+;not_skip_inosisi:
+
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
 
@@ -610,6 +644,7 @@ not_overflow2_16:
 
 skip_inosisi1:
 
+skip_inosisi:
 
 ;End:
 	rts
@@ -618,6 +653,12 @@ skip_inosisi1:
 
 ; 描画
 .proc	InosisiDrawDma6
+	; そもそも一体も居ない
+;	lda inosisi_alive_flag
+;	bne not_skip_inosisi
+;	jmp skip_inosisi
+;not_skip_inosisi:
+
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
 
@@ -949,6 +990,7 @@ not_overflow2_16:
 
 skip_inosisi1:
 
+skip_inosisi:
 
 ;End:
 	rts

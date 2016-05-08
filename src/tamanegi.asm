@@ -1,151 +1,178 @@
-.proc	TakoInit
+.proc	TamanegiInit
 	lda #0
-	sta tako0_world_pos_x_low
-	sta tako1_world_pos_x_low
-	sta tako0_world_pos_x_hi
-	sta tako1_world_pos_x_hi
-	sta tako00_status
-	sta tako01_status
-	sta tako00_wait
-	sta tako01_wait
-	sta tako00_update_dead_step
-	sta tako01_update_dead_step
+	sta tamanegi0_world_pos_x_low
+	sta tamanegi1_world_pos_x_low
+	sta tamanegi0_world_pos_x_hi
+	sta tamanegi1_world_pos_x_hi
+	sta tamanegi00_status
+	sta tamanegi01_status
+	sta tamanegi00_wait
+	sta tamanegi01_wait
+	sta tamanegi00_update_dead_step
+	sta tamanegi01_update_dead_step
 	lda #224	; 画面外;#184
-	sta tako0_pos_y
-	sta tako1_pos_y
+	sta tamanegi0_pos_y
+	sta tamanegi1_pos_y
 	; 属性は変わらない
 	lda #%00000001     ; 0(10進数)をAにロード
-	sta tako1_s
-	sta tako2_s
-	sta tako3_s
-	sta tako4_s
-	sta tako21_s
-	sta tako22_s
-	sta tako23_s
-	sta tako24_s
-	sta tako1_s2
-	sta tako2_s2
-	sta tako3_s2
-	sta tako4_s2
-	sta tako21_s2
-	sta tako22_s2
-	sta tako23_s2
-	sta tako24_s2
+	sta tamanegi1_s
+	sta tamanegi2_s
+	sta tamanegi3_s
+	sta tamanegi4_s
+	sta tamanegi21_s
+	sta tamanegi22_s
+	sta tamanegi23_s
+	sta tamanegi24_s
+	sta tamanegi1_s2
+	sta tamanegi2_s2
+	sta tamanegi3_s2
+	sta tamanegi4_s2
+	sta tamanegi21_s2
+	sta tamanegi22_s2
+	sta tamanegi23_s2
+	sta tamanegi24_s2
 
 	rts
 .endproc
 
 ; 登場
-.proc appear_tako
-	; 空いているタコを探す
+.proc appear_tamanegi
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+; パレット2をタマネギ色にする
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#$10
+	ldy	#4
+copypal2_test:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal2_test
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	; 空いているタマネギを探す
 
 	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 	ldx #0
 loop_x:
 	; 空いているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq set_tako
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq set_tamanegi
 	
 	; 次
-	asl tako_alive_flag_current
+	asl tamanegi_alive_flag_current
 	inx
-	cpx tako_max_count	; ループ最大数
+	cpx tamanegi_max_count	; ループ最大数
 	bne loop_x				; ループ
 
 	; ここまで来たら空きはないのでスキップ
-	jmp skip_tako
+	jmp skip_tamanegi
 
-set_tako:
-	; 空いているタコに情報をセットする
+set_tamanegi:
+	; 空いているタマネギに情報をセットする
 	lda enemy_pos_x_hi
-	sta tako0_world_pos_x_hi,x
+	sta tamanegi0_world_pos_x_hi,x
 	lda enemy_pos_x_low
-	sta tako0_world_pos_x_low,x
+	sta tamanegi0_world_pos_x_low,x
 	lda enemy_pos_y
-	sta tako0_pos_y,x
+	sta tamanegi0_pos_y,x
 	
 	; 色々初期化
+
 	lda #0
-	sta tako00_status,x
-	sta tako00_update_dead_step,x
-	; タコ属性を通常に変える
-	lda #%00000010	; パレット3を使用
+	sta tamanegi00_status,x
+	sta tamanegi00_update_dead_step,x
+	; タマネギ属性を通常に変える
+	lda #%00000001	; パレット2を使用
 	sta REG0
-	jsr Tako_SetAttribute
+	lda #%01000001	; パレット2を使用
+	sta REG1
+	jsr Tamanegi_SetAttribute
 
 	; フラグを立てる
 	clc
-	lda tako_alive_flag
-	adc tako_alive_flag_current
-	sta tako_alive_flag
+	lda tamanegi_alive_flag
+	adc tamanegi_alive_flag_current
+	sta tamanegi_alive_flag
 
-skip_tako:
+skip_tamanegi:
 	; スキップ
 	rts
-.endproc	; appear_tako
+.endproc	; appear_tamanegi
 
 ; 更新
-.proc	TakoUpdate
+.proc	TamanegiUpdate
 	lda is_dead
-	bne skip_tako
+	bne skip_tamanegi
 
 	; そもそも一体も居ない
-	lda tako_alive_flag
-	beq skip_tako
+	lda tamanegi_alive_flag
+	beq skip_tamanegi
 
 	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 	ldx #0
 loop_x:
 	; 生存しているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
 	beq next_update		; 存在していない
 	; 存在している
 
-	jsr Tako_UpdateNormal
+	jsr Tamanegi_UpdateNormal
 
 	; 画面外判定
 	sec
 	lda field_scroll_x_up
-	sbc tako0_world_pos_x_hi,x
+	sbc tamanegi0_world_pos_x_hi,x
 	bcc skip_dead
 	sec
 	lda field_scroll_x_low
-	sbc tako0_world_pos_x_low,x
+	sbc tamanegi0_world_pos_x_low,x
 	bcc skip_dead
 	; 画面外処理
-	lda tako_alive_flag
-	eor tako_alive_flag_current
-	sta tako_alive_flag
+	lda tamanegi_alive_flag
+	eor tamanegi_alive_flag_current
+	sta tamanegi_alive_flag
 	lda #224	; 画面外
-	sta tako0_pos_y,x
+	sta tamanegi0_pos_y,x
 
 skip_dead:
 
 next_update:
 	; 次
-	asl tako_alive_flag_current
+	asl tamanegi_alive_flag_current
 	inx
-	cpx tako_max_count	; ループ最大数
+	cpx tamanegi_max_count	; ループ最大数
 	bne loop_x				; ループ
 
-skip_tako:
+skip_tamanegi:
 	rts
-.endproc	; TakoUpdate
+.endproc	; InosisiUpdate
 
 ; 通常更新
-.proc	Tako_UpdateNormal
+.proc	Tamanegi_UpdateNormal
 	; 重力
 	clc
 	lda #2
-	adc tako0_pos_y,x
-	sta tako0_pos_y,x
+	adc tamanegi0_pos_y,x
+	sta tamanegi0_pos_y,x
 
 	; あたり判定
-	jsr tako_collision_object
+	jsr tamanegi_collision_object
 	
 	lda obj_collision_result
 	beq roll_skip
@@ -154,357 +181,390 @@ skip_tako:
 
 	;下の処理
 	sec
-	lda tako0_pos_y,x
+	lda tamanegi0_pos_y,x
 	and #%11111000
-	sta tako0_pos_y,x
+	sta tamanegi0_pos_y,x
 	
 roll_skip:
 
 	; 左移動
 	sec
-	lda tako0_world_pos_x_low,x
+	lda tamanegi0_world_pos_x_low,x
 	sbc #1
-	sta tako0_world_pos_x_low,x
-	lda tako0_world_pos_x_hi,x
+	sta tamanegi0_world_pos_x_low,x
+	lda tamanegi0_world_pos_x_hi,x
 	sbc #0
-	sta tako0_world_pos_x_hi,x
+	sta tamanegi0_world_pos_x_hi,x
 
 	rts
-.endproc	; Tako_UpdateNormal
+.endproc	; Tamanegi_UpdateNormal
 
 ; 描画
-.proc	TakoDrawDma7
+.proc	TamanegiDrawDma7
 	; そもそも一体も居ない
-;	lda tako_alive_flag
-;	bne not_skip_tako
-;	jmp skip_tako
-;not_skip_tako:
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+;	lda tamanegi_alive_flag
+;	bne not_skip_tamanegi
+;	jmp skip_tamanegi
+;not_skip_tamanegi:
 
-	ldx #$02
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$1 : #0;
+	;REG1 = (p_pat == 0) ? #$0 : #1;
+
+	ldx #$01
 	lda p_pat
 	bne	Pat1
 	ldx #0
 Pat1:
 	stx REG0
 
+	ldx #$00
+	lda p_pat
+	bne	Pat2
+	ldx #1
+Pat2:
+	stx REG1
+
 ; 生存タイル
 	clc
-	lda #$8B     ; 
+	lda #$AD     ; 
 	adc REG0
-	sta tako1_t
+	sta tamanegi1_t
 	clc
-	lda #$8C
-	adc REG0
-	sta tako2_t
+	lda #$AD
+	adc REG1
+	sta tamanegi2_t
 	clc
-	lda #$9B
+	lda #$BD
 	adc REG0
-	sta tako3_t
+	sta tamanegi3_t
 	clc
-	lda #$9C
-	adc REG0
-	sta tako4_t
+	lda #$BD
+	adc REG1
+	sta tamanegi4_t
 	
 
 ; 表示確認準備
 	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
 ; Y座標は更新必須
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tamanegi0_pos_y
 	adc #7
-	sta tako1_y
-	sta tako2_y
+	sta tamanegi1_y
+	sta tamanegi2_y
 
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tamanegi0_pos_y
 	adc #15
-	sta tako3_y
-	sta tako4_y
+	sta tamanegi3_y
+	sta tamanegi4_y
 
 ; Y座標以外は非表示時スキップ
-
 	; 生存しているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako0		; 存在していない
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq skip_tamanegi0		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako0_world_pos_x_low
+	lda tamanegi0_world_pos_x_low
 	sbc field_scroll_x_low
-	sta tako0_window_pos_x
+	sta tamanegi0_window_pos_x
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tako1_x
-	sta tako3_x
+	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	sta tamanegi1_x
+	sta tamanegi3_x
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tako2_y
-	sta tako4_y
+	sta tamanegi2_y
+	sta tamanegi4_y
 not_overflow_8:
-	sta tako2_x
-	sta tako4_x
+	sta tamanegi2_x
+	sta tamanegi4_x
 
-skip_tako0:
+skip_tamanegi0:
 
 ; タイル
 	;REG0 = (p_pat == 0) ? #$20 : #0;
+	;REG1 = (p_pat == 0) ? #$0 : #1;
 
-	ldx #$02
+	ldx #$01
 	lda p_pat
 	bne	skip_pat2
 	ldx #0
 skip_pat2:
 	stx REG0
 
+	ldx #$00
+	lda p_pat
+	bne	skip_pat22
+	ldx #1
+skip_pat22:
+	stx REG1
+
 ; 生存タイル
 	clc
-	lda #$8B     ; 
+	lda #$AD     ; 
 	adc REG0
-	sta tako21_t
+	sta tamanegi21_t
 	clc
-	lda #$8C
-	adc REG0
-	sta tako22_t
+	lda #$AD
+	adc REG1
+	sta tamanegi22_t
 	clc
-	lda #$9B
+	lda #$BD
 	adc REG0
-	sta tako23_t
+	sta tamanegi23_t
 	clc
-	lda #$9C
-	adc REG0
-	sta tako24_t
+	lda #$BD
+	adc REG1
+	sta tamanegi24_t
 	
 ; Y座標は更新必須
 
 	clc			; キャリーフラグOFF
-	lda tako1_pos_y
+	lda tamanegi1_pos_y
 	adc #7
-	sta tako21_y
-	sta tako22_y
+	sta tamanegi21_y
+	sta tamanegi22_y
 
 	clc			; キャリーフラグOFF
-	lda tako1_pos_y
+	lda tamanegi1_pos_y
 	adc #15
-	sta tako23_y
-	sta tako24_y
+	sta tamanegi23_y
+	sta tamanegi24_y
 
 ; Y座標以外は非表示時スキップ
 
 	; 生存しているか
-	asl tako_alive_flag_current	; 左シフト
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako1		; 存在していない
+	asl tamanegi_alive_flag_current	; 左シフト
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq skip_tamanegi1		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako1_world_pos_x_low
+	lda tamanegi1_world_pos_x_low
 	sbc field_scroll_x_low
-	sta tako1_window_pos_x
+	sta tamanegi1_window_pos_x
 
-	lda tako1_window_pos_x
-	sta tako21_x
-	sta tako23_x
+	lda tamanegi1_window_pos_x
+	sta tamanegi21_x
+	sta tamanegi23_x
 
-	lda tako1_window_pos_x
+	lda tamanegi1_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow2_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tako22_y
-	sta tako24_y
+	sta tamanegi22_y
+	sta tamanegi24_y
 not_overflow2_8:
-	sta tako22_x
-	sta tako24_x
+	sta tamanegi22_x
+	sta tamanegi24_x
 
-skip_tako1:
+skip_tamanegi1:
 
-skip_tako:
+skip_tamanegi:
 
 ;End:
 	rts
 
-.endproc	; TakoDrawDma7
+.endproc	; TamanegiDrawDma7
 
 ; 描画
-.proc	TakoDrawDma6
+.proc	TamanegiDrawDma6
 	; そもそも一体も居ない
-;	lda tako_alive_flag
-;	bne not_skip_tako
-;	jmp skip_tako
-;not_skip_tako:
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+;	lda tamanegi_alive_flag
+;	bne not_skip_tamanegi
+;	jmp skip_tamanegi
+;not_skip_tamanegi:
 
-	ldx #$02
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$1 : #0;
+	;REG1 = (p_pat == 0) ? #$0 : #1;
+
+	ldx #$01
 	lda p_pat
 	bne	Pat1
 	ldx #0
 Pat1:
 	stx REG0
 
+	ldx #$00
+	lda p_pat
+	bne	Pat2
+	ldx #1
+Pat2:
+	stx REG1
+
 ; 生存タイル
 	clc
-	lda #$8B     ; 
+	lda #$AD     ; 
 	adc REG0
-	sta tako1_t2
+	sta tamanegi1_t2
 	clc
-	lda #$8C     ;
-	adc REG0
-	sta tako2_t2
+	lda #$AD     ;
+	adc REG1
+	sta tamanegi2_t2
 	clc
-	lda #$9B     ; 
+	lda #$BD     ; 
 	adc REG0
-	sta tako3_t2
+	sta tamanegi3_t2
 	clc
-	lda #$9C     ; 
-	adc REG0
-	sta tako4_t2
+	lda #$BD     ; 
+	adc REG1
+	sta tamanegi4_t2
 
 
 ; 生存確認準備
 	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
 ; Y座標は更新必須
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tamanegi0_pos_y
 	adc #7
-	sta tako1_y2
-	sta tako2_y2
+	sta tamanegi1_y2
+	sta tamanegi2_y2
 
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tamanegi0_pos_y
 	adc #15
-	sta tako3_y2
-	sta tako4_y2
+	sta tamanegi3_y2
+	sta tamanegi4_y2
 
 ; Y座標以外は非表示時スキップ
 
 	; 生存しているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako0		; 存在していない
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq skip_tamanegi0		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako0_world_pos_x_low
+	lda tamanegi0_world_pos_x_low
 	sbc field_scroll_x_low
-	sta tako0_window_pos_x
+	sta tamanegi0_window_pos_x
 
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tako1_x2
-	sta tako3_x2
+	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	sta tamanegi1_x2
+	sta tamanegi3_x2
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
-	sta tako2_y2
-	sta tako4_y2
+	sta tamanegi2_y2
+	sta tamanegi4_y2
 not_overflow_8:
-	sta tako2_x2
-	sta tako4_x2
+	sta tamanegi2_x2
+	sta tamanegi4_x2
 
-skip_tako0:
+skip_tamanegi0:
 
 ; タイル
 	;REG0 = (p_pat == 0) ? #$20 : #0;
+	;REG1 = (p_pat == 0) ? #$0 : #1;
 
-	ldx #$02
+	ldx #$01
 	lda p_pat
 	bne	skip_pat2
 	ldx #0
 skip_pat2:
 	stx REG0
 
+	ldx #$00
+	lda p_pat
+	bne	skip_pat22
+	ldx #1
+skip_pat22:
+	stx REG1
+
 ; 生存タイル
 	clc
-	lda #$8B     ; 
+	lda #$AD     ; 
 	adc REG0
-	sta tako21_t2
+	sta tamanegi21_t2
 	clc
-	lda #$8C
-	adc REG0
-	sta tako22_t2
+	lda #$AD
+	adc REG1
+	sta tamanegi22_t2
 	clc
-	lda #$9B
+	lda #$BD
 	adc REG0
-	sta tako23_t2
+	sta tamanegi23_t2
 	clc
-	lda #$9C
-	adc REG0
-	sta tako24_t2
+	lda #$BD
+	adc REG1
+	sta tamanegi24_t2
 	
 ; Y座標は更新必須
 
 	clc			; キャリーフラグOFF
-	lda tako1_pos_y
+	lda tamanegi1_pos_y
 	adc #7
-	sta tako21_y2
-	sta tako22_y2
+	sta tamanegi21_y2
+	sta tamanegi22_y2
 
 	clc			; キャリーフラグOFF
-	lda tako1_pos_y
+	lda tamanegi1_pos_y
 	adc #15
-	sta tako23_y2
-	sta tako24_y2
+	sta tamanegi23_y2
+	sta tamanegi24_y2
 
 ; Y座標以外は非表示時スキップ
 
 	; 生存しているか
-	asl tako_alive_flag_current	; 左シフト
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako1		; 存在していない
+	asl tamanegi_alive_flag_current	; 左シフト
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq skip_tamanegi1		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako1_world_pos_x_low
+	lda tamanegi1_world_pos_x_low
 	sbc field_scroll_x_low
-	sta tako1_window_pos_x
+	sta tamanegi1_window_pos_x
 
-	lda tako1_window_pos_x
-	sta tako21_x2
-	sta tako23_x2
+	lda tamanegi1_window_pos_x
+	sta tamanegi21_x2
+	sta tamanegi23_x2
 
-	lda tako1_window_pos_x
+	lda tamanegi1_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow2_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #232	; 画面外
-	sta tako22_y2
-	sta tako24_y2
+	sta tamanegi22_y2
+	sta tamanegi24_y2
 not_overflow2_8:
-	sta tako22_x2
-	sta tako24_x2
+	sta tamanegi22_x2
+	sta tamanegi24_x2
 
-skip_tako1:
+skip_tamanegi1:
 
-skip_tako:
+skip_tamanegi:
 
 ;End:
 	rts
 
-.endproc	; TakoDrawDma6
+.endproc	; TamanegiDrawDma6
 
-; タコとオブジェクトとのあたり判定
-.proc tako_collision_object
+; タマネギとオブジェクトとのあたり判定
+.proc tamanegi_collision_object
 	; 死亡中は判定しない
 	lda is_dead
 	beq skip_return
@@ -521,15 +581,15 @@ skip_return:
 	;		右上は左上の上と右下の右を流用する
 	; あたり判定用の4隅を格納
 	clc
-	lda tako0_pos_y,x ;player_y
+	lda tamanegi0_pos_y,x ;player_y
 	sta player_y_top_for_collision		; あたり判定用上Y座標（Y座標）
 	clc
 	adc #15
 	sta player_y_bottom_for_collision	; あたり判定用下Y座標（Y座標+15）
 
-	lda tako0_world_pos_x_hi,x ;player_x_up
+	lda tamanegi0_world_pos_x_hi,x ;player_x_up
 	sta player_x_left_hi_for_collision	; あたり判定用左X座標上位（X座標）
-	lda tako0_world_pos_x_low,x ;player_x_low
+	lda tamanegi0_world_pos_x_low,x ;player_x_low
 	sta player_x_left_low_for_collision	; あたり判定用左X座標下位（X座標）
 	clc
 	adc #23
@@ -1022,40 +1082,42 @@ hit3:
 skip3:
 
 	rts
-.endproc	; tako_collision_object
+.endproc	; tamanegi_collision_object
 
-.proc Tako_SetAttribute
+.proc Tamanegi_SetAttribute
 	; 引数REG0：属性(0か1)
-	; 引数x：タコ１かタコ２
+	; 引数x：タマネギ１かタマネギ２
 	; xが0か1かで変える属性を判定する
 	txa
 	cmp #0
-	beq tako1
+	beq tamanegi1
 	cmp #1
-	beq tako2
-tako1:
+	beq tamanegi2
+tamanegi1:
 	lda REG0
-	sta tako1_s
-	sta tako2_s
-	sta tako3_s
-	sta tako4_s
-	sta tako1_s2
-	sta tako2_s2
-	sta tako3_s2
-	sta tako4_s2
+	sta tamanegi1_s
+	sta tamanegi3_s
+	sta tamanegi1_s2
+	sta tamanegi3_s2
+	lda REG1
+	sta tamanegi2_s
+	sta tamanegi4_s
+	sta tamanegi2_s2
+	sta tamanegi4_s2
 	
 	jmp break
-tako2:
+tamanegi2:
 	lda REG0
-	sta tako21_s
-	sta tako22_s
-	sta tako23_s
-	sta tako24_s
-	sta tako21_s2
-	sta tako22_s2
-	sta tako23_s2
-	sta tako24_s2
+	sta tamanegi21_s
+	sta tamanegi23_s
+	sta tamanegi21_s2
+	sta tamanegi23_s2
+	lda REG1
+	sta tamanegi22_s
+	sta tamanegi24_s
+	sta tamanegi22_s2
+	sta tamanegi24_s2
 
 break:
 	rts
-.endproc	; Tako_SetSplashAttribute
+.endproc	; Tamanegi_SetSplashAttribute

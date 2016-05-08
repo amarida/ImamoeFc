@@ -360,8 +360,8 @@ skip_first_sea_hit:
 	jsr collision_char
 	lda is_dead					; 死亡フラグ
 	eor #1						; is_deadを反転
-	and char_collision_result	; 当たり判定とand
-	; 当たりかつ生きている場合
+	and char_collision_result	; あたり判定とand
+	; あたりかつ生きている場合
 	; 初回処理と死亡フラグを立てる
 	beq skip_first_hit
 	jsr PlayerDead
@@ -1844,6 +1844,72 @@ next_update_tako:
 	inx
 	cpx tako_max_count	; ループ最大数
 	bne loop_x_tako				; ループ
+	
+
+;exit:
+
+	; プレイヤのX座標とタマネギのX座標と
+	; プレイヤのY座標とタマネギのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+	lda #1
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
+	ldx #0
+loop_x_tamanegi:
+	; 生存しているか
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq next_update_tamanegi	; 存在していない
+
+	; 存在している
+	; プレイヤのXとタコのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc tamanegi0_window_pos_x,x
+	bpl big_player_tamanegi	; プレイヤの方が大きい
+	; タマネギの方が大きい
+	sec
+	lda tamanegi0_window_pos_x,x
+	sbc window_player_x_low
+big_player_tamanegi:
+	sta REG0	; X差分
+
+	; プレイヤのXとタマネギのYの大きい方
+	sec
+	lda player_y
+	sbc tamanegi0_pos_y,x
+	bpl big_player_y_tamanegi	; プレイヤの方が大きい
+	; タマネギの方が大きい
+	sec
+	lda tamanegi0_pos_y,x
+	sbc player_y
+big_player_y_tamanegi:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	next_update_tamanegi	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #17
+	bpl	next_update_tamanegi	; 差分が16より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+
+next_update_tamanegi:
+	; 次
+	asl tamanegi_alive_flag_current
+	inx
+	cpx tamanegi_max_count	; ループ最大数
+	bne loop_x_tamanegi				; ループ
 	
 
 exit:

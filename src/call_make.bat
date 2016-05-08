@@ -1,0 +1,2 @@
+del ImamoeFc.o
+make

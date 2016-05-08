@@ -1,26 +1,11 @@
 .proc scene_maingame
 
+	jsr confirm_appear_enemy
 
 	; 画面外背景の描画
-	jsr draw_bg				; ネームテーブル
+	jsr draw_bg_name_table	; ネームテーブル
 	jsr draw_bg_attribute	; 属性テーブル
 	jsr DrawStatus
-
-	lda loop_count
-	and #%00000001
-	bne player_dma7
-	beq player_dma6
-player_dma7:
-	jsr	player_draw_dma7	; プレイヤー描画関数
-	jsr InosisiDrawDma7		; イノシシ描画関数
-	jsr TakoDrawDma7		; タコ描画関数
-	jmp player_dma_break
-player_dma6:
-	jsr	player_draw_dma6	; プレイヤー描画関数
-	jsr InosisiDrawDma6		; イノシシ描画関数
-	jsr TakoDrawDma6		; タコ描画関数
-	jmp player_dma_break
-player_dma_break:
 
 
 ;	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
@@ -46,6 +31,24 @@ dma_break:
 	sta $2005		; X方向スクロール
 	lda #$00		; Y方向固定
 	sta $2005
+
+	lda loop_count
+	and #%00000001
+	bne player_dma7
+	beq player_dma6
+player_dma7:
+	jsr	player_draw_dma7	; プレイヤー描画関数
+	jsr InosisiDrawDma7		; イノシシ描画関数
+	jsr TakoDrawDma7		; タコ描画関数
+	jsr TamanegiDrawDma7	; タマネギ描画関数
+	jmp player_dma_break
+player_dma6:
+	jsr	player_draw_dma6	; プレイヤー描画関数
+	jsr InosisiDrawDma6		; イノシシ描画関数
+	jsr TakoDrawDma6		; タコ描画関数
+	jsr TamanegiDrawDma6	; タマネギ描画関数
+	jmp player_dma_break
+player_dma_break:
 
 ;jmp r_skip
 waitZeroSpriteClear:
@@ -78,7 +81,7 @@ r_skip:
 .endproc
 
 .proc waitScan			; 何もせず待つ
-	ldx #167
+	ldx #167	;#167
 waitScanSub:
 	dex
 	bne waitScanSub
@@ -176,8 +179,9 @@ break:
 	jsr Player_Update
 	jsr	InosisiUpdate
 	jsr	TakoUpdate
+	jsr	TamanegiUpdate
 
-	jsr confirm_appear_enemy
+;	jsr confirm_appear_enemy
 
 	lda bgm_type
 	beq skip_bgm
@@ -302,12 +306,17 @@ appear_skip:
 	beq case_inosisi
 	cmp #1
 	beq case_tako
+	cmp #2
+	beq case_tamanegi
 
 case_inosisi:
 	jsr appear_inosisi
 	jmp break
 case_tako:
 	jsr appear_tako
+	jmp break
+case_tamanegi:
+	jsr appear_tamanegi
 	jmp break
 
 break:
@@ -317,6 +326,11 @@ break:
 
 ; ステータス情報の描画
 .proc DrawStatus
+
+;	clc
+;	adc current_draw_display_no	; 画面０か１
+;	lda #%10001000	; VRAM増加量1byte
+;	sta $2000
 
 	; タイム
 	lda #$20
@@ -351,6 +365,11 @@ break:
 	clc
 	adc #$30
 	sta $2007
+
+;	clc
+;	lda #%10001100	; VRAM増加量32byte
+;	adc current_draw_display_no	; 画面０か１
+;	sta $2000
 
 rts
 	; スコア
