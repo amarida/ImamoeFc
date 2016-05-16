@@ -1,14 +1,43 @@
 .proc scene_maingame
 
 	jsr confirm_appear_enemy
+	jsr chage_palette_table
 
 	; 画面外背景の描画
 	jsr draw_bg_name_table	; ネームテーブル
 	jsr draw_bg_attribute	; 属性テーブル
 	jsr DrawStatus
 
+	lda $2002		; スクロール値クリア
+	lda #$00
+	sta $2005		; X方向スクロール
+	lda #$00		; Y方向固定
+	sta $2005
+
 
 ;	jsr	sprite_draw2	; スプライト描画関数(色替えテスト表示)
+
+	lda loop_count
+	and #%00000001
+	bne player_dma7
+	beq player_dma6
+player_dma7:
+	jsr	player_draw_dma7		; プレイヤー描画関数
+	jsr InosisiDrawDma7			; イノシシ描画関数
+	jsr TakoDrawDma7			; タコ描画関数
+	jsr TamanegiDrawDma7		; タマネギ描画関数
+	jsr CannonMask_DrawDma7		; 大砲マスク
+	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
+	jmp player_dma_break
+player_dma6:
+	jsr	player_draw_dma6		; プレイヤー描画関数
+	jsr InosisiDrawDma6			; イノシシ描画関数
+	jsr TakoDrawDma6			; タコ描画関数
+	jsr TamanegiDrawDma6		; タマネギ描画関数
+	jsr CannonMask_DrawDma6		; 大砲マスク
+	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
+	jmp player_dma_break
+player_dma_break:
 
 	
 	lda loop_count
@@ -25,30 +54,6 @@ dma6:
 	sta $4014 ; スプライトDMAレジスタにAをストアして、スプライトデータをDMA転送する
 	jmp dma_break
 dma_break:
-
-	lda $2002		; スクロール値クリア
-	lda #$00
-	sta $2005		; X方向スクロール
-	lda #$00		; Y方向固定
-	sta $2005
-
-	lda loop_count
-	and #%00000001
-	bne player_dma7
-	beq player_dma6
-player_dma7:
-	jsr	player_draw_dma7	; プレイヤー描画関数
-	jsr InosisiDrawDma7		; イノシシ描画関数
-	jsr TakoDrawDma7		; タコ描画関数
-	jsr TamanegiDrawDma7	; タマネギ描画関数
-	jmp player_dma_break
-player_dma6:
-	jsr	player_draw_dma6	; プレイヤー描画関数
-	jsr InosisiDrawDma6		; イノシシ描画関数
-	jsr TakoDrawDma6		; タコ描画関数
-	jsr TamanegiDrawDma6	; タマネギ描画関数
-	jmp player_dma_break
-player_dma_break:
 
 ;jmp r_skip
 waitZeroSpriteClear:
@@ -180,6 +185,8 @@ break:
 	jsr	InosisiUpdate
 	jsr	TakoUpdate
 	jsr	TamanegiUpdate
+	jsr CannonMask_Update
+	jsr TamanegiFire_Update
 
 ;	jsr confirm_appear_enemy
 
@@ -671,6 +678,89 @@ skip_bcd1hi:
 	sta timer_b0
 	lda REG2
 	sta timer_b1
+
+	rts
+.endproc
+
+; 動的パレットテーブル
+.proc chage_palette_table
+
+	lda palette_change_state
+
+	cmp #0
+	beq case_none
+	cmp #1
+	beq case_2tama
+	cmp #2
+	beq case_4fire
+
+case_none:
+	jmp break
+case_2tama:
+	jmp change_palette_2_tamanegi
+case_4fire:
+	jmp change_palette_4_fire
+
+
+change_palette_2_tamanegi:
+; パレット2をタマネギ色にする
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#$10
+	ldy	#4
+copypal_2tama:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_2tama
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_4_fire:
+	; パレット4を燃える色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$1c
+	sta	$2006
+	ldx	#$14
+	ldy	#4
+copypal_4fire:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_4fire
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+
+	jmp break
+
+break:
+
+	lda #0
+	sta palette_change_state
 
 	rts
 .endproc

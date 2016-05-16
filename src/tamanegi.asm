@@ -8,8 +8,8 @@
 	sta tamanegi01_status
 	sta tamanegi00_wait
 	sta tamanegi01_wait
-	sta tamanegi00_update_dead_step
-	sta tamanegi01_update_dead_step
+	sta tamanegi00_update_step
+	sta tamanegi01_update_step
 	lda #224	; 画面外;#184
 	sta tamanegi0_pos_y
 	sta tamanegi1_pos_y
@@ -37,31 +37,10 @@
 
 ; 登場
 .proc appear_tamanegi
-	clc
-	adc current_draw_display_no	; 画面０か１
-	lda #%10001000	; VRAM増加量1byte
-	sta $2000
-
-; パレット2をタマネギ色にする
-	lda	#$3f
-	sta	$2006
-	lda	#$14
-	sta	$2006
-	ldx	#$10
-	ldy	#4
-copypal2_test:
-	lda	palette1, x
-	sta $2007
-	inx
-	dey
-	bne	copypal2_test
-
-	clc
-	lda #%10001100	; VRAM増加量32byte
-	adc current_draw_display_no	; 画面０か１
-	sta $2000
 
 	; 空いているタマネギを探す
+	lda #1
+	sta palette_change_state
 
 	lda #1
 	sta tamanegi_alive_flag_current	; フラグ参照現在位置
@@ -89,12 +68,15 @@ set_tamanegi:
 	sta tamanegi0_world_pos_x_low,x
 	lda enemy_pos_y
 	sta tamanegi0_pos_y,x
+
+	; 大砲のマスクを登場させる
+	jsr CannonMask_Appear
 	
 	; 色々初期化
 
 	lda #0
 	sta tamanegi00_status,x
-	sta tamanegi00_update_dead_step,x
+	sta tamanegi00_update_step,x
 	; タマネギ属性を通常に変える
 	lda #%00000001	; パレット2を使用
 	sta REG0
@@ -102,7 +84,7 @@ set_tamanegi:
 	sta REG1
 	jsr Tamanegi_SetAttribute
 
-	; フラグを立てる
+	; 生存フラグを立てる
 	clc
 	lda tamanegi_alive_flag
 	adc tamanegi_alive_flag_current
@@ -112,6 +94,75 @@ skip_tamanegi:
 	; スキップ
 	rts
 .endproc	; appear_tamanegi
+
+;;;;; 削除 ;;;;;
+.proc Tamanegi_Clear
+
+	; xの0,1でどちらを消すか判断する
+	ldy #0
+	lda #%00000001
+	sta REG0
+	txa
+	beq not_set16
+	ldy #16
+	lda #%00000010
+	sta REG0
+	not_set16:
+	
+	; 生存フラグの確認
+	lda tamanegi_alive_flag
+	and REG0
+	beq skip_clear		; 存在していない
+
+	lda #0
+	sta tamanegi1_y,y
+	sta tamanegi1_t,y
+	sta tamanegi1_s,y
+	sta tamanegi1_x,y
+	sta tamanegi2_y,y
+	sta tamanegi2_t,y
+	sta tamanegi2_s,y
+	sta tamanegi2_x,y
+	sta tamanegi3_y,y
+	sta tamanegi3_t,y
+	sta tamanegi3_s,y
+	sta tamanegi3_x,y
+	sta tamanegi4_y,y
+	sta tamanegi4_t,y
+	sta tamanegi4_s,y
+	sta tamanegi4_x,y
+	sta tamanegi1_y2,y
+	sta tamanegi1_t2,y
+	sta tamanegi1_s2,y
+	sta tamanegi1_x2,y
+	sta tamanegi2_y2,y
+	sta tamanegi2_t2,y
+	sta tamanegi2_s2,y
+	sta tamanegi2_x2,y
+	sta tamanegi3_y2,y
+	sta tamanegi3_t2,y
+	sta tamanegi3_s2,y
+	sta tamanegi3_x2,y
+	sta tamanegi4_y2,y
+	sta tamanegi4_t2,y
+	sta tamanegi4_s2,y
+	sta tamanegi4_x2,y
+
+	lda #0
+	sta tamanegi0_world_pos_x_low,x
+	sta tamanegi0_world_pos_x_hi,x
+	sta tamanegi0_pos_y,x
+	
+	; 生存フラグを落とす
+	lda tamanegi_alive_flag
+	eor REG0
+	sta tamanegi_alive_flag
+
+skip_clear:
+
+	rts
+.endproc	; Tamanegi_Clear
+
 
 ; 更新
 .proc	TamanegiUpdate
@@ -132,7 +183,38 @@ loop_x:
 	beq next_update		; 存在していない
 	; 存在している
 
+	; 状態
+	lda tamanegi00_status,x
+	cmp #0
+	beq case_in_the_cannon
+	cmp #1
+	beq case_parabola
+	cmp #2
+	beq case_normal
+	cmp #3
+	beq case_burst
+
+; 大砲の中
+case_in_the_cannon:
+	jsr Tamanegi_UpdateInTheCannon
+	jmp break;
+
+; 放物線
+case_parabola:
+	jsr Tamanegi_UpdateParabola
+	jmp break;
+
+; 通常
+case_normal:
 	jsr Tamanegi_UpdateNormal
+	jmp break;
+
+; 炎上
+case_burst:
+	jsr Tamanegi_UpdateBurst
+	jmp break;
+
+break:
 
 	; 画面外判定
 	sec
@@ -144,11 +226,12 @@ loop_x:
 	sbc tamanegi0_world_pos_x_low,x
 	bcc skip_dead
 	; 画面外処理
-	lda tamanegi_alive_flag
-	eor tamanegi_alive_flag_current
-	sta tamanegi_alive_flag
-	lda #224	; 画面外
-	sta tamanegi0_pos_y,x
+	jsr Tamanegi_Clear
+	;lda tamanegi_alive_flag
+	;eor tamanegi_alive_flag_current
+	;sta tamanegi_alive_flag
+	;lda #224	; 画面外
+	;sta tamanegi0_pos_y,x
 
 skip_dead:
 
@@ -162,6 +245,156 @@ next_update:
 skip_tamanegi:
 	rts
 .endproc	; InosisiUpdate
+
+; 更新大砲の中
+.proc	Tamanegi_UpdateInTheCannon
+	; 距離が近づくと次へ
+	; タマネギのX座標
+	; プレイヤーのX座標
+	sec
+	lda tamanegi0_window_pos_x,x
+	sbc window_player_x_low
+	sec
+	sbc #96
+	bcs skip; キャリーフラグがセットされている場合スキップ
+
+	; キャリーフラグがクリアされている場合、距離が64未満
+	lda #1
+	sta tamanegi00_status,x
+
+	lda #0
+	sta tamanegi00_update_step,x
+
+skip:
+	
+	rts
+.endproc	; Tamanegi_UpdateInTheCannon
+
+; 更新放物線
+.proc	Tamanegi_UpdateParabola
+	lda tamanegi00_update_step,x
+	cmp #0
+	beq step_init
+	cmp #1
+	beq step_update
+	cmp #2
+	beq step_next
+
+step_init:
+
+	; 速度を設定
+	lda #6
+	sta tamanegi00_spd_y,x
+	lda #0
+	sta tamanegi00_spd_y_decimal,x
+
+	; 方向は上
+	lda #1
+	sta tamanegi00_spd_vec,x
+
+	lda #1
+	sta tamanegi00_update_step,x
+	jmp step_break
+
+step_update:
+
+	; 横位置更新
+	sec
+	lda tamanegi0_world_pos_x_low,x
+	sbc #2
+	sta tamanegi0_world_pos_x_low,x
+	lda tamanegi0_world_pos_x_hi,x
+	sbc #0
+	sta tamanegi0_world_pos_x_hi,x
+
+	; 上下方向
+	lda tamanegi00_spd_vec,x
+	cmp #0
+	beq case_down
+	cmp #1
+	beq case_up
+
+	case_down:
+		; 位置更新
+		clc
+		lda tamanegi0_pos_y,x
+		adc tamanegi00_spd_y,x
+		sta tamanegi0_pos_y,x
+
+		; 速度更新
+		clc
+		lda tamanegi00_spd_y_decimal,x
+		adc #$70
+		sta tamanegi00_spd_y_decimal,x
+		lda tamanegi00_spd_y,x
+		adc #0
+		sta tamanegi00_spd_y,x
+
+		; 着地判定
+		jsr tamanegi_collision_object
+		
+		lda obj_collision_result
+		beq roll_skip
+		; 当たった処理
+
+		sec
+		lda tamanegi0_pos_y,x
+		and #%11111000
+		sta tamanegi0_pos_y,x
+	
+		lda #2
+		sta tamanegi00_update_step,x
+
+		roll_skip:
+
+		jmp case_break
+	case_up:
+		; 縦位置更新
+		sec
+		lda tamanegi0_pos_y,x
+		sbc tamanegi00_spd_y,x
+		sta tamanegi0_pos_y,x
+
+		; 速度更新
+		sec
+		lda tamanegi00_spd_y_decimal,x
+		sbc #$70
+		sta tamanegi00_spd_y_decimal,x
+		lda tamanegi00_spd_y,x
+		sbc #0
+		sta tamanegi00_spd_y,x
+
+		; 速度反転判定
+		; 実数部がマイナスになったら
+		bpl	skip_negative_proc; ネガティブフラグがクリアされている
+		; 速度がマイナスになったので、速度方向を下にする
+		lda #0
+		sta tamanegi00_spd_vec,x
+		sta tamanegi00_spd_y,x
+		sta tamanegi00_spd_y_decimal,x
+		skip_negative_proc:
+
+		jmp case_break
+
+	case_break:
+
+	jmp step_break
+
+step_next:
+	lda #2
+	sta tamanegi00_status,x
+
+	lda #0
+	sta tamanegi00_update_step,x
+	
+	jsr CannonMask_Clear	; マスク大砲クリア
+
+	jmp step_break
+
+step_break:
+
+	rts
+.endproc	; Tamanegi_UpdateParabola
 
 ; 通常更新
 .proc	Tamanegi_UpdateNormal
@@ -196,8 +429,104 @@ roll_skip:
 	sbc #0
 	sta tamanegi0_world_pos_x_hi,x
 
+	; ある程度距離
+	sec
+	lda window_player_x_low
+	sbc tamanegi0_window_pos_x,x
+	sta REG0
+	bcc not_burst	; キャリーフラグが立っていない
+	sec
+	lda #48
+	sbc REG0
+	bcs not_burst; キャリーフラグがセットされている場合スキップ
+	
+	lda #3
+	sta tamanegi00_status,x
+	lda #0
+	sta tamanegi00_update_step,x
+
+	not_burst:
+
 	rts
 .endproc	; Tamanegi_UpdateNormal
+
+; 更新炎上
+.proc	Tamanegi_UpdateBurst
+	lda tamanegi00_update_step,x
+	cmp #0
+	beq step_init
+	cmp #1
+	beq step_burst1
+	cmp #2
+	beq step_burst2
+	cmp #3
+	beq step_burst3
+	cmp #4
+	beq step_next
+
+step_init:
+
+	lda #1
+	sta tamanegi00_update_step,x
+
+	lda #10
+	sta tamanegi00_wait,x
+
+	; 火の登場
+	jsr TamanegiFire_Appear
+
+	jmp case_break
+
+step_burst1:
+
+	sec
+	dec tamanegi00_wait,x
+	bne case_break
+	; 0になったら
+	lda #10
+	sta tamanegi00_wait,x
+	lda #2
+	sta tamanegi00_update_step,x
+
+	jmp case_break
+
+step_burst2:
+
+	sec
+	dec tamanegi00_wait,x
+	bne case_break
+	; 0になったら
+	lda #10
+	sta tamanegi00_wait,x
+	lda #3
+	sta tamanegi00_update_step,x
+
+	jmp case_break
+
+step_burst3:
+
+	sec
+	dec tamanegi00_wait,x
+	bne case_break
+	; 0になったら
+	lda #4
+	sta tamanegi00_update_step,x
+
+	jmp case_break
+
+step_next:
+	; 炎削除
+	jsr TamanegiFire_Clear
+	; タマネギ削除
+	jsr Tamanegi_Clear
+
+	jmp case_break
+
+case_break:
+
+
+	rts
+.endproc	; Tamanegi_UpdateBurst
 
 ; 描画
 .proc	TamanegiDrawDma7
@@ -207,175 +536,171 @@ roll_skip:
 ;	jmp skip_tamanegi
 ;not_skip_tamanegi:
 
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$1 : #0;
-	;REG1 = (p_pat == 0) ? #$0 : #1;
-
-	ldx #$01
-	lda p_pat
-	bne	Pat1
 	ldx #0
-Pat1:
-	stx REG0
-
-	ldx #$00
-	lda p_pat
-	bne	Pat2
-	ldx #1
-Pat2:
-	stx REG1
-
-; 生存タイル
-	clc
-	lda #$AD     ; 
-	adc REG0
-	sta tamanegi1_t
-	clc
-	lda #$AD
-	adc REG1
-	sta tamanegi2_t
-	clc
-	lda #$BD
-	adc REG0
-	sta tamanegi3_t
-	clc
-	lda #$BD
-	adc REG1
-	sta tamanegi4_t
+	ldy #0
 	
-
-; 表示確認準備
 	lda #1
 	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
+loop_x:
+	txa		; xをaにコピー
+	; aを16倍
+	asl		; 左シフト
+	asl
+	asl
+	asl
+	tay		; aをyにコピー
+
+	; 状態
+	lda tamanegi00_status,x
+	cmp #0
+	beq case_in_the_cannon
+	cmp #1
+	beq case_parabola
+	cmp #2
+	beq case_normal
+	cmp #3
+	jmp case_burst
+
+; 大砲の中
+case_in_the_cannon:
+; 放物線
+case_parabola:
+	; ななめタイル
+	lda #$AB
+	sta tamanegi1_t,y
+	lda #$AC
+	sta tamanegi2_t,y
+	lda #$BB
+	sta tamanegi3_t,y
+	lda #$BC
+	sta tamanegi4_t,y
+	
+	; 反転なし
+	lda #%00000001
+	sta tamanegi2_s,y
+	sta tamanegi4_s,y
+
+	jmp break;
+
+; 通常
+case_normal:
+
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$0 : #1;
+	;REG1 = (p_pat == 0) ? #$1 : #0;
+
+	lda #0
+	eor p_pat
+	sta REG0
+	eor #1
+	sta REG1
+
+	; 生存タイル
+	clc
+	lda #$AD     ; 
+	adc REG0
+	sta tamanegi1_t,y
+	clc
+	lda #$AD
+	adc REG1
+	sta tamanegi2_t,y
+	clc
+	lda #$BD
+	adc REG0
+	sta tamanegi3_t,y
+	clc
+	lda #$BD
+	adc REG1
+	sta tamanegi4_t,y
+	
+	; 反転あり
+	lda #%01000001
+	sta tamanegi2_s,y
+	sta tamanegi4_s,y
+
+	jmp break;
+
+; 炎上
+case_burst:
+
+	lda tamanegi00_update_step,x
+	cmp #0
+	beq skip_hide
+	cmp #1
+	beq skip_hide
+	; 本体は非表示
+	lda #$00
+	sta tamanegi1_t,y
+	lda #$00
+	sta tamanegi2_t,y
+	lda #$00
+	sta tamanegi3_t,y
+	lda #$00
+	sta tamanegi4_t,y
+
+	skip_hide:
+	
+	jmp break
+
+break:	
+
+; 表示確認準備
+
 ; Y座標は更新必須
 	clc			; キャリーフラグOFF
-	lda tamanegi0_pos_y
+	lda tamanegi0_pos_y,x
 	adc #7
-	sta tamanegi1_y
-	sta tamanegi2_y
+	sta tamanegi1_y,y
+	sta tamanegi2_y,y
 
 	clc			; キャリーフラグOFF
-	lda tamanegi0_pos_y
+	lda tamanegi0_pos_y,x
 	adc #15
-	sta tamanegi3_y
-	sta tamanegi4_y
+	sta tamanegi3_y,y
+	sta tamanegi4_y,y
 
 ; Y座標以外は非表示時スキップ
 	; 生存しているか
 	lda tamanegi_alive_flag
 	and tamanegi_alive_flag_current
-	beq skip_tamanegi0		; 存在していない
+	beq next_draw		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tamanegi0_world_pos_x_low
+	lda tamanegi0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta tamanegi0_window_pos_x
+	sta tamanegi0_window_pos_x,x
 
-	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tamanegi1_x
-	sta tamanegi3_x
+	lda tamanegi0_window_pos_x,x
+	sta tamanegi1_x,y
+	sta tamanegi3_x,y
 
-	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tamanegi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tamanegi2_y
-	sta tamanegi4_y
+	sta tamanegi2_y,y
+	sta tamanegi4_y,y
 not_overflow_8:
-	sta tamanegi2_x
-	sta tamanegi4_x
+	sta tamanegi2_x,y
+	sta tamanegi4_x,y
 
-skip_tamanegi0:
+next_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
-	;REG1 = (p_pat == 0) ? #$0 : #1;
+	; 次
+	asl tamanegi_alive_flag_current
+	inx
+	cpx tamanegi_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$01
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
-
-	ldx #$00
-	lda p_pat
-	bne	skip_pat22
-	ldx #1
-skip_pat22:
-	stx REG1
-
-; 生存タイル
-	clc
-	lda #$AD     ; 
-	adc REG0
-	sta tamanegi21_t
-	clc
-	lda #$AD
-	adc REG1
-	sta tamanegi22_t
-	clc
-	lda #$BD
-	adc REG0
-	sta tamanegi23_t
-	clc
-	lda #$BD
-	adc REG1
-	sta tamanegi24_t
-	
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda tamanegi1_pos_y
-	adc #7
-	sta tamanegi21_y
-	sta tamanegi22_y
-
-	clc			; キャリーフラグOFF
-	lda tamanegi1_pos_y
-	adc #15
-	sta tamanegi23_y
-	sta tamanegi24_y
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl tamanegi_alive_flag_current	; 左シフト
-	lda tamanegi_alive_flag
-	and tamanegi_alive_flag_current
-	beq skip_tamanegi1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda tamanegi1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta tamanegi1_window_pos_x
-
-	lda tamanegi1_window_pos_x
-	sta tamanegi21_x
-	sta tamanegi23_x
-
-	lda tamanegi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta tamanegi22_y
-	sta tamanegi24_y
-not_overflow2_8:
-	sta tamanegi22_x
-	sta tamanegi24_x
-
-skip_tamanegi1:
 
 skip_tamanegi:
 
-;End:
 	rts
 
 .endproc	; TamanegiDrawDma7
@@ -388,177 +713,169 @@ skip_tamanegi:
 ;	jmp skip_tamanegi
 ;not_skip_tamanegi:
 
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$1 : #0;
-	;REG1 = (p_pat == 0) ? #$0 : #1;
-
-	ldx #$01
-	lda p_pat
-	bne	Pat1
 	ldx #0
-Pat1:
-	stx REG0
-
-	ldx #$00
-	lda p_pat
-	bne	Pat2
-	ldx #1
-Pat2:
-	stx REG1
-
-; 生存タイル
-	clc
-	lda #$AD     ; 
-	adc REG0
-	sta tamanegi1_t2
-	clc
-	lda #$AD     ;
-	adc REG1
-	sta tamanegi2_t2
-	clc
-	lda #$BD     ; 
-	adc REG0
-	sta tamanegi3_t2
-	clc
-	lda #$BD     ; 
-	adc REG1
-	sta tamanegi4_t2
-
-
-; 生存確認準備
+	ldy #0
+	
 	lda #1
 	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
+loop_x:
+	txa		; xをaにコピー
+	; aを16倍
+	asl		; 左シフト
+	asl
+	asl
+	asl
+	tay		; aをyにコピー
+
+	; 状態
+	lda tamanegi00_status,x
+	cmp #0
+	beq case_in_the_cannon
+	cmp #1
+	beq case_parabola
+	cmp #2
+	beq case_normal
+	cmp #3
+	jmp case_burst
+
+; 大砲の中
+case_in_the_cannon:
+; 放物線
+case_parabola:
+	; ななめタイル
+	lda #$AB
+	sta tamanegi1_t2,y
+	lda #$AC
+	sta tamanegi2_t2,y
+	lda #$BB
+	sta tamanegi3_t2,y
+	lda #$BC
+	sta tamanegi4_t2,y
+	
+	; 反転なし
+	lda #%00000001
+	sta tamanegi2_s2,y
+	sta tamanegi4_s2,y
+	
+	jmp break;
+
+; 通常
+case_normal:
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$0 : #1;
+	;REG1 = (p_pat == 0) ? #$1 : #0;
+
+	lda #0
+	eor p_pat
+	sta REG0
+	eor #1
+	sta REG1
+
+	; 生存タイル
+	clc
+	lda #$AD     ; 
+	adc REG0
+	sta tamanegi1_t2,y
+	clc
+	lda #$AD
+	adc REG1
+	sta tamanegi2_t2,y
+	clc
+	lda #$BD
+	adc REG0
+	sta tamanegi3_t2,y
+	clc
+	lda #$BD
+	adc REG1
+	sta tamanegi4_t2,y
+	
+	; 反転あり
+	lda #%01000001
+	sta tamanegi2_s2,y
+	sta tamanegi4_s2,y
+
+	jmp break;
+
+; 炎上
+case_burst:
+
+	lda tamanegi00_update_step,x
+	cmp #0
+	beq skip_hide
+	cmp #1
+	beq skip_hide
+	; 本体は非表示
+	lda #$00
+	sta tamanegi1_t2,y
+	lda #$00
+	sta tamanegi2_t2,y
+	lda #$00
+	sta tamanegi3_t2,y
+	lda #$00
+	sta tamanegi4_t2,y
+
+	skip_hide:
+	
+	jmp break
+
+break:
+
+	
+
+; 表示確認準備
+
 ; Y座標は更新必須
 	clc			; キャリーフラグOFF
-	lda tamanegi0_pos_y
+	lda tamanegi0_pos_y,x
 	adc #7
-	sta tamanegi1_y2
-	sta tamanegi2_y2
+	sta tamanegi1_y2,y
+	sta tamanegi2_y2,y
 
 	clc			; キャリーフラグOFF
-	lda tamanegi0_pos_y
+	lda tamanegi0_pos_y,x
 	adc #15
-	sta tamanegi3_y2
-	sta tamanegi4_y2
+	sta tamanegi3_y2,y
+	sta tamanegi4_y2,y
 
 ; Y座標以外は非表示時スキップ
-
 	; 生存しているか
 	lda tamanegi_alive_flag
 	and tamanegi_alive_flag_current
-	beq skip_tamanegi0		; 存在していない
+	beq next_draw		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tamanegi0_world_pos_x_low
+	lda tamanegi0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta tamanegi0_window_pos_x
+	sta tamanegi0_window_pos_x,x
 
+	lda tamanegi0_window_pos_x,x
+	sta tamanegi1_x2,y
+	sta tamanegi3_x2,y
 
-	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tamanegi1_x2
-	sta tamanegi3_x2
-
-	lda tamanegi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tamanegi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta tamanegi2_y2
-	sta tamanegi4_y2
+	lda #231	; 画面外
+	sta tamanegi2_y2,y
+	sta tamanegi4_y2,y
 not_overflow_8:
-	sta tamanegi2_x2
-	sta tamanegi4_x2
+	sta tamanegi2_x2,y
+	sta tamanegi4_x2,y
 
-skip_tamanegi0:
+next_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
-	;REG1 = (p_pat == 0) ? #$0 : #1;
+	; 次
+	asl tamanegi_alive_flag_current
+	inx
+	cpx tamanegi_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$01
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
-
-	ldx #$00
-	lda p_pat
-	bne	skip_pat22
-	ldx #1
-skip_pat22:
-	stx REG1
-
-; 生存タイル
-	clc
-	lda #$AD     ; 
-	adc REG0
-	sta tamanegi21_t2
-	clc
-	lda #$AD
-	adc REG1
-	sta tamanegi22_t2
-	clc
-	lda #$BD
-	adc REG0
-	sta tamanegi23_t2
-	clc
-	lda #$BD
-	adc REG1
-	sta tamanegi24_t2
-	
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda tamanegi1_pos_y
-	adc #7
-	sta tamanegi21_y2
-	sta tamanegi22_y2
-
-	clc			; キャリーフラグOFF
-	lda tamanegi1_pos_y
-	adc #15
-	sta tamanegi23_y2
-	sta tamanegi24_y2
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl tamanegi_alive_flag_current	; 左シフト
-	lda tamanegi_alive_flag
-	and tamanegi_alive_flag_current
-	beq skip_tamanegi1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda tamanegi1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta tamanegi1_window_pos_x
-
-	lda tamanegi1_window_pos_x
-	sta tamanegi21_x2
-	sta tamanegi23_x2
-
-	lda tamanegi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta tamanegi22_y2
-	sta tamanegi24_y2
-not_overflow2_8:
-	sta tamanegi22_x2
-	sta tamanegi24_x2
-
-skip_tamanegi1:
-
-skip_tamanegi:
-
-;End:
 	rts
 
 .endproc	; TamanegiDrawDma6
