@@ -469,7 +469,7 @@ step_init:
 	lda #1
 	sta tamanegi00_update_step,x
 
-	lda #10
+	lda #15
 	sta tamanegi00_wait,x
 
 	; ‰Î‚Ì“oê
@@ -483,7 +483,7 @@ step_burst1:
 	dec tamanegi00_wait,x
 	bne case_break
 	; 0‚É‚È‚Á‚½‚ç
-	lda #10
+	lda #15
 	sta tamanegi00_wait,x
 	lda #2
 	sta tamanegi00_update_step,x
