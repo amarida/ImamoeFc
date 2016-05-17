@@ -246,7 +246,6 @@ skip_update:
 .proc	TamanegiFire_DrawDma7
 
 	ldx #0
-	ldy #0
 	
 	lda #1
 	sta fire_alive_flag_current	; フラグ参照現在位置
@@ -259,6 +258,7 @@ loop_x:
 	jmp skip_draw
 	not_skip_draw:
 
+	ldy #0
 	txa		; xをaにコピー
 	beq skip_set24
 	ldy #24	; xが0ならyは0、xが1ならyは24
@@ -382,7 +382,6 @@ skip_draw:
 .proc	TamanegiFire_DrawDma6
 
 	ldx #0
-	ldy #0
 	
 	lda #1
 	sta fire_alive_flag_current	; フラグ参照現在位置
@@ -395,6 +394,7 @@ loop_x:
 	jmp skip_draw
 	not_skip_draw:
 
+	ldy #0
 	txa		; xをaにコピー
 	beq skip_set24
 	ldy #24	; xが0ならyは0、xが1ならyは24
