@@ -118,6 +118,92 @@ skip_inosisi:
 	rts
 .endproc	; appear_inosisi
 
+; イノシシクリア
+.proc Inosisi_Clear
+
+	; xの0,1でどちらを消すか判断する
+	ldy #0
+	lda #%00000001
+	sta REG0
+	txa
+	beq not_set24
+	ldy #24
+	lda #%00000010
+	sta REG0
+	not_set24:
+	
+	; 生存フラグの確認
+	lda inosisi_alive_flag
+	and REG0
+	bne not_skip_clear		; 存在している
+	jmp skip_clear
+	not_skip_clear:
+
+	lda #0
+	sta char_6type1_y,y
+	sta char_6type1_t,y
+	sta char_6type1_s,y
+	sta char_6type1_x,y
+	sta char_6type2_y,y
+	sta char_6type2_t,y
+	sta char_6type2_s,y
+	sta char_6type2_x,y
+	sta char_6type3_y,y
+	sta char_6type3_t,y
+	sta char_6type3_s,y
+	sta char_6type3_x,y
+	sta char_6type4_y,y
+	sta char_6type4_t,y
+	sta char_6type4_s,y
+	sta char_6type4_x,y
+	sta char_6type5_y,y
+	sta char_6type5_t,y
+	sta char_6type5_s,y
+	sta char_6type5_x,y
+	sta char_6type6_y,y
+	sta char_6type6_t,y
+	sta char_6type6_s,y
+	sta char_6type6_x,y
+	sta char_6type1_y2,y
+	sta char_6type1_t2,y
+	sta char_6type1_s2,y
+	sta char_6type1_x2,y
+	sta char_6type2_y2,y
+	sta char_6type2_t2,y
+	sta char_6type2_s2,y
+	sta char_6type2_x2,y
+	sta char_6type3_y2,y
+	sta char_6type3_t2,y
+	sta char_6type3_s2,y
+	sta char_6type3_x2,y
+	sta char_6type4_y2,y
+	sta char_6type4_t2,y
+	sta char_6type4_s2,y
+	sta char_6type4_x2,y
+	sta char_6type5_y2,y
+	sta char_6type5_t2,y
+	sta char_6type5_s2,y
+	sta char_6type5_x2,y
+	sta char_6type6_y2,y
+	sta char_6type6_t2,y
+	sta char_6type6_s2,y
+	sta char_6type6_x2,y
+
+	lda #0
+	sta inosisi0_world_pos_x_low,x
+	sta inosisi0_world_pos_x_hi,x
+	sta inosisi0_pos_y,x
+	
+	; 生存フラグを落とす
+	lda inosisi_alive_flag
+	eor REG0
+	sta inosisi_alive_flag
+
+skip_clear:
+
+	rts
+.endproc ; TamanegiFire_Clear
+
 ; 更新
 .proc	InosisiUpdate
 	lda is_dead
@@ -165,11 +251,12 @@ break:
 	sbc inosisi0_world_pos_x_low,x
 	bcc skip_dead
 	; 画面外処理
-	lda inosisi_alive_flag
-	eor inosisi_alive_flag_current
-	sta inosisi_alive_flag
-	lda #224	; 画面外
-	sta inosisi0_pos_y,x
+	jsr Inosisi_Clear
+;	lda inosisi_alive_flag
+;	eor inosisi_alive_flag_current
+;	sta inosisi_alive_flag
+;	lda #224	; 画面外
+;	sta inosisi0_pos_y,x
 
 skip_dead:
 
@@ -288,12 +375,12 @@ case_splash2_wait:
 	jmp break;
 
 case_release:
-	; 処理2
-	lda inosisi_alive_flag
-	eor inosisi_alive_flag_current
-	sta inosisi_alive_flag
-	lda #224	; 画面外
-	sta inosisi0_pos_y,x
+	jsr Inosisi_Clear
+;	lda inosisi_alive_flag
+;	eor inosisi_alive_flag_current
+;	sta inosisi_alive_flag
+;	lda #224	; 画面外
+;	sta inosisi0_pos_y,x
 
 	inc inosisi00_update_dead_step,x
 	jmp break;
@@ -306,11 +393,25 @@ break:
 
 ; 描画
 .proc	InosisiDrawDma7
-	; そもそも一体も居ない
-;	lda inosisi_alive_flag
-;	bne not_skip_inosisi
-;	jmp skip_inosisi
-;not_skip_inosisi:
+
+	ldx #0
+	
+	lda #1
+	sta inosisi_alive_flag_current	; フラグ参照現在位置
+	
+loop_x:
+	; 生存しているか
+	lda inosisi_alive_flag
+	and inosisi_alive_flag_current
+	bne not_skip_draw		; 存在してる
+	jmp skip_draw
+	not_skip_draw:
+
+	ldy #0
+	txa		; xをaにコピー
+	beq skip_set24
+	ldy #24	; xが0ならyは0、xが1ならyは24
+	skip_set24:
 
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
@@ -323,37 +424,41 @@ Pat1:
 	stx REG0
 
 	lda inosisi00_status
+	cmp #0
+	beq nomal_tail
 	cmp #1
 	beq drown_tail
 	cmp #2
 	beq splash1_tail
 	cmp #3
 	beq splash2_tail
+	
+nomal_tail:
 ; 生存タイル
 	clc
 	lda #$84     ; 
 	adc REG0
-	sta char_6type1_t
+	sta char_6type1_t,y
 	clc
 	lda #$85
 	adc REG0
-	sta char_6type2_t
+	sta char_6type2_t,y
 	clc
 	lda #$86
 	adc REG0
-	sta char_6type3_t
+	sta char_6type3_t,y
 	clc
 	lda #$94
 	adc REG0
-	sta char_6type4_t
+	sta char_6type4_t,y
 	clc
 	lda #$95
 	adc REG0
-	sta char_6type5_t
+	sta char_6type5_t,y
 	clc
 	lda #$96
 	adc REG0
-	sta char_6type6_t
+	sta char_6type6_t,y
 	
 	jmp break_tile
 ; 溺れタイル
@@ -361,303 +466,146 @@ drown_tail:
 	clc
 	lda #$87     ; 
 	adc REG0
-	sta char_6type1_t
+	sta char_6type1_t,y
 	clc
 	lda #$88
 	adc REG0
-	sta char_6type2_t
+	sta char_6type2_t,y
 	clc
 	lda #$97
 	adc REG0
-	sta char_6type4_t
+	sta char_6type4_t,y
 	clc
 	lda #$98
 	adc REG0
-	sta char_6type5_t
+	sta char_6type5_t,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t
-	sta char_6type6_t
+	sta char_6type3_t,y
+	sta char_6type6_t,y
 
 	jmp break_tile
 ; 水しぶき1タイル
 splash1_tail:
 	lda #$89     ; 
-	sta char_6type1_t
+	sta char_6type1_t,y
 	lda #$8A
-	sta char_6type2_t
+	sta char_6type2_t,y
 	lda #$99
-	sta char_6type4_t
+	sta char_6type4_t,y
 	lda #$9A
-	sta char_6type5_t
+	sta char_6type5_t,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t
-	sta char_6type6_t
+	sta char_6type3_t,y
+	sta char_6type6_t,y
 
 	jmp break_tile
 
 ; 水しぶき2タイル
 splash2_tail:
 	lda #$A9     ; 
-	sta char_6type1_t
+	sta char_6type1_t,y
 	lda #$AA
-	sta char_6type2_t
+	sta char_6type2_t,y
 	lda #$B9
-	sta char_6type4_t
+	sta char_6type4_t,y
 	lda #$BA
-	sta char_6type5_t
+	sta char_6type5_t,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t
-	sta char_6type6_t
+	sta char_6type3_t,y
+	sta char_6type6_t,y
 
 	jmp break_tile
 
 break_tile:
 
-; 表示確認準備
-	lda #1
-	sta inosisi_alive_flag_current	; フラグ参照現在位置
-
-; Y座標は更新必須
+; Y座標
 	clc			; キャリーフラグOFF
-	lda inosisi0_pos_y
+	lda inosisi0_pos_y,x
 	adc #7
-	sta char_6type1_y
-	sta char_6type2_y
-	sta char_6type3_y
+	sta char_6type1_y,y
+	sta char_6type2_y,y
+	sta char_6type3_y,y
 
 	clc			; キャリーフラグOFF
-	lda inosisi0_pos_y
+	lda inosisi0_pos_y,x
 	adc #15
-	sta char_6type4_y
-	sta char_6type5_y
-	sta char_6type6_y
+	sta char_6type4_y,y
+	sta char_6type5_y,y
+	sta char_6type6_y,y
 
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	lda inosisi_alive_flag
-	and inosisi_alive_flag_current
-	beq skip_inosisi0		; 存在していない
+; X座標
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda inosisi0_world_pos_x_low
+	lda inosisi0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta inosisi0_window_pos_x
+	sta inosisi0_window_pos_x,x
 
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta char_6type1_x
-	sta char_6type4_x
+	lda inosisi0_window_pos_x,x
+	sta char_6type1_x,y
+	sta char_6type4_x,y
 
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda inosisi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta char_6type2_y
-	sta char_6type5_y
+	sta char_6type2_y,y
+	sta char_6type5_y,y
 not_overflow_8:
-	sta char_6type2_x
-	sta char_6type5_x
+	sta char_6type2_x,y
+	sta char_6type5_x,y
 
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda inosisi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #16
 	bcc not_overflow_16	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta char_6type3_y
-	sta char_6type6_y
+	sta char_6type3_y,y
+	sta char_6type6_y,y
 not_overflow_16:
-	sta char_6type3_x
-	sta char_6type6_x
+	sta char_6type3_x,y
+	sta char_6type6_x,y
 
-skip_inosisi0:
+skip_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+	; 次
+	asl inosisi_alive_flag_current
+	inx
+	cpx inosisi_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$20
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
-
-	lda inosisi01_status
-	cmp #1
-	beq drown_tail2
-	cmp #2
-	beq splash1_tail2
-	cmp #3
-	beq splash2_tail2
-; 生存タイル
-	clc
-	lda #$84     ; 
-	adc REG0
-	sta char_6type21_t
-	clc
-	lda #$85
-	adc REG0
-	sta char_6type22_t
-	clc
-	lda #$86
-	adc REG0
-	sta char_6type23_t
-	clc
-	lda #$94
-	adc REG0
-	sta char_6type24_t
-	clc
-	lda #$95
-	adc REG0
-	sta char_6type25_t
-	clc
-	lda #$96
-	adc REG0
-	sta char_6type26_t
-	
-	jmp break_tile2
-; 溺れタイル
-drown_tail2:
-	clc
-	lda #$87     ; 
-	adc REG0
-	sta char_6type21_t
-	clc
-	lda #$88
-	adc REG0
-	sta char_6type22_t
-	clc
-	lda #$97
-	adc REG0
-	sta char_6type24_t
-	clc
-	lda #$98
-	adc REG0
-	sta char_6type25_t
-
-	lda #$03	; ブランク
-	sta char_6type23_t
-	sta char_6type26_t
-
-	jmp break_tile2
-
-; 水しぶき1タイル
-splash1_tail2:
-	lda #$89     ; 
-	sta char_6type21_t
-	lda #$8A
-	sta char_6type22_t
-	lda #$99
-	sta char_6type24_t
-	lda #$9A
-	sta char_6type25_t
-
-	lda #$03	; ブランク
-	sta char_6type3_t
-	sta char_6type6_t
-
-	jmp break_tile2
-
-; 水しぶき2タイル
-splash2_tail2:
-	lda #$A9     ; 
-	sta char_6type21_t
-	lda #$AA
-	sta char_6type22_t
-	lda #$B9
-	sta char_6type24_t
-	lda #$BA
-	sta char_6type25_t
-
-	lda #$03	; ブランク
-	sta char_6type23_t
-	sta char_6type26_t
-
-	jmp break_tile2
-
-
-break_tile2:
-
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda inosisi1_pos_y
-	adc #7
-	sta char_6type21_y
-	sta char_6type22_y
-	sta char_6type23_y
-
-	clc			; キャリーフラグOFF
-	lda inosisi1_pos_y
-	adc #15
-	sta char_6type24_y
-	sta char_6type25_y
-	sta char_6type26_y
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl inosisi_alive_flag_current	; 左シフト
-	lda inosisi_alive_flag
-	and inosisi_alive_flag_current
-	beq skip_inosisi1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda inosisi1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta inosisi1_window_pos_x
-
-	lda inosisi1_window_pos_x
-	sta char_6type21_x
-	sta char_6type24_x
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta char_6type22_y
-	sta char_6type25_y
-not_overflow2_8:
-	sta char_6type22_x
-	sta char_6type25_x
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #16
-	bcc not_overflow2_16	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta char_6type23_y
-	sta char_6type26_y
-not_overflow2_16:
-	sta char_6type23_x
-	sta char_6type26_x
-
-skip_inosisi1:
-
-skip_inosisi:
-
-;End:
 	rts
 
 .endproc	; InosisiDrawDma7
 
 ; 描画
 .proc	InosisiDrawDma6
-	; そもそも一体も居ない
-;	lda inosisi_alive_flag
-;	bne not_skip_inosisi
-;	jmp skip_inosisi
-;not_skip_inosisi:
+	ldx #0
+	
+	lda #1
+	sta inosisi_alive_flag_current	; フラグ参照現在位置
+	
+loop_x:
+	; 生存しているか
+	lda inosisi_alive_flag
+	and inosisi_alive_flag_current
+	bne not_skip_draw		; 存在してる
+	jmp skip_draw
+	not_skip_draw:
+
+	ldy #0
+	txa		; xをaにコピー
+	beq skip_set24
+	ldy #24	; xが0ならyは0、xが1ならyは24
+	skip_set24:
 
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
@@ -670,329 +618,164 @@ Pat1:
 	stx REG0
 
 	lda inosisi00_status
+	cmp #0
+	beq nomal_tail
 	cmp #1
 	beq drown_tail
 	cmp #2
 	beq splash1_tail
 	cmp #3
 	beq splash2_tail
+	
+nomal_tail:
 ; 生存タイル
 	clc
 	lda #$84     ; 
 	adc REG0
-	sta char_6type1_t2
+	sta char_6type1_t2,y
 	clc
-	lda #$85     ; 21をAにロード
+	lda #$85
 	adc REG0
-	sta char_6type2_t2
+	sta char_6type2_t2,y
 	clc
-	lda #$86     ; 21をAにロード
+	lda #$86
 	adc REG0
-	sta char_6type3_t2
+	sta char_6type3_t2,y
 	clc
-	lda #$94     ; 21をAにロード
+	lda #$94
 	adc REG0
-	sta char_6type4_t2
+	sta char_6type4_t2,y
 	clc
-	lda #$95     ; 21をAにロード
+	lda #$95
 	adc REG0
-	sta char_6type5_t2
+	sta char_6type5_t2,y
 	clc
-	lda #$96     ; 21をAにロード
+	lda #$96
 	adc REG0
-	sta char_6type6_t2
-
+	sta char_6type6_t2,y
+	
 	jmp break_tile
 ; 溺れタイル
 drown_tail:
 	clc
 	lda #$87     ; 
 	adc REG0
-	sta char_6type1_t2
+	sta char_6type1_t2,y
 	clc
 	lda #$88
 	adc REG0
-	sta char_6type2_t2
+	sta char_6type2_t2,y
 	clc
 	lda #$97
 	adc REG0
-	sta char_6type4_t2
+	sta char_6type4_t2,y
 	clc
 	lda #$98
 	adc REG0
-	sta char_6type5_t2
+	sta char_6type5_t2,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t2
-	sta char_6type6_t2
+	sta char_6type3_t2,y
+	sta char_6type6_t2,y
 
 	jmp break_tile
 ; 水しぶき1タイル
 splash1_tail:
 	lda #$89     ; 
-	sta char_6type1_t2
+	sta char_6type1_t2,y
 	lda #$8A
-	sta char_6type2_t2
+	sta char_6type2_t2,y
 	lda #$99
-	sta char_6type4_t2
+	sta char_6type4_t2,y
 	lda #$9A
-	sta char_6type5_t2
+	sta char_6type5_t2,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t2
-	sta char_6type6_t2
+	sta char_6type3_t2,y
+	sta char_6type6_t2,y
 
 	jmp break_tile
 
 ; 水しぶき2タイル
 splash2_tail:
 	lda #$A9     ; 
-	sta char_6type1_t2
+	sta char_6type1_t2,y
 	lda #$AA
-	sta char_6type2_t2
+	sta char_6type2_t2,y
 	lda #$B9
-	sta char_6type4_t2
+	sta char_6type4_t2,y
 	lda #$BA
-	sta char_6type5_t2
+	sta char_6type5_t2,y
 
 	lda #$03	; ブランク
-	sta char_6type3_t2
-	sta char_6type6_t2
+	sta char_6type3_t2,y
+	sta char_6type6_t2,y
 
 	jmp break_tile
 
 break_tile:
 
-; 生存確認準備
-	lda #1
-	sta inosisi_alive_flag_current	; フラグ参照現在位置
-
-; Y座標は更新必須
+; Y座標
 	clc			; キャリーフラグOFF
-	lda inosisi0_pos_y
+	lda inosisi0_pos_y,x
 	adc #7
-	sta char_6type1_y2
-	sta char_6type2_y2
-	sta char_6type3_y2
+	sta char_6type1_y2,y
+	sta char_6type2_y2,y
+	sta char_6type3_y2,y
 
 	clc			; キャリーフラグOFF
-	lda inosisi0_pos_y
+	lda inosisi0_pos_y,x
 	adc #15
-	sta char_6type4_y2
-	sta char_6type5_y2
-	sta char_6type6_y2
+	sta char_6type4_y2,y
+	sta char_6type5_y2,y
+	sta char_6type6_y2,y
 
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	lda inosisi_alive_flag
-	and inosisi_alive_flag_current
-	beq skip_inosisi0		; 存在していない
+; X座標
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda inosisi0_world_pos_x_low
+	lda inosisi0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta inosisi0_window_pos_x
+	sta inosisi0_window_pos_x,x
 
+	lda inosisi0_window_pos_x,x
+	sta char_6type1_x2,y
+	sta char_6type4_x2,y
 
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta char_6type1_x2
-	sta char_6type4_x2
-
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda inosisi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta char_6type2_y2
-	sta char_6type5_y2
+	lda #231	; 画面外
+	sta char_6type2_y2,y
+	sta char_6type5_y2,y
 not_overflow_8:
-	sta char_6type2_x2
-	sta char_6type5_x2
+	sta char_6type2_x2,y
+	sta char_6type5_x2,y
 
-	lda inosisi0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda inosisi0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #16
 	bcc not_overflow_16	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta char_6type3_y2
-	sta char_6type6_y2
+	lda #231	; 画面外
+	sta char_6type3_y2,y
+	sta char_6type6_y2,y
 not_overflow_16:
-	sta char_6type3_x2
-	sta char_6type6_x2
+	sta char_6type3_x2,y
+	sta char_6type6_x2,y
 
-skip_inosisi0:
+skip_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+	; 次
+	asl inosisi_alive_flag_current
+	inx
+	cpx inosisi_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$20
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
-
-	lda inosisi01_status
-	cmp #1
-	beq drown_tail2
-	cmp #2
-	beq splash1_tail2
-	cmp #3
-	beq splash2_tail2
-; 生存タイル
-	clc
-	lda #$84     ; 
-	adc REG0
-	sta char_6type21_t2
-	clc
-	lda #$85
-	adc REG0
-	sta char_6type22_t2
-	clc
-	lda #$86
-	adc REG0
-	sta char_6type23_t2
-	clc
-	lda #$94
-	adc REG0
-	sta char_6type24_t2
-	clc
-	lda #$95
-	adc REG0
-	sta char_6type25_t2
-	clc
-	lda #$96
-	adc REG0
-	sta char_6type26_t2
-	
-	jmp break_tile2
-; 溺れタイル
-drown_tail2:
-	clc
-	lda #$87     ; 
-	adc REG0
-	sta char_6type21_t2
-	clc
-	lda #$88
-	adc REG0
-	sta char_6type22_t2
-	clc
-	lda #$97
-	adc REG0
-	sta char_6type24_t2
-	clc
-	lda #$98
-	adc REG0
-	sta char_6type25_t2
-
-	lda #$03	; ブランク
-	sta char_6type23_t2
-	sta char_6type26_t2
-
-	jmp break_tile2
-
-; 水しぶき1タイル
-splash1_tail2:
-	lda #$89     ; 
-	sta char_6type21_t2
-	lda #$8A
-	sta char_6type22_t2
-	lda #$99
-	sta char_6type24_t2
-	lda #$9A
-	sta char_6type25_t2
-
-	lda #$03	; ブランク
-	sta char_6type3_t2
-	sta char_6type6_t2
-
-	jmp break_tile2
-
-; 水しぶき2タイル
-splash2_tail2:
-	lda #$A9     ; 
-	sta char_6type21_t2
-	lda #$AA
-	sta char_6type22_t2
-	lda #$B9
-	sta char_6type24_t2
-	lda #$BA
-	sta char_6type25_t2
-
-	lda #$03	; ブランク
-	sta char_6type23_t2
-	sta char_6type26_t2
-
-	jmp break_tile2
-
-break_tile2:
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda inosisi1_pos_y
-	adc #7
-	sta char_6type21_y2
-	sta char_6type22_y2
-	sta char_6type23_y2
-
-	clc			; キャリーフラグOFF
-	lda inosisi1_pos_y
-	adc #15
-	sta char_6type24_y2
-	sta char_6type25_y2
-	sta char_6type26_y2
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl inosisi_alive_flag_current	; 左シフト
-	lda inosisi_alive_flag
-	and inosisi_alive_flag_current
-	beq skip_inosisi1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda inosisi1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta inosisi1_window_pos_x
-
-	lda inosisi1_window_pos_x
-	sta char_6type21_x2
-	sta char_6type24_x2
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta char_6type22_y2
-	sta char_6type25_y2
-not_overflow2_8:
-	sta char_6type22_x2
-	sta char_6type25_x2
-
-	lda inosisi1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #16
-	bcc not_overflow2_16	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta char_6type23_y2
-	sta char_6type26_y2
-not_overflow2_16:
-	sta char_6type23_x2
-	sta char_6type26_x2
-
-skip_inosisi1:
-
-skip_inosisi:
-
-;End:
 	rts
 
 .endproc	; InosisiDrawDma6
