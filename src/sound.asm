@@ -56,6 +56,21 @@
 	rts
 .endproc
 
+.proc Sound_PlayFire
+
+	lda $4015		; サウンドレジスタ
+	ora #%00001000	; ノイズチャンネルを有効にする
+	sta $4015
+
+	lda #2
+	sta se_type
+	
+	lda #0
+	sta se_kukei_step
+
+	rts
+.endproc
+
 .proc PlayBgmIntroduction
 
 	lda #1
@@ -73,20 +88,23 @@
 .endproc
 
 .proc UpdateSe
-lda se_type
-sta debug_var
 
 	lda se_type
 	cmp #0
 	beq case_none
 	cmp #1
 	beq case_jump
+	cmp #2
+	beq case_fire
 	jmp end
 	
 case_none:
 	jmp break
 case_jump:
 	jsr UpdateSeJumpKukei
+	jmp break
+case_fire:
+	jsr UpdateSeFireNoise
 	jmp break
 	
 break:
@@ -170,6 +188,94 @@ case_wait:
 	bne break
 	lda se_kukei_count
 	cmp #3
+	beq case_loop_end
+	
+	case_next:
+	lda #1
+	sta se_kukei_step
+	jmp break
+	case_loop_end:
+	lda #0
+	sta se_type
+	jmp break
+	
+break:
+	
+
+
+	rts
+.endproc
+
+.proc UpdateSeFireNoise
+
+	lda se_kukei_step
+	cmp #0
+	beq case_init
+	cmp #1
+	beq case_play
+	cmp #2
+	beq case_wait
+	
+case_init:
+
+	lda #< se_fire_noise 
+	sta se_jump_address_low
+	lda #> se_fire_noise 
+	sta se_jump_address_hi
+	
+	lda #0
+	sta se_kukei_count
+
+	inc se_kukei_step
+	
+	jmp break
+	
+case_play:
+
+	ldy #0
+
+	lda (se_jump_address_low), y 
+	sta $400C
+	
+	iny
+
+	lda (se_jump_address_low), y 
+	sta $400E
+	
+	iny
+		
+	lda (se_jump_address_low), y 
+	sta $400F
+	
+	iny
+
+	lda (se_jump_address_low), y 
+	sta se_kukei_wait_frame
+
+	iny
+	
+	clc
+	lda se_jump_address_low
+	adc #4
+	sta se_jump_address_low
+	lda se_jump_address_hi
+	adc #0
+	sta se_jump_address_hi
+	
+	inc se_kukei_count
+
+	inc se_kukei_step
+	
+	jmp break
+	
+case_wait:
+
+	dec se_kukei_wait_frame
+	lda se_kukei_wait_frame
+	cmp #0
+	bne break
+	lda se_kukei_count
+	cmp #2
 	beq case_loop_end
 	
 	case_next:

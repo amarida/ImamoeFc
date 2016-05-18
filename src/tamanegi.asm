@@ -474,6 +474,7 @@ step_init:
 
 	; ‰Î‚Ì“oê
 	jsr TamanegiFire_Appear
+	jsr Sound_PlayFire
 
 	jmp case_break
 

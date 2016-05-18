@@ -1342,9 +1342,12 @@ map_chip_attribute_game_over:
 ; x位置上位、x座標下位、y位置、敵のタイプ
 map_enemy_info:
 	.byte	$01, $a2, $b8, $01
+	.byte	$01, $aa, $b8, $01
 	.byte	$01, $d7, $b0, $02
+	.byte	$01, $df, $b0, $02
 ;	.byte	$02, $02, $b8, $01
 	.byte	$02, $f0, $b8, $00
+	.byte	$02, $f8, $b8, $00
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 ; BGM情報テーブル
@@ -1396,6 +1399,11 @@ se_jump_kukei:
 	.byte $5F, $00, $7E, $b0, $3	; ラＡ
 	.byte $9F, $AC, $D5, $B0, $10	; シＢ
 	.byte $00, $00, $00, $00, $1
+
+se_fire_noise:
+	;     400C 400E 400F 次フレーム待ち
+	.byte $0F, $07, $B0, $20	; ラＡ
+	.byte $00, $00, $00, $1
 
 
 .segment "VECINFO"
