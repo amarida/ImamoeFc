@@ -416,12 +416,20 @@ loop_x:
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
 
-	ldx #$20
 	lda p_pat
-	bne	Pat1
-	ldx #0
-Pat1:
-	stx REG0
+	beq set_pat0
+	bne set_pat1
+	
+set_pat0:
+	lda #$00
+	sta REG0
+	jmp break_pat
+set_pat1:
+	lda #$20
+	sta REG0
+	jmp break_pat
+	
+break_pat:
 
 	lda inosisi00_status
 	cmp #0
@@ -610,12 +618,20 @@ loop_x:
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$20 : #0;
 
-	ldx #$20
 	lda p_pat
-	bne	Pat1
-	ldx #0
-Pat1:
-	stx REG0
+	beq set_pat0
+	bne set_pat1
+	
+set_pat0:
+	lda #$00
+	sta REG0
+	jmp break_pat
+set_pat1:
+	lda #$20
+	sta REG0
+	jmp break_pat
+	
+break_pat:
 
 	lda inosisi00_status
 	cmp #0
