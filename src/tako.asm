@@ -86,6 +86,76 @@ skip_tako:
 	rts
 .endproc	; appear_tako
 
+; タコクリア
+.proc Tako_Clear
+
+	; xの0,1でどちらを消すか判断する
+	ldy #0
+	lda #%00000001
+	sta REG0
+	txa
+	beq not_set16
+	ldy #16
+	lda #%00000010
+	sta REG0
+	not_set16:
+	
+	; 生存フラグの確認
+	lda tako_alive_flag
+	and REG0
+	bne not_skip_clear		; 存在している
+	jmp skip_clear
+	not_skip_clear:
+
+	lda #0
+	sta tako1_y,y
+	sta tako1_t,y
+	sta tako1_s,y
+	sta tako1_x,y
+	sta tako2_y,y
+	sta tako2_t,y
+	sta tako2_s,y
+	sta tako2_x,y
+	sta tako3_y,y
+	sta tako3_t,y
+	sta tako3_s,y
+	sta tako3_x,y
+	sta tako4_y,y
+	sta tako4_t,y
+	sta tako4_s,y
+	sta tako4_x,y
+	sta tako1_y2,y
+	sta tako1_t2,y
+	sta tako1_s2,y
+	sta tako1_x2,y
+	sta tako2_y2,y
+	sta tako2_t2,y
+	sta tako2_s2,y
+	sta tako2_x2,y
+	sta tako3_y2,y
+	sta tako3_t2,y
+	sta tako3_s2,y
+	sta tako3_x2,y
+	sta tako4_y2,y
+	sta tako4_t2,y
+	sta tako4_s2,y
+	sta tako4_x2,y
+
+	lda #0
+	sta tako0_world_pos_x_low,x
+	sta tako0_world_pos_x_hi,x
+	sta tako0_pos_y,x
+	
+	; 生存フラグを落とす
+	lda tako_alive_flag
+	eor REG0
+	sta tako_alive_flag
+
+skip_clear:
+
+	rts
+.endproc ; Tako_Clear
+
 ; 更新
 .proc	TakoUpdate
 	lda is_dead
@@ -117,11 +187,12 @@ loop_x:
 	sbc tako0_world_pos_x_low,x
 	bcc skip_dead
 	; 画面外処理
-	lda tako_alive_flag
-	eor tako_alive_flag_current
-	sta tako_alive_flag
-	lda #224	; 画面外
-	sta tako0_pos_y,x
+	jsr Tako_Clear
+;	lda tako_alive_flag
+;	eor tako_alive_flag_current
+;	sta tako_alive_flag
+;	lda #224	; 画面外
+;	sta tako0_pos_y,x
 
 skip_dead:
 
@@ -174,165 +245,118 @@ roll_skip:
 
 ; 描画
 .proc	TakoDrawDma7
-	; そもそも一体も居ない
-;	lda tako_alive_flag
-;	bne not_skip_tako
-;	jmp skip_tako
-;not_skip_tako:
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$20 : #0;
 
-	ldx #$02
-	lda p_pat
-	bne	Pat1
+	; そもそも一体も居ない
+	lda tako_alive_flag
+	bne not_skip_alltako
+	jmp skip_alltako
+not_skip_alltako:
+
 	ldx #0
-Pat1:
-	stx REG0
+	
+	lda #1
+	sta tako_alive_flag_current	; フラグ参照現在位置
+	
+loop_x:
+	; 生存しているか
+	lda tako_alive_flag
+	and tako_alive_flag_current
+	bne not_skip_draw		; 存在してる
+	jmp skip_draw
+	not_skip_draw:
+
+	ldy #0
+	txa		; xをaにコピー
+	beq skip_set16
+	ldy #16	; xが0ならyは0、xが1ならyは16
+	skip_set16:
+
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$00 : #$02;
+
+	lda p_pat
+	beq set_pat0
+	bne set_pat1
+	
+set_pat0:
+	lda #$00
+	sta REG0
+	jmp break_pat
+set_pat1:
+	lda #$02
+	sta REG0
+	jmp break_pat
+	
+break_pat:
 
 ; 生存タイル
 	clc
 	lda #$8B     ; 
 	adc REG0
-	sta tako1_t
+	sta tako1_t,y
 	clc
 	lda #$8C
 	adc REG0
-	sta tako2_t
+	sta tako2_t,y
 	clc
 	lda #$9B
 	adc REG0
-	sta tako3_t
+	sta tako3_t,y
 	clc
 	lda #$9C
 	adc REG0
-	sta tako4_t
+	sta tako4_t,y
 	
 
-; 表示確認準備
-	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
-
-; Y座標は更新必須
+; Y座標
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tako0_pos_y,x
 	adc #7
-	sta tako1_y
-	sta tako2_y
+	sta tako1_y,y
+	sta tako2_y,y
 
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tako0_pos_y,x
 	adc #15
-	sta tako3_y
-	sta tako4_y
+	sta tako3_y,y
+	sta tako4_y,y
 
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako0		; 存在していない
+; X座標
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako0_world_pos_x_low
+	lda tako0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta tako0_window_pos_x
+	sta tako0_window_pos_x,x
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tako1_x
-	sta tako3_x
+	lda tako0_window_pos_x,x
+	sta tako1_x,y
+	sta tako3_x,y
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tako0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tako2_y
-	sta tako4_y
+	sta tako2_y,y
+	sta tako4_y,y
 not_overflow_8:
-	sta tako2_x
-	sta tako4_x
+	sta tako2_x,y
+	sta tako4_x,y
 
-skip_tako0:
+skip_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+	; 次
+	asl tako_alive_flag_current
+	inx
+	cpx tako_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$02
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
+skip_alltako:
 
-; 生存タイル
-	clc
-	lda #$8B     ; 
-	adc REG0
-	sta tako21_t
-	clc
-	lda #$8C
-	adc REG0
-	sta tako22_t
-	clc
-	lda #$9B
-	adc REG0
-	sta tako23_t
-	clc
-	lda #$9C
-	adc REG0
-	sta tako24_t
-	
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda tako1_pos_y
-	adc #7
-	sta tako21_y
-	sta tako22_y
-
-	clc			; キャリーフラグOFF
-	lda tako1_pos_y
-	adc #15
-	sta tako23_y
-	sta tako24_y
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl tako_alive_flag_current	; 左シフト
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda tako1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta tako1_window_pos_x
-
-	lda tako1_window_pos_x
-	sta tako21_x
-	sta tako23_x
-
-	lda tako1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #231	; 画面外
-	sta tako22_y
-	sta tako24_y
-not_overflow2_8:
-	sta tako22_x
-	sta tako24_x
-
-skip_tako1:
-
-skip_tako:
-
-;End:
 	rts
 
 .endproc	; TakoDrawDma7
@@ -340,165 +364,116 @@ skip_tako:
 ; 描画
 .proc	TakoDrawDma6
 	; そもそも一体も居ない
-;	lda tako_alive_flag
-;	bne not_skip_tako
-;	jmp skip_tako
-;not_skip_tako:
-	; アニメパターン
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+	lda tako_alive_flag
+	bne not_skip_alltako
+	jmp skip_alltako
+not_skip_alltako:
 
-	ldx #$02
-	lda p_pat
-	bne	Pat1
 	ldx #0
-Pat1:
-	stx REG0
+	
+	lda #1
+	sta tako_alive_flag_current	; フラグ参照現在位置
+	
+loop_x:
+	; 生存しているか
+	lda tako_alive_flag
+	and tako_alive_flag_current
+	bne not_skip_draw		; 存在してる
+	jmp skip_draw
+	not_skip_draw:
+
+	ldy #0
+	txa		; xをaにコピー
+	beq skip_set16
+	ldy #16	; xが0ならyは0、xが1ならyは16
+	skip_set16:
+
+	; アニメパターン
+	;REG0 = (p_pat == 0) ? #$00 : #$02;
+
+	lda p_pat
+	beq set_pat0
+	bne set_pat1
+	
+set_pat0:
+	lda #$00
+	sta REG0
+	jmp break_pat
+set_pat1:
+	lda #$02
+	sta REG0
+	jmp break_pat
+	
+break_pat:
 
 ; 生存タイル
 	clc
 	lda #$8B     ; 
 	adc REG0
-	sta tako1_t2
+	sta tako1_t2,y
 	clc
-	lda #$8C     ;
+	lda #$8C
 	adc REG0
-	sta tako2_t2
+	sta tako2_t2,y
 	clc
-	lda #$9B     ; 
+	lda #$9B
 	adc REG0
-	sta tako3_t2
+	sta tako3_t2,y
 	clc
-	lda #$9C     ; 
+	lda #$9C
 	adc REG0
-	sta tako4_t2
+	sta tako4_t2,y
+	
 
-
-; 生存確認準備
-	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
-
-; Y座標は更新必須
+; Y座標
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tako0_pos_y,x
 	adc #7
-	sta tako1_y2
-	sta tako2_y2
+	sta tako1_y2,y
+	sta tako2_y2,y
 
 	clc			; キャリーフラグOFF
-	lda tako0_pos_y
+	lda tako0_pos_y,x
 	adc #15
-	sta tako3_y2
-	sta tako4_y2
+	sta tako3_y2,y
+	sta tako4_y2,y
 
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako0		; 存在していない
+; X座標
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
-	lda tako0_world_pos_x_low
+	lda tako0_world_pos_x_low,x
 	sbc field_scroll_x_low
-	sta tako0_window_pos_x
+	sta tako0_window_pos_x,x
 
+	lda tako0_window_pos_x,x
+	sta tako1_x2,y
+	sta tako3_x2,y
 
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
-	sta tako1_x2
-	sta tako3_x2
-
-	lda tako0_window_pos_x; player_x;#30;#%01111110     ; 30(10進数)をAにロード
+	lda tako0_window_pos_x,x
 	clc			; キャリーフラグOFF
 	adc #8
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta tako2_y2
-	sta tako4_y2
+	lda #231	; 画面外
+	sta tako2_y2,y
+	sta tako4_y2,y
 not_overflow_8:
-	sta tako2_x2
-	sta tako4_x2
+	sta tako2_x2,y
+	sta tako4_x2,y
 
-skip_tako0:
+skip_draw:
 
-; タイル
-	;REG0 = (p_pat == 0) ? #$20 : #0;
+	; 次
+	asl tako_alive_flag_current
+	inx
+	cpx tako_max_count	; ループ最大数
+	beq skip_loop_x				; ループ
+	jmp loop_x
+	skip_loop_x:
 
-	ldx #$02
-	lda p_pat
-	bne	skip_pat2
-	ldx #0
-skip_pat2:
-	stx REG0
+skip_alltako:
 
-; 生存タイル
-	clc
-	lda #$8B     ; 
-	adc REG0
-	sta tako21_t2
-	clc
-	lda #$8C
-	adc REG0
-	sta tako22_t2
-	clc
-	lda #$9B
-	adc REG0
-	sta tako23_t2
-	clc
-	lda #$9C
-	adc REG0
-	sta tako24_t2
-	
-; Y座標は更新必須
-
-	clc			; キャリーフラグOFF
-	lda tako1_pos_y
-	adc #7
-	sta tako21_y2
-	sta tako22_y2
-
-	clc			; キャリーフラグOFF
-	lda tako1_pos_y
-	adc #15
-	sta tako23_y2
-	sta tako24_y2
-
-; Y座標以外は非表示時スキップ
-
-	; 生存しているか
-	asl tako_alive_flag_current	; 左シフト
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq skip_tako1		; 存在していない
-
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
-	sec
-	lda tako1_world_pos_x_low
-	sbc field_scroll_x_low
-	sta tako1_window_pos_x
-
-	lda tako1_window_pos_x
-	sta tako21_x2
-	sta tako23_x2
-
-	lda tako1_window_pos_x
-	clc			; キャリーフラグOFF
-	adc #8
-	bcc not_overflow2_8	; キャリーフラグが立っていない
-	; オーバーフローしている場合はY座標を画面外
-	lda #232	; 画面外
-	sta tako22_y2
-	sta tako24_y2
-not_overflow2_8:
-	sta tako22_x2
-	sta tako24_x2
-
-skip_tako1:
-
-skip_tako:
-
-;End:
 	rts
 
 .endproc	; TakoDrawDma6

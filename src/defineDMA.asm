@@ -315,23 +315,6 @@ char_6type26_t2:	.byte 0
 char_6type26_s2:	.byte 0
 char_6type26_x2:	.byte 0
 
-tako21_y2:	.byte 0
-tako21_t2:	.byte 0
-tako21_s2:	.byte 0
-tako21_x2:	.byte 0
-tako22_y2:	.byte 0
-tako22_t2:	.byte 0
-tako22_s2:	.byte 0
-tako22_x2:	.byte 0
-tako23_y2:	.byte 0
-tako23_t2:	.byte 0
-tako23_s2:	.byte 0
-tako23_x2:	.byte 0
-tako24_y2:	.byte 0
-tako24_t2:	.byte 0
-tako24_s2:	.byte 0
-tako24_x2:	.byte 0
-
 tako1_y2:	.byte 0
 tako1_t2:	.byte 0
 tako1_s2:	.byte 0
@@ -348,3 +331,20 @@ tako4_y2:	.byte 0
 tako4_t2:	.byte 0
 tako4_s2:	.byte 0
 tako4_x2:	.byte 0
+
+tako21_y2:	.byte 0
+tako21_t2:	.byte 0
+tako21_s2:	.byte 0
+tako21_x2:	.byte 0
+tako22_y2:	.byte 0
+tako22_t2:	.byte 0
+tako22_s2:	.byte 0
+tako22_x2:	.byte 0
+tako23_y2:	.byte 0
+tako23_t2:	.byte 0
+tako23_s2:	.byte 0
+tako23_x2:	.byte 0
+tako24_y2:	.byte 0
+tako24_t2:	.byte 0
+tako24_s2:	.byte 0
+tako24_x2:	.byte 0
