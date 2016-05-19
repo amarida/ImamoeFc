@@ -114,9 +114,9 @@ loop_x:
 	beq set_fire
 	
 	; 次
-	asl tamanegi_alive_flag_current
+	asl fire_alive_flag_current
 	inx
-	cpx tamanegi_max_count	; ループ最大数
+	cpx fire_max_count		; ループ最大数
 	bne loop_x				; ループ
 
 	; ここまで来たら空きはないのでスキップ
