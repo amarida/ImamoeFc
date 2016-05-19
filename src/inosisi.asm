@@ -431,7 +431,7 @@ set_pat1:
 	
 break_pat:
 
-	lda inosisi00_status
+	lda inosisi00_status,x
 	cmp #0
 	beq nomal_tail
 	cmp #1
@@ -633,7 +633,7 @@ set_pat1:
 	
 break_pat:
 
-	lda inosisi00_status
+	lda inosisi00_status,x
 	cmp #0
 	beq nomal_tail
 	cmp #1
@@ -798,7 +798,7 @@ skip_draw:
 
 ; イノシシとオブジェクトとのあたり判定
 .proc inosisi_collision_object
-	; 死亡中は判定しない
+	; プレイヤが死亡中は判定しない
 	lda is_dead
 	beq skip_return
 	lda #0
@@ -814,15 +814,15 @@ skip_return:
 	;		右上は左上の上と右下の右を流用する
 	; あたり判定用の4隅を格納
 	clc
-	lda inosisi0_pos_y,x ;player_y
+	lda inosisi0_pos_y,x
 	sta player_y_top_for_collision		; あたり判定用上Y座標（Y座標）
 	clc
 	adc #15
 	sta player_y_bottom_for_collision	; あたり判定用下Y座標（Y座標+15）
 
-	lda inosisi0_world_pos_x_hi,x ;player_x_up
+	lda inosisi0_world_pos_x_hi,x
 	sta player_x_left_hi_for_collision	; あたり判定用左X座標上位（X座標）
-	lda inosisi0_world_pos_x_low,x ;player_x_low
+	lda inosisi0_world_pos_x_low,x
 	sta player_x_left_low_for_collision	; あたり判定用左X座標下位（X座標）
 	clc
 	adc #23
