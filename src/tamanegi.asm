@@ -68,9 +68,6 @@ set_tamanegi:
 	sta tamanegi0_world_pos_x_low,x
 	lda enemy_pos_y
 	sta tamanegi0_pos_y,x
-
-	; 大砲のマスクを登場させる
-	jsr CannonMask_Appear
 	
 	; 色々初期化
 
@@ -207,6 +204,11 @@ case_parabola:
 ; 通常
 case_normal:
 	jsr Tamanegi_UpdateNormal
+	lda update_result
+	bne skip_delete
+	; 削除処理
+	jsr Tamanegi_Clear
+	skip_delete:
 	jmp break;
 
 ; 炎上
@@ -215,25 +217,6 @@ case_burst:
 	jmp break;
 
 break:
-
-	; 画面外判定
-	sec
-	lda field_scroll_x_up
-	sbc tamanegi0_world_pos_x_hi,x
-	bcc skip_dead
-	sec
-	lda field_scroll_x_low
-	sbc tamanegi0_world_pos_x_low,x
-	bcc skip_dead
-	; 画面外処理
-	jsr Tamanegi_Clear
-	;lda tamanegi_alive_flag
-	;eor tamanegi_alive_flag_current
-	;sta tamanegi_alive_flag
-	;lda #224	; 画面外
-	;sta tamanegi0_pos_y,x
-
-skip_dead:
 
 next_update:
 	; 次
@@ -386,8 +369,6 @@ step_next:
 
 	lda #0
 	sta tamanegi00_update_step,x
-	
-	jsr CannonMask_Clear	; マスク大砲クリア
 
 	jmp step_break
 
@@ -398,11 +379,26 @@ step_break:
 
 ; 通常更新
 .proc	Tamanegi_UpdateNormal
+	lda #1
+	sta update_result
+	
 	; 重力
 	clc
 	lda #2
 	adc tamanegi0_pos_y,x
 	sta tamanegi0_pos_y,x
+	
+	; 画面下外判定
+	sec
+	lda #231
+	sbc  tamanegi0_pos_y,x
+	bcs skip_down_delete			; キャリーフラグがセットされている場合スキップ
+	down_delete:
+	; 削除返却
+	lda #0
+	sta update_result
+	jmp update_break
+	skip_down_delete:
 
 	; あたり判定
 	jsr tamanegi_collision_object
@@ -429,6 +425,21 @@ roll_skip:
 	sbc #0
 	sta tamanegi0_world_pos_x_hi,x
 
+	; 画面左外判定
+	sec
+	lda field_scroll_x_up
+	sbc tamanegi0_world_pos_x_hi,x
+	bcc skip_left_delete
+	sec
+	lda field_scroll_x_low
+	sbc tamanegi0_world_pos_x_low,x
+	bcc skip_left_delete
+	; 削除返却
+	lda #0
+	sta update_result
+	jmp update_break
+	skip_left_delete:
+
 	; ある程度距離
 	sec
 	lda window_player_x_low
@@ -446,6 +457,8 @@ roll_skip:
 	sta tamanegi00_update_step,x
 
 	not_burst:
+
+update_break:
 
 	rts
 .endproc	; Tamanegi_UpdateNormal
@@ -531,6 +544,8 @@ case_break:
 
 ; 描画
 .proc	TamanegiDrawDma7
+	lda #7
+	sta debug_var
 	; そもそも一体も居ない
 ;	lda tamanegi_alive_flag
 ;	bne not_skip_tamanegi
@@ -544,6 +559,13 @@ case_break:
 	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
 loop_x:
+	; 生存しているか
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	bne skip_next_draw		; 存在している
+	jmp next_draw
+	skip_next_draw:
+
 	txa		; xをaにコピー
 	; aを16倍
 	asl		; 左シフト
@@ -577,8 +599,8 @@ case_parabola:
 	lda #$BC
 	sta tamanegi4_t,y
 	
-	; 反転なし
-	lda #%00000001
+	; 反転なし、後ろ
+	lda #%00100001
 	sta tamanegi2_s,y
 	sta tamanegi4_s,y
 
@@ -662,10 +684,6 @@ break:
 	sta tamanegi4_y,y
 
 ; Y座標以外は非表示時スキップ
-	; 生存しているか
-	lda tamanegi_alive_flag
-	and tamanegi_alive_flag_current
-	beq next_draw		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
@@ -688,6 +706,16 @@ break:
 not_overflow_8:
 	sta tamanegi2_x,y
 	sta tamanegi4_x,y
+	
+	; タイルが空(炎上中)は画面外
+	lda tamanegi1_t,y
+	bne skip_y_hide
+	lda #231	; 画面外
+	sta tamanegi1_y,y
+	sta tamanegi2_y,y	
+	sta tamanegi3_y,y
+	sta tamanegi4_y,y	
+	skip_y_hide:
 
 next_draw:
 
@@ -708,6 +736,8 @@ skip_tamanegi:
 
 ; 描画
 .proc	TamanegiDrawDma6
+	lda #6
+	sta debug_var
 	; そもそも一体も居ない
 ;	lda tamanegi_alive_flag
 ;	bne not_skip_tamanegi
@@ -721,6 +751,13 @@ skip_tamanegi:
 	sta tamanegi_alive_flag_current	; フラグ参照現在位置
 
 loop_x:
+	; 生存しているか
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	bne skip_next_draw		; 存在している
+	jmp next_draw
+	skip_next_draw:
+
 	txa		; xをaにコピー
 	; aを16倍
 	asl		; 左シフト
@@ -754,8 +791,8 @@ case_parabola:
 	lda #$BC
 	sta tamanegi4_t2,y
 	
-	; 反転なし
-	lda #%00000001
+	; 反転なし、後ろ
+	lda #%00100001
 	sta tamanegi2_s2,y
 	sta tamanegi4_s2,y
 	
@@ -840,10 +877,6 @@ break:
 	sta tamanegi4_y2,y
 
 ; Y座標以外は非表示時スキップ
-	; 生存しているか
-	lda tamanegi_alive_flag
-	and tamanegi_alive_flag_current
-	beq next_draw		; 存在していない
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
@@ -866,6 +899,16 @@ break:
 not_overflow_8:
 	sta tamanegi2_x2,y
 	sta tamanegi4_x2,y
+
+	; タイルが空(炎上中)は画面外
+	lda tamanegi1_t2,y
+	bne skip_y_hide
+	lda #231	; 画面外
+	sta tamanegi1_y2,y
+	sta tamanegi2_y2,y	
+	sta tamanegi3_y2,y
+	sta tamanegi4_y2,y	
+	skip_y_hide:
 
 next_draw:
 

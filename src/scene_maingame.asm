@@ -26,7 +26,6 @@ player_dma7:
 	jsr InosisiDrawDma7			; イノシシ描画関数
 	jsr TakoDrawDma7			; タコ描画関数
 	jsr TamanegiDrawDma7		; タマネギ描画関数
-	jsr CannonMask_DrawDma7		; 大砲マスク
 	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
 	jmp player_dma_break
 player_dma6:
@@ -34,7 +33,6 @@ player_dma6:
 	jsr InosisiDrawDma6			; イノシシ描画関数
 	jsr TakoDrawDma6			; タコ描画関数
 	jsr TamanegiDrawDma6		; タマネギ描画関数
-	jsr CannonMask_DrawDma6		; 大砲マスク
 	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
 	jmp player_dma_break
 player_dma_break:
@@ -185,7 +183,6 @@ break:
 	jsr	InosisiUpdate
 	jsr	TakoUpdate
 	jsr	TamanegiUpdate
-	jsr CannonMask_Update
 	jsr TamanegiFire_Update
 
 ;	jsr confirm_appear_enemy

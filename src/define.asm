@@ -235,4 +235,5 @@ fire0_y										= $E9
 fire1_y										= $EA
 fire0_window_x								= $EB
 fire1_window_x								= $EC
+update_result								= $ED
 debug_var									= $FF	; デバッグ用

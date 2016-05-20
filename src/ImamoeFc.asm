@@ -13,7 +13,6 @@
 .include "inosisi.asm"
 .include "tako.asm"
 .include "tamanegi.asm"
-.include "CannonMask.asm"
 .include "TamanegiFire.asm"
 .include "utility.asm"
 .include "sound.asm"
@@ -103,7 +102,6 @@
 	jsr InosisiInit			; イノシシ初期化
 	jsr TakoInit			; タコ初期化
 	jsr TamanegiInit		; タマネギ初期化
-	jsr CannonMask_Init		; 大砲マスク初期化
 	jsr TamanegiFire_Init	; タマネギファイアー初期化
 
 	lda #1			; メインゲーム
@@ -132,8 +130,7 @@
 	lda #0
 	sta bg_already_draw_attribute_pos
 
-	jsr CannonMask_Clear		; マスク大砲クリア
-	jsr TamanegiFire_AllClear	; タマネギファイアー大砲クリア
+	jsr TamanegiFire_AllClear	; タマネギファイアークリア
 
 	; サウンド
 	lda #0
@@ -1344,7 +1341,6 @@ map_enemy_info:
 	.byte	$01, $a2, $b8, $01
 	.byte	$01, $aa, $b8, $01
 	.byte	$01, $d7, $b0, $02
-	.byte	$01, $df, $b0, $02
 ;	.byte	$02, $02, $b8, $01
 	.byte	$02, $f0, $b8, $00
 	.byte	$02, $f8, $b8, $00
