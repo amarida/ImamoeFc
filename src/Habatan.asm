@@ -56,6 +56,34 @@ set_habatan:
 	lda #3
 	sta palette_change_state
 
+	; 属性は変わらない
+	lda #%00000000     ; 0(10進数)をAにロード
+	sta habatan01_s
+	sta habatan08_s
+	sta habatan09_s
+	sta habatan01_s2
+	sta habatan08_s2
+	sta habatan09_s2
+	lda #%00000011
+	sta habatan02_s
+	sta habatan03_s
+	sta habatan04_s
+	sta habatan05_s
+	sta habatan06_s
+	sta habatan07_s
+	sta habatan10_s
+	sta habatan11_s
+	sta habatan12_s
+	sta habatan02_s2
+	sta habatan03_s2
+	sta habatan04_s2
+	sta habatan05_s2
+	sta habatan06_s2
+	sta habatan07_s2
+	sta habatan10_s2
+	sta habatan11_s2
+	sta habatan12_s2
+
 	; フラグを立てる
 	lda #1
 	sta habatan_alive_flag
