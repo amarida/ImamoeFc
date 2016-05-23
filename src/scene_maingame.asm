@@ -1,7 +1,7 @@
 .proc scene_maingame
 
 	jsr confirm_appear_enemy
-	jsr chage_palette_table
+	jsr change_palette_table
 
 	; 画面外背景の描画
 	jsr draw_bg_name_table	; ネームテーブル
@@ -27,6 +27,7 @@ player_dma7:
 	jsr TakoDrawDma7			; タコ描画関数
 	jsr TamanegiDrawDma7		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
+	jsr HabatanDrawDma7			; はばタン描画
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
@@ -34,9 +35,9 @@ player_dma6:
 	jsr TakoDrawDma6			; タコ描画関数
 	jsr TamanegiDrawDma6		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
+	jsr HabatanDrawDma6			; はばタン描画
 	jmp player_dma_break
 player_dma_break:
-
 	
 	lda loop_count
 	and #%00000001
@@ -184,6 +185,7 @@ break:
 	jsr	TakoUpdate
 	jsr	TamanegiUpdate
 	jsr TamanegiFire_Update
+	jsr HabatanUpdate
 
 ;	jsr confirm_appear_enemy
 
@@ -312,6 +314,8 @@ appear_skip:
 	beq case_tako
 	cmp #2
 	beq case_tamanegi
+	cmp #3
+	beq case_habatan
 
 case_inosisi:
 	jsr appear_inosisi
@@ -321,6 +325,9 @@ case_tako:
 	jmp break
 case_tamanegi:
 	jsr appear_tamanegi
+	jmp break
+case_habatan:
+	jsr appear_habatan
 	jmp break
 
 break:
@@ -679,8 +686,8 @@ skip_bcd1hi:
 	rts
 .endproc
 
-; 動的パレットテーブル
-.proc chage_palette_table
+; パレットテーブル変更
+.proc change_palette_table
 
 	lda palette_change_state
 
@@ -689,14 +696,22 @@ skip_bcd1hi:
 	cmp #1
 	beq case_2tama
 	cmp #2
-	beq case_4fire
+	beq case_3fire
+	cmp #3
+	beq case_4habatan
+	cmp #4
+	beq case_2inosisi
 
 case_none:
 	jmp break
 case_2tama:
 	jmp change_palette_2_tamanegi
-case_4fire:
-	jmp change_palette_4_fire
+case_3fire:
+	jmp change_palette_3_fire
+case_4habatan:
+	jmp change_palette_4_habatan
+case_2inosisi:
+	jmp change_palette_2_inosisi
 
 
 change_palette_2_tamanegi:
@@ -726,8 +741,35 @@ copypal_2tama:
 
 	jmp break
 
-change_palette_4_fire:
-	; パレット4を燃える色に変更
+change_palette_3_fire:
+	; パレット3を燃える色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$18
+	sta	$2006
+	ldx	#$14
+	ldy	#4
+copypal_3fire:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_3fire
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_4_habatan:
+	; パレット4をはばタン色に変更
 	clc
 	adc current_draw_display_no	; 画面０か１
 	lda #%10001000	; VRAM増加量1byte
@@ -737,20 +779,46 @@ change_palette_4_fire:
 	sta	$2006
 	lda	#$1c
 	sta	$2006
-	ldx	#$14
+	ldx	#$0c
 	ldy	#4
-copypal_4fire:
+copypal_4habatan:
 	lda	palette1, x
 	sta $2007
 	inx
 	dey
-	bne	copypal_4fire
+	bne	copypal_4habatan
 
 	clc
 	lda #%10001100	; VRAM増加量32byte
 	adc current_draw_display_no	; 画面０か１
 	sta $2000
 
+	jmp break
+	
+change_palette_2_inosisi:
+	; パレット2をイノシシ色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#$4
+	ldy	#4
+copypal_2inosisi:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_2inosisi
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
 
 	jmp break
 
@@ -760,4 +828,4 @@ break:
 	sta palette_change_state
 
 	rts
-.endproc
+.endproc	; change_palette_table

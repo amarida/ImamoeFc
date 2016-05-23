@@ -174,6 +174,58 @@ char_6type26_t:	.byte 0;	=	$0755	;
 char_6type26_s:	.byte 0;	=	$0756	; 
 char_6type26_x:	.byte 0;	=	$0757	; 
 
+habatan01_y:	.byte 0
+habatan01_t:	.byte 0
+habatan01_s:	.byte 0
+habatan01_x:	.byte 0
+habatan02_y:	.byte 0
+habatan02_t:	.byte 0
+habatan02_s:	.byte 0
+habatan02_x:	.byte 0
+habatan03_y:	.byte 0
+habatan03_t:	.byte 0
+habatan03_s:	.byte 0
+habatan03_x:	.byte 0
+habatan04_y:	.byte 0
+habatan04_t:	.byte 0
+habatan04_s:	.byte 0
+habatan04_x:	.byte 0
+habatan05_y:	.byte 0
+habatan05_t:	.byte 0
+habatan05_s:	.byte 0
+habatan05_x:	.byte 0
+habatan06_y:	.byte 0
+habatan06_t:	.byte 0
+habatan06_s:	.byte 0
+habatan06_x:	.byte 0
+habatan07_y:	.byte 0
+habatan07_t:	.byte 0
+habatan07_s:	.byte 0
+habatan07_x:	.byte 0
+habatan08_y:	.byte 0
+habatan08_t:	.byte 0
+habatan08_s:	.byte 0
+habatan08_x:	.byte 0
+habatan09_y:	.byte 0
+habatan09_t:	.byte 0
+habatan09_s:	.byte 0
+habatan09_x:	.byte 0
+habatan10_y:	.byte 0
+habatan10_t:	.byte 0
+habatan10_s:	.byte 0
+habatan10_x:	.byte 0
+habatan11_y:	.byte 0
+habatan11_t:	.byte 0
+habatan11_s:	.byte 0
+habatan11_x:	.byte 0
+habatan12_y:	.byte 0
+habatan12_t:	.byte 0
+habatan12_s:	.byte 0
+habatan12_x:	.byte 0
+
+; 53
+
+
 .org $0600
 spriteZero_y2:		.byte 0
 spriteZero_t2:		.byte 0
@@ -348,3 +400,52 @@ tako24_y2:	.byte 0
 tako24_t2:	.byte 0
 tako24_s2:	.byte 0
 tako24_x2:	.byte 0
+
+habatan01_y2:	.byte 0
+habatan01_t2:	.byte 0
+habatan01_s2:	.byte 0
+habatan01_x2:	.byte 0
+habatan02_y2:	.byte 0
+habatan02_t2:	.byte 0
+habatan02_s2:	.byte 0
+habatan02_x2:	.byte 0
+habatan03_y2:	.byte 0
+habatan03_t2:	.byte 0
+habatan03_s2:	.byte 0
+habatan03_x2:	.byte 0
+habatan04_y2:	.byte 0
+habatan04_t2:	.byte 0
+habatan04_s2:	.byte 0
+habatan04_x2:	.byte 0
+habatan05_y2:	.byte 0
+habatan05_t2:	.byte 0
+habatan05_s2:	.byte 0
+habatan05_x2:	.byte 0
+habatan06_y2:	.byte 0
+habatan06_t2:	.byte 0
+habatan06_s2:	.byte 0
+habatan06_x2:	.byte 0
+habatan07_y2:	.byte 0
+habatan07_t2:	.byte 0
+habatan07_s2:	.byte 0
+habatan07_x2:	.byte 0
+habatan08_y2:	.byte 0
+habatan08_t2:	.byte 0
+habatan08_s2:	.byte 0
+habatan08_x2:	.byte 0
+habatan09_y2:	.byte 0
+habatan09_t2:	.byte 0
+habatan09_s2:	.byte 0
+habatan09_x2:	.byte 0
+habatan10_y2:	.byte 0
+habatan10_t2:	.byte 0
+habatan10_s2:	.byte 0
+habatan10_x2:	.byte 0
+habatan11_y2:	.byte 0
+habatan11_t2:	.byte 0
+habatan11_s2:	.byte 0
+habatan11_x2:	.byte 0
+habatan12_y2:	.byte 0
+habatan12_t2:	.byte 0
+habatan12_s2:	.byte 0
+habatan12_x2:	.byte 0

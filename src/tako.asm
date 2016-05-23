@@ -6,8 +6,6 @@
 	sta tako1_world_pos_x_hi
 	sta tako00_status
 	sta tako01_status
-	sta tako00_wait
-	sta tako01_wait
 	sta tako00_update_dead_step
 	sta tako01_update_dead_step
 	lda #224	; ‰æ–ÊŠO;#184

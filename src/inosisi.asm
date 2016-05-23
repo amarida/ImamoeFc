@@ -45,29 +45,9 @@
 
 ; “oê
 .proc appear_inosisi
-	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
-	lda #%10001000	; VRAM‘‰Á—Ê1byte
-	sta $2000
 
-; ƒpƒŒƒbƒg2‚ğƒCƒmƒVƒVF‚É‚·‚é
-	lda	#$3f
-	sta	$2006
-	lda	#$14
-	sta	$2006
-	ldx	#$4
-	ldy	#4
-copypal2_test:
-	lda	palette1, x
-	sta $2007
-	inx
-	dey
-	bne	copypal2_test
-
-	clc
-	lda #%10001100	; VRAM‘‰Á—Ê32byte
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
-	sta $2000
+	lda #4
+	sta palette_change_state
 
 	; ‹ó‚¢‚Ä‚¢‚éƒCƒmƒVƒV‚ğ’T‚·
 

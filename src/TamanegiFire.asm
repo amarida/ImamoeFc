@@ -144,7 +144,7 @@ set_fire:
 	lda #$F5
 	sta char_6type6_t,y
 	; 属性
-	lda #%00000011
+	lda #%00000010
 	sta char_6type1_s,y
 	sta char_6type2_s,y
 	sta char_6type3_s,y
@@ -178,7 +178,7 @@ set_fire:
 
 skip_fire:
 
-	; パレット4を炎
+	; パレット3を炎
 	lda #2
 	sta palette_change_state
 

@@ -14,6 +14,7 @@
 .include "tako.asm"
 .include "tamanegi.asm"
 .include "TamanegiFire.asm"
+.include "Habatan.asm"
 .include "utility.asm"
 .include "sound.asm"
 
@@ -1103,11 +1104,12 @@ Y_Pos_Init:   .byte 40       ; Y座標初期値
 
 ; パレットテーブル
 palette1:
-	.byte	$21, $23, $3A, $30	; スプライト色1
-	.byte	$0f, $07, $16, $0d	; スプライト色2
-	.byte	$0f, $30, $16, $0e	; スプライト色3
-	.byte	$0f, $0f, $00, $10	; スプライト色4
-	.byte	$0f, $16, $1A, $0e	; スプライト色2'
+	.byte	$21, $23, $38, $30	; スプライト色1		プレイヤー
+	.byte	$0f, $07, $16, $0d	; スプライト色2		イノシシ
+	.byte	$0f, $30, $16, $0e	; スプライト色3		タコ
+	.byte	$0f, $26, $38, $0f	; スプライト色4		はばタン
+	.byte	$0f, $16, $1A, $0e	; スプライト色2'	タマネギ
+	.byte	$0f, $16, $07, $05	; スプライト色3'	タマネギ炎
 	.byte	$0f, $16, $07, $05	; スプライト色4'
 palette2:
 	.byte	$0f, $00, $10, $20
@@ -1335,15 +1337,17 @@ map_chip_attribute_game_over:
 	.byte 	$aa, $aa, $aa, $aa, $aa, $aa, $aa, $aa
 	.byte 	$aa, $aa, $aa, $aa, $aa, $aa, $aa, $aa
 
-; 敵の位置情報テーブル
+; 敵の登場位置情報テーブル
 ; x位置上位、x座標下位、y位置、敵のタイプ
+; $00:イノシシ、$01:タコ、$02:タマネギ、$03:はばタン
 map_enemy_info:
 	.byte	$01, $a2, $b8, $01
 	.byte	$01, $aa, $b8, $01
 	.byte	$01, $d7, $b0, $02
 ;	.byte	$02, $02, $b8, $01
+	.byte	$02, $ec, $b8, $03
 	.byte	$02, $f0, $b8, $00
-	.byte	$02, $f8, $b8, $00
+	.byte	$02, $fc, $b8, $00
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 ; BGM情報テーブル
