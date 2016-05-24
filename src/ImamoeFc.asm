@@ -15,6 +15,7 @@
 .include "tamanegi.asm"
 .include "TamanegiFire.asm"
 .include "Habatan.asm"
+.include "HabatanFire.asm"
 .include "utility.asm"
 .include "sound.asm"
 
@@ -1108,9 +1109,9 @@ palette1:
 	.byte	$0f, $07, $16, $0d	; スプライト色2		イノシシ
 	.byte	$0f, $30, $16, $0e	; スプライト色3		タコ
 	.byte	$0f, $26, $38, $0f	; スプライト色4		はばタン
-	.byte	$0f, $16, $1A, $0e	; スプライト色2'	タマネギ
-	.byte	$0f, $16, $07, $05	; スプライト色3'	タマネギ炎
-	.byte	$0f, $16, $07, $05	; スプライト色4'
+	.byte	$0f, $16, $1A, $0e	; スプライト色5		タマネギ
+	.byte	$0f, $16, $07, $05	; スプライト色6		タマネギ炎、タコ焼き、はばタン炎
+	.byte	$0f, $16, $07, $05	; スプライト色7
 palette2:
 	.byte	$0f, $00, $10, $20
 	.byte	$0f, $00, $10, $20

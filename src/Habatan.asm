@@ -287,7 +287,9 @@ skip_update:
 	lda #1
 	sta habatan_status
 	lda #255
-	sta habatan_wait
+	sta habatan_wait_low
+	lda #2
+	sta habatan_wait_hi
 	
 	next_skip:
 
@@ -308,10 +310,19 @@ skip_update:
 	sbc #32
 	sta habatan_pos_y
 	
-	dec habatan_wait
-	lda habatan_wait
+	dec habatan_wait_low
+	lda habatan_wait_low
 	bne next_skip
+
+	lda habatan_wait_hi
+	beq next
+
+	dec habatan_wait_hi
+	lda #255
+	sta habatan_wait_low
+	jmp next_skip
 	
+	next:
 	lda #2
 	sta habatan_status
 	next_skip:

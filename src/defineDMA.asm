@@ -5,15 +5,6 @@ spriteZero_t:		.byte 0
 spriteZero_s:		.byte 0
 spriteZero_x:		.byte 0
 
-cannonLeft1_y: .byte 0
-cannonLeft1_t: .byte 0
-cannonLeft1_s: .byte 0
-cannonLeft1_x: .byte 0
-cannonLeft2_y: .byte 0
-cannonLeft2_t: .byte 0
-cannonLeft2_s: .byte 0
-cannonLeft2_x: .byte 0
-
 playerFuki1_y: .byte 0
 playerFuki1_t: .byte 0
 playerFuki1_s: .byte 0
@@ -223,7 +214,40 @@ habatan12_t:	.byte 0
 habatan12_s:	.byte 0
 habatan12_x:	.byte 0
 
-; 53
+haba_fire1_y:	.byte 0
+haba_fire1_t:	.byte 0
+haba_fire1_s:	.byte 0
+haba_fire1_x:	.byte 0
+haba_fire2_y:	.byte 0
+haba_fire2_t:	.byte 0
+haba_fire2_s:	.byte 0
+haba_fire2_x:	.byte 0
+haba_fire3_y:	.byte 0
+haba_fire3_t:	.byte 0
+haba_fire3_s:	.byte 0
+haba_fire3_x:	.byte 0
+haba_fire4_y:	.byte 0
+haba_fire4_t:	.byte 0
+haba_fire4_s:	.byte 0
+haba_fire4_x:	.byte 0
+haba_fire5_y:	.byte 0
+haba_fire5_t:	.byte 0
+haba_fire5_s:	.byte 0
+haba_fire5_x:	.byte 0
+haba_fire6_y:	.byte 0
+haba_fire6_t:	.byte 0
+haba_fire6_s:	.byte 0
+haba_fire6_x:	.byte 0
+haba_fire7_y:	.byte 0
+haba_fire7_t:	.byte 0
+haba_fire7_s:	.byte 0
+haba_fire7_x:	.byte 0
+haba_fire8_y:	.byte 0
+haba_fire8_t:	.byte 0
+haba_fire8_s:	.byte 0
+haba_fire8_x:	.byte 0
+
+; 59
 
 
 .org $0600
@@ -231,15 +255,6 @@ spriteZero_y2:		.byte 0
 spriteZero_t2:		.byte 0
 spriteZero_s2:		.byte 0
 spriteZero_x2:		.byte 0
-
-cannonLeft1_y2: .byte 0
-cannonLeft1_t2: .byte 0
-cannonLeft1_s2: .byte 0
-cannonLeft1_x2: .byte 0
-cannonLeft2_y2: .byte 0
-cannonLeft2_t2: .byte 0
-cannonLeft2_s2: .byte 0
-cannonLeft2_x2: .byte 0
 
 playerFuki1_y2: .byte 0
 playerFuki1_t2: .byte 0
@@ -449,3 +464,36 @@ habatan12_y2:	.byte 0
 habatan12_t2:	.byte 0
 habatan12_s2:	.byte 0
 habatan12_x2:	.byte 0
+
+haba_fire1_y2:	.byte 0
+haba_fire1_t2:	.byte 0
+haba_fire1_s2:	.byte 0
+haba_fire1_x2:	.byte 0
+haba_fire2_y2:	.byte 0
+haba_fire2_t2:	.byte 0
+haba_fire2_s2:	.byte 0
+haba_fire2_x2:	.byte 0
+haba_fire3_y2:	.byte 0
+haba_fire3_t2:	.byte 0
+haba_fire3_s2:	.byte 0
+haba_fire3_x2:	.byte 0
+haba_fire4_y2:	.byte 0
+haba_fire4_t2:	.byte 0
+haba_fire4_s2:	.byte 0
+haba_fire4_x2:	.byte 0
+haba_fire5_y2:	.byte 0
+haba_fire5_t2:	.byte 0
+haba_fire5_s2:	.byte 0
+haba_fire5_x2:	.byte 0
+haba_fire6_y2:	.byte 0
+haba_fire6_t2:	.byte 0
+haba_fire6_s2:	.byte 0
+haba_fire6_x2:	.byte 0
+haba_fire7_y2:	.byte 0
+haba_fire7_t2:	.byte 0
+haba_fire7_s2:	.byte 0
+haba_fire7_x2:	.byte 0
+haba_fire8_y2:	.byte 0
+haba_fire8_t2:	.byte 0
+haba_fire8_s2:	.byte 0
+haba_fire8_x2:	.byte 0

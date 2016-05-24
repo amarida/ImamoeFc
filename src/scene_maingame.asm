@@ -28,6 +28,7 @@ player_dma7:
 	jsr TamanegiDrawDma7		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
 	jsr HabatanDrawDma7			; はばタン描画
+	jsr HabatanFire_DrawDma7		; はばタンファイアー描画
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
@@ -36,6 +37,7 @@ player_dma6:
 	jsr TamanegiDrawDma6		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
 	jsr HabatanDrawDma6			; はばタン描画
+	jsr HabatanFire_DrawDma6		; はばタンファイアー描画
 	jmp player_dma_break
 player_dma_break:
 	
@@ -186,6 +188,7 @@ break:
 	jsr	TamanegiUpdate
 	jsr TamanegiFire_Update
 	jsr HabatanUpdate
+	jsr HabatanFire_Update
 
 ;	jsr confirm_appear_enemy
 
@@ -701,6 +704,10 @@ skip_bcd1hi:
 	beq case_4habatan
 	cmp #4
 	beq case_2inosisi
+	cmp #5
+	beq case_2tako
+	cmp #6
+	beq case_3tako
 
 case_none:
 	jmp break
@@ -712,6 +719,10 @@ case_4habatan:
 	jmp change_palette_4_habatan
 case_2inosisi:
 	jmp change_palette_2_inosisi
+case_2tako:
+	jmp change_palette_2_tako
+case_3tako:
+	jmp change_palette_3_tako
 
 
 change_palette_2_tamanegi:
@@ -814,6 +825,60 @@ copypal_2inosisi:
 	inx
 	dey
 	bne	copypal_2inosisi
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_2_tako:
+	; パレット2をタコ色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#$8
+	ldy	#4
+copypal_2tako:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_2tako
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_3_tako:
+	; パレット3をタコ色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$18
+	sta	$2006
+	ldx	#$8
+	ldy	#4
+copypal_3tako:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_3tako
 
 	clc
 	lda #%10001100	; VRAM増加量32byte

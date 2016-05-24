@@ -45,6 +45,12 @@ End:
 
 	; 吹き戻しSE
 	jsr Sound_PlayFukimodoshi
+	
+	; はばタンが居ればファイアー
+	lda habatan_alive_flag
+	beq skip_haba_fire
+	jsr HabatanFire_Appear
+	skip_haba_fire:
 
 	rts
 .endproc
