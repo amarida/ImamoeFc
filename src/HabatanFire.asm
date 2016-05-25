@@ -215,6 +215,53 @@ step_3:
 
 case_break:
 
+	;;;;; 敵との当たり判定
+	; タマネギ
+	lda #1
+	sta tamanegi_alive_flag_current	; フラグ参照現在位置
+	ldx #0
+loop_tamanegi:
+	; 生存しているか
+	lda tamanegi_alive_flag
+	and tamanegi_alive_flag_current
+	beq next_tamanegi		; 存在していない
+	; 既に燃えているか
+	lda tamanegi00_status,x
+	cmp #3
+	beq next_tamanegi		; 既に燃えている
+
+	; 存在している
+	jsr HabatanFire_CollisionTamanegi
+	lda char_collision_result
+	beq skip_tamanegi_fire
+	; タマネギ燃える
+	lda #3
+	sta tamanegi00_status,x
+	lda #0
+	sta tamanegi00_update_step,x
+
+	skip_tamanegi_fire:
+	next_tamanegi:
+	; 次
+	asl tamanegi_alive_flag_current
+	inx
+	cpx tamanegi_max_count	; ループ最大数
+	bne loop_tamanegi		; ループ
+
+	; タコ
+	lda #1
+	sta tako_alive_flag_current
+	ldx #0
+loop_tako:
+	lda tako_alive_flag
+	and tako_alive_flag_current
+	beq next_tako
+;	jsr HabatanFire_CollisionTako
+	next_tako:
+	asl tako_alive_flag_current
+	inx
+	cpx tako_max_count
+	bne loop_tako
 
 skip_update:
 	rts
@@ -470,3 +517,72 @@ skip_draw:
 	rts
 
 .endproc	; HabatanFire_DrawDma6
+
+; タマネギとの当たり判定
+.proc HabatanFire_CollisionTamanegi
+
+	; 炎のXとタマネギのXの大きい方
+	clc
+	lda habatan_window_pos_x
+	adc #45
+	sta REG2	; 炎の中心
+	clc
+	lda tamanegi0_window_pos_x,x
+	adc #8
+	sta REG3	; タマネギの中心
+	
+	sec
+	lda REG2
+	sbc REG3
+	bpl big_player_x	; 炎の方が大きい
+	; タマネギの方が大きい
+	sec
+	lda REG3
+	sbc REG2
+big_player_x:
+	sta REG0	; X差分
+
+	; 炎のYとタマネギのYの大きい方
+	clc
+	lda habatan_pos_y
+	adc #8
+	sta REG2	; 炎の中心
+	clc
+	lda tamanegi0_pos_y,x
+	adc #8
+	sta REG3	; タマネギの中心
+	
+	sec
+	lda REG2
+	sbc REG3
+	bpl big_player_y	; 炎の方が大きい
+	; タマネギの方が大きい
+	sec
+	lda REG3
+	sbc REG2
+big_player_y:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #33
+	bpl	next_update	; 差分が32より大きい
+	
+	sec
+	lda REG1
+	sbc #25
+	bpl	next_update	; 差分が24より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+	next_update:
+
+exit:
+
+	rts
+.endproc	; HabatanFire_CollisionTamanegi

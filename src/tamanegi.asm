@@ -266,7 +266,7 @@ skip:
 step_init:
 
 	; 速度を設定
-	lda #6
+	lda #4
 	sta tamanegi00_spd_y,x
 	lda #0
 	sta tamanegi00_spd_y_decimal,x
@@ -284,7 +284,7 @@ step_update:
 	; 横位置更新
 	sec
 	lda tamanegi0_world_pos_x_low,x
-	sbc #2
+	sbc #1
 	sta tamanegi0_world_pos_x_low,x
 	lda tamanegi0_world_pos_x_hi,x
 	sbc #0
@@ -307,7 +307,7 @@ step_update:
 		; 速度更新
 		clc
 		lda tamanegi00_spd_y_decimal,x
-		adc #$70
+		adc #$40
 		sta tamanegi00_spd_y_decimal,x
 		lda tamanegi00_spd_y,x
 		adc #0
@@ -341,7 +341,7 @@ step_update:
 		; 速度更新
 		sec
 		lda tamanegi00_spd_y_decimal,x
-		sbc #$70
+		sbc #$40
 		sta tamanegi00_spd_y_decimal,x
 		lda tamanegi00_spd_y,x
 		sbc #0
@@ -649,9 +649,35 @@ case_burst:
 
 	lda tamanegi00_update_step,x
 	cmp #0
-	beq skip_hide
+	beq type_show
 	cmp #1
-	beq skip_hide
+	beq type_show
+	cmp #2
+	beq type_hide
+	cmp #3
+	beq type_hide
+	cmp #4
+	beq type_hide
+
+	type_show:
+	; 生存タイル
+	lda #$AD     ; 
+	sta tamanegi1_t,y
+	lda #$AD
+	sta tamanegi2_t,y
+	lda #$BD
+	sta tamanegi3_t,y
+	lda #$BD
+	sta tamanegi4_t,y
+	
+	; 反転あり
+	lda #%01000001
+	sta tamanegi2_s,y
+	sta tamanegi4_s,y
+
+	jmp type_break
+
+	type_hide:
 	; 本体は非表示
 	lda #$00
 	sta tamanegi1_t,y
@@ -662,7 +688,9 @@ case_burst:
 	lda #$00
 	sta tamanegi4_t,y
 
-	skip_hide:
+	jmp type_break
+
+	type_break:
 	
 	jmp break
 
@@ -840,9 +868,35 @@ case_burst:
 
 	lda tamanegi00_update_step,x
 	cmp #0
-	beq skip_hide
+	beq type_show
 	cmp #1
-	beq skip_hide
+	beq type_show
+	cmp #2
+	beq type_hide
+	cmp #3
+	beq type_hide
+	cmp #4
+	beq type_hide
+
+	type_show:
+	; 生存タイル
+	lda #$AD     ; 
+	sta tamanegi1_t2,y
+	lda #$AD
+	sta tamanegi2_t2,y
+	lda #$BD
+	sta tamanegi3_t2,y
+	lda #$BD
+	sta tamanegi4_t2,y
+	
+	; 反転あり
+	lda #%01000001
+	sta tamanegi2_s2,y
+	sta tamanegi4_s2,y
+
+	jmp type_break
+
+	type_hide:
 	; 本体は非表示
 	lda #$00
 	sta tamanegi1_t2,y
@@ -853,7 +907,9 @@ case_burst:
 	lda #$00
 	sta tamanegi4_t2,y
 
-	skip_hide:
+	jmp type_break
+
+	type_break:
 	
 	jmp break
 

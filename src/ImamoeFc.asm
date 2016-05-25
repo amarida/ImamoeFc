@@ -1344,6 +1344,7 @@ map_chip_attribute_game_over:
 map_enemy_info:
 	.byte	$01, $a2, $b8, $01
 	.byte	$01, $aa, $b8, $01
+	.byte	$01, $c7, $b8, $03
 	.byte	$01, $d7, $b0, $02
 ;	.byte	$02, $02, $b8, $01
 	.byte	$02, $ec, $b8, $03
