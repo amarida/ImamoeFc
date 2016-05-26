@@ -37,21 +37,29 @@ End:
 
 ; B
 .proc	PlayerAttack
+	
+	; はばタンが居ればファイアー
+	lda habatan_alive_flag
+	beq skip_haba_fire
+	lda habatan_status
+	cmp #1
+	bne skip_haba_fire
+	jsr HabatanFire_Appear
+	
+	jmp exit
+
+	skip_haba_fire:
+	
+	; それ以外は吹き戻し
 	; 攻撃
 	lda #2
 	sta player_draw_status
 	lda #0
 	sta attack_frame
-
 	; 吹き戻しSE
 	jsr Sound_PlayFukimodoshi
-	
-	; はばタンが居ればファイアー
-	lda habatan_alive_flag
-	beq skip_haba_fire
-	jsr HabatanFire_Appear
-	skip_haba_fire:
 
+exit:
 	rts
 .endproc
 
@@ -1748,7 +1756,7 @@ loop_x:
 big_player:
 	sta REG0	; X差分
 
-	; プレイヤのXとイノシシのYの大きい方
+	; プレイヤのYとイノシシのYの大きい方
 	sec
 	lda player_y
 	sbc inosisi0_pos_y,x
