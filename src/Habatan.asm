@@ -20,7 +20,6 @@
 	sta habatan07_s
 	sta habatan10_s
 	sta habatan11_s
-	sta habatan12_s
 
 	rts
 .endproc
@@ -73,7 +72,6 @@ set_habatan:
 	sta habatan07_s
 	sta habatan10_s
 	sta habatan11_s
-	sta habatan12_s
 	sta habatan02_s2
 	sta habatan03_s2
 	sta habatan04_s2
@@ -82,7 +80,6 @@ set_habatan:
 	sta habatan07_s2
 	sta habatan10_s2
 	sta habatan11_s2
-	sta habatan12_s2
 
 	; フラグを立てる
 	lda #1
@@ -147,10 +144,6 @@ skip_habatan:
 	sta habatan11_t
 	sta habatan11_s
 	sta habatan11_x
-	sta habatan12_y
-	sta habatan12_t
-	sta habatan12_s
-	sta habatan12_x
 	sta habatan01_y2
 	sta habatan01_t2
 	sta habatan01_s2
@@ -195,10 +188,6 @@ skip_habatan:
 	sta habatan11_t2
 	sta habatan11_s2
 	sta habatan11_x2
-	sta habatan12_y2
-	sta habatan12_t2
-	sta habatan12_s2
-	sta habatan12_x2
 
 	lda #0
 	sta habatan_world_pos_x_low
@@ -307,7 +296,7 @@ skip_update:
 	
 	sec
 	lda player_y
-	sbc #32
+	sbc #24
 	sta habatan_pos_y
 	
 	dec habatan_wait_low
@@ -413,10 +402,6 @@ break_pat:
 	lda #$63
 	adc REG0
 	sta habatan11_t
-	clc
-	lda #$64
-	adc REG0
-	sta habatan12_t
 
 ; Y座標
 	; 1列目
@@ -444,13 +429,12 @@ break_pat:
 	sta habatan09_y
 	sta habatan10_y
 	sta habatan11_y
-	sta habatan12_y
 	
 
 ; X座標
 	; xx123
 	; x4567
-	; 89012
+	; 8901x
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
@@ -486,7 +470,6 @@ break_pat:
 	adc #32
 	sta habatan03_x
 	sta habatan07_x
-	sta habatan12_x
 
 skip_draw:
 
@@ -569,10 +552,6 @@ break_pat:
 	lda #$63
 	adc REG0
 	sta habatan11_t2
-	clc
-	lda #$64
-	adc REG0
-	sta habatan12_t2
 
 ; Y座標
 	; 1列目
@@ -600,13 +579,12 @@ break_pat:
 	sta habatan09_y2
 	sta habatan10_y2
 	sta habatan11_y2
-	sta habatan12_y2
 	
 
 ; X座標
 	; xx123
 	; x4567
-	; 89012
+	; 8901x
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
 	sec
@@ -642,7 +620,6 @@ break_pat:
 	adc #32
 	sta habatan03_x2
 	sta habatan07_x2
-	sta habatan12_x2
 
 skip_draw:
 

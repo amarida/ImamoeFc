@@ -310,20 +310,6 @@ copypal2:
 	dey
 	bne	copypal2
 
-; パレット2をタマネギ色にするテスト
-;	lda	#$3f
-;	sta	$2006
-;	lda	#$14
-;	sta	$2006
-;	ldx	#$10
-;	ldy	#4
-;copypal2_test:
-;	lda	palette1, x
-;	sta $2007
-;	inx
-;	dey
-;	bne	copypal2_test
-
 ; ネームテーブルへ転送
 	lda #1
 	sta current_draw_display_no

@@ -209,10 +209,6 @@ habatan11_y:	.byte 0
 habatan11_t:	.byte 0
 habatan11_s:	.byte 0
 habatan11_x:	.byte 0
-habatan12_y:	.byte 0
-habatan12_t:	.byte 0
-habatan12_s:	.byte 0
-habatan12_x:	.byte 0
 
 haba_fire1_y:	.byte 0
 haba_fire1_t:	.byte 0
@@ -247,7 +243,7 @@ haba_fire8_t:	.byte 0
 haba_fire8_s:	.byte 0
 haba_fire8_x:	.byte 0
 
-; 59
+; 58
 
 
 .org $0600
@@ -460,10 +456,6 @@ habatan11_y2:	.byte 0
 habatan11_t2:	.byte 0
 habatan11_s2:	.byte 0
 habatan11_x2:	.byte 0
-habatan12_y2:	.byte 0
-habatan12_t2:	.byte 0
-habatan12_s2:	.byte 0
-habatan12_x2:	.byte 0
 
 haba_fire1_y2:	.byte 0
 haba_fire1_t2:	.byte 0
