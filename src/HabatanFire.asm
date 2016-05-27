@@ -46,6 +46,10 @@
 	sta haba_fire8_t
 	sta haba_fire8_s
 	sta haba_fire8_x
+	sta haba_fire9_y
+	sta haba_fire9_t
+	sta haba_fire9_s
+	sta haba_fire9_x
 	sta haba_fire1_y2
 	sta haba_fire1_t2
 	sta haba_fire1_s2
@@ -78,6 +82,10 @@
 	sta haba_fire8_t2
 	sta haba_fire8_s2
 	sta haba_fire8_x2
+	sta haba_fire9_y2
+	sta haba_fire9_t2
+	sta haba_fire9_s2
+	sta haba_fire9_x2
 	
 	; 生存フラグを落とす
 	lda #0
@@ -135,6 +143,7 @@ set_fire:
 	sta haba_fire6_s
 	sta haba_fire7_s
 	sta haba_fire8_s
+	sta haba_fire9_s
 	sta haba_fire1_s2
 	sta haba_fire2_s2
 	sta haba_fire3_s2
@@ -143,6 +152,7 @@ set_fire:
 	sta haba_fire6_s2
 	sta haba_fire7_s2
 	sta haba_fire8_s2
+	sta haba_fire9_s2
 	
 	lda #0
 	sta habatan_fire_status
@@ -282,39 +292,45 @@ skip_update:
 	clc			; キャリーフラグOFF
 	adc #40
 	sta haba_fire1_x
-	sta haba_fire5_x
+	sta haba_fire3_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #48
 	sta haba_fire2_x
+	sta haba_fire4_x
 	sta haba_fire6_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #56
-	sta haba_fire3_x
+	sta haba_fire5_x
 	sta haba_fire7_x
+	sta haba_fire8_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #64
-	sta haba_fire4_x
-	sta haba_fire8_x
+	sta haba_fire9_x
 	
 	clc
 	lda habatan_pos_y
-	adc #7
+	adc #15
 	sta haba_fire1_y
 	sta haba_fire2_y
-	sta haba_fire3_y
-	sta haba_fire4_y
 	clc
 	adc #8
+	sta haba_fire3_y
+	sta haba_fire4_y
 	sta haba_fire5_y
+	clc
+	adc #8
 	sta haba_fire6_y
 	sta haba_fire7_y
+	clc
+	adc #8
 	sta haba_fire8_y
+	sta haba_fire9_y
 	
 	; 状態　
 	lda habatan_fire_status
@@ -331,18 +347,20 @@ step_1:
 	sta haba_fire1_t
 	lda #$4B
 	sta haba_fire2_t
-	lda #$00
-	sta haba_fire3_t
-	lda #$00
-	sta haba_fire4_t
 	lda #$5A
-	sta haba_fire5_t
+	sta haba_fire3_t
 	lda #$5B
+	sta haba_fire4_t
+	lda #$00
+	sta haba_fire5_t
+	lda #$00
 	sta haba_fire6_t
 	lda #$00
 	sta haba_fire7_t
 	lda #$00
 	sta haba_fire8_t
+	lda #$00
+	sta haba_fire9_t
 	jmp case_break
 	
 step_2:
@@ -351,38 +369,42 @@ step_2:
 	sta haba_fire1_t
 	lda #$4D
 	sta haba_fire2_t
-	lda #$4E
-	sta haba_fire3_t
-	lda #$4F
-	sta haba_fire4_t
 	lda #$5C
-	sta haba_fire5_t
+	sta haba_fire3_t
 	lda #$5D
-	sta haba_fire6_t
+	sta haba_fire4_t
 	lda #$5E
+	sta haba_fire5_t
+	lda #$6D
+	sta haba_fire6_t
+	lda #$6E
 	sta haba_fire7_t
-	lda #$5F
+	lda #$7E
 	sta haba_fire8_t
+	lda #$7F
+	sta haba_fire9_t
 	jmp case_break
 
 step_3:
 	; タイル番号
-	lda #$6C
+	lda #$CC
 	sta haba_fire1_t
-	lda #$6D
+	lda #$CD
 	sta haba_fire2_t
-	lda #$6E
+	lda #$DC
 	sta haba_fire3_t
-	lda #$6F
+	lda #$DD
 	sta haba_fire4_t
-	lda #$7C
+	lda #$DE
 	sta haba_fire5_t
-	lda #$7D
+	lda #$ED
 	sta haba_fire6_t
-	lda #$7E
+	lda #$EE
 	sta haba_fire7_t
-	lda #$7F
+	lda #$FE
 	sta haba_fire8_t
+	lda #$FF
+	sta haba_fire9_t
 	jmp case_break
 
 case_break:
@@ -395,7 +417,6 @@ skip_draw:
 
 ; 描画
 .proc	HabatanFire_DrawDma6
-
 	; 生存しているか
 	lda habatan_fire_alive_flag
 	bne not_skip_draw		; 存在してる
@@ -407,39 +428,45 @@ skip_draw:
 	clc			; キャリーフラグOFF
 	adc #40
 	sta haba_fire1_x2
-	sta haba_fire5_x2
+	sta haba_fire3_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #48
 	sta haba_fire2_x2
+	sta haba_fire4_x2
 	sta haba_fire6_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #56
-	sta haba_fire3_x2
+	sta haba_fire5_x2
 	sta haba_fire7_x2
+	sta haba_fire8_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #64
-	sta haba_fire4_x2
-	sta haba_fire8_x2
+	sta haba_fire9_x2
 	
 	clc
 	lda habatan_pos_y
-	adc #7
+	adc #15
 	sta haba_fire1_y2
 	sta haba_fire2_y2
-	sta haba_fire3_y2
-	sta haba_fire4_y2
 	clc
 	adc #8
+	sta haba_fire3_y2
+	sta haba_fire4_y2
 	sta haba_fire5_y2
+	clc
+	adc #8
 	sta haba_fire6_y2
 	sta haba_fire7_y2
+	clc
+	adc #8
 	sta haba_fire8_y2
+	sta haba_fire9_y2
 	
 	; 状態　
 	lda habatan_fire_status
@@ -456,18 +483,20 @@ step_1:
 	sta haba_fire1_t2
 	lda #$4B
 	sta haba_fire2_t2
-	lda #$00
-	sta haba_fire3_t2
-	lda #$00
-	sta haba_fire4_t2
 	lda #$5A
-	sta haba_fire5_t2
+	sta haba_fire3_t2
 	lda #$5B
+	sta haba_fire4_t2
+	lda #$00
+	sta haba_fire5_t2
+	lda #$00
 	sta haba_fire6_t2
 	lda #$00
 	sta haba_fire7_t2
 	lda #$00
 	sta haba_fire8_t2
+	lda #$00
+	sta haba_fire9_t2
 	jmp case_break
 	
 step_2:
@@ -476,38 +505,42 @@ step_2:
 	sta haba_fire1_t2
 	lda #$4D
 	sta haba_fire2_t2
-	lda #$4E
-	sta haba_fire3_t2
-	lda #$4F
-	sta haba_fire4_t2
 	lda #$5C
-	sta haba_fire5_t2
+	sta haba_fire3_t2
 	lda #$5D
-	sta haba_fire6_t2
+	sta haba_fire4_t2
 	lda #$5E
+	sta haba_fire5_t2
+	lda #$6D
+	sta haba_fire6_t2
+	lda #$6E
 	sta haba_fire7_t2
-	lda #$5F
+	lda #$7E
 	sta haba_fire8_t2
+	lda #$7F
+	sta haba_fire9_t2
 	jmp case_break
 
 step_3:
 	; タイル番号
-	lda #$6C
+	lda #$CC
 	sta haba_fire1_t2
-	lda #$6D
+	lda #$CD
 	sta haba_fire2_t2
-	lda #$6E
+	lda #$DC
 	sta haba_fire3_t2
-	lda #$6F
+	lda #$DD
 	sta haba_fire4_t2
-	lda #$7C
+	lda #$DE
 	sta haba_fire5_t2
-	lda #$7D
+	lda #$ED
 	sta haba_fire6_t2
-	lda #$7E
+	lda #$EE
 	sta haba_fire7_t2
-	lda #$7F
+	lda #$FE
 	sta haba_fire8_t2
+	lda #$FF
+	sta haba_fire9_t2
 	jmp case_break
 
 case_break:
@@ -524,7 +557,7 @@ skip_draw:
 	; 炎のXとタマネギのXの大きい方
 	clc
 	lda habatan_window_pos_x
-	adc #45
+	adc #56
 	sta REG2	; 炎の中心
 	clc
 	lda tamanegi0_window_pos_x,x
@@ -545,7 +578,7 @@ big_player_x:
 	; 炎のYとタマネギのYの大きい方
 	clc
 	lda habatan_pos_y
-	adc #8
+	adc #24
 	sta REG2	; 炎の中心
 	clc
 	lda tamanegi0_pos_y,x
@@ -568,13 +601,13 @@ big_player_y:
 	
 	sec
 	lda REG0
-	sbc #33
-	bpl	next_update	; 差分が32より大きい
+	sbc #17
+	bpl	next_update	; 差分が16より大きい
 	
 	sec
 	lda REG1
-	sbc #25
-	bpl	next_update	; 差分が24より大きい
+	sbc #17
+	bpl	next_update	; 差分が16より大きい
 
 	lda #1
 	sta char_collision_result

@@ -242,8 +242,12 @@ haba_fire8_y:	.byte 0
 haba_fire8_t:	.byte 0
 haba_fire8_s:	.byte 0
 haba_fire8_x:	.byte 0
+haba_fire9_y:	.byte 0
+haba_fire9_t:	.byte 0
+haba_fire9_s:	.byte 0
+haba_fire9_x:	.byte 0
 
-; 58
+; 59
 
 
 .org $0600
@@ -489,3 +493,7 @@ haba_fire8_y2:	.byte 0
 haba_fire8_t2:	.byte 0
 haba_fire8_s2:	.byte 0
 haba_fire8_x2:	.byte 0
+haba_fire9_y2:	.byte 0
+haba_fire9_t2:	.byte 0
+haba_fire9_s2:	.byte 0
+haba_fire9_x2:	.byte 0
