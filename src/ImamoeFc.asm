@@ -1390,7 +1390,7 @@ se_jump_kukei:
 
 se_fire_noise:
 	;     400C 400E 400F ŸƒtƒŒ[ƒ€‘Ò‚¿
-	.byte $0F, $07, $B0, $20	; ƒ‰‚`
+	.byte $1F, $0F, $B0, $20
 	.byte $00, $00, $00, $1
 
 
