@@ -606,8 +606,8 @@ big_player_y:
 	
 	sec
 	lda REG1
-	sbc #17
-	bpl	next_update	; ·•ª‚ª16‚æ‚è‘å‚«‚¢
+	sbc #25
+	bpl	next_update	; ·•ª‚ª24‚æ‚è‘å‚«‚¢
 
 	lda #1
 	sta char_collision_result
