@@ -45,7 +45,8 @@ End:
 	cmp #1
 	bne skip_haba_fire
 	jsr HabatanFire_Appear
-	
+	jsr Sound_PlayFire
+
 	jmp exit
 
 	skip_haba_fire:
