@@ -1797,6 +1797,20 @@ next_update:
 
 ;exit:
 
+	; REG2 ｎ個目
+	; REG3 alive_flag
+	lda #0
+	sta REG2
+
+loop_tako_type:
+	lda tako_alive_flag
+	sta REG3		; タコ生存フラグ
+	lda REG2
+	beq skip_alive_flag
+	lda tako_haba_alive_flag
+	sta REG3		; はばタコ生存フラグ
+	skip_alive_flag:
+
 	; プレイヤのX座標とタコのX座標と
 	; プレイヤのY座標とタコのY座標を
 	; 比較して、ともに差分が一定以下なら
@@ -1806,7 +1820,7 @@ next_update:
 	ldx #0
 loop_x_tako:
 	; 生存しているか
-	lda tako_alive_flag
+	lda REG3
 	and tako_alive_flag_current
 	beq next_update_tako	; 存在していない
 
@@ -1861,6 +1875,10 @@ next_update_tako:
 	bne loop_x_tako				; ループ
 	
 
+	inc REG2
+	lda REG2
+	cmp #2
+	bne loop_tako_type
 ;exit:
 
 	; プレイヤのX座標とタマネギのX座標と

@@ -25,6 +25,7 @@ player_dma7:
 	jsr	player_draw_dma7		; プレイヤー描画関数
 	jsr InosisiDrawDma7			; イノシシ描画関数
 	jsr TakoDrawDma7			; タコ描画関数
+	jsr TakoHaba_DrawDma7		; タコ描画関数
 	jsr TamanegiDrawDma7		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
 	jsr HabatanDrawDma7			; はばタン描画
@@ -34,6 +35,7 @@ player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
 	jsr InosisiDrawDma6			; イノシシ描画関数
 	jsr TakoDrawDma6			; タコ描画関数
+	jsr TakoHaba_DrawDma6		; タコ描画関数
 	jsr TamanegiDrawDma6		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
 	jsr HabatanDrawDma6			; はばタン描画
@@ -185,6 +187,7 @@ break:
 	jsr Player_Update
 	jsr	InosisiUpdate
 	jsr	TakoUpdate
+	jsr	TakoHaba_Update
 	jsr	TamanegiUpdate
 	jsr TamanegiFire_Update
 	jsr HabatanUpdate
@@ -319,6 +322,8 @@ appear_skip:
 	beq case_tamanegi
 	cmp #3
 	beq case_habatan
+	cmp #4
+	beq case_habatako
 
 case_inosisi:
 	jsr appear_inosisi
@@ -332,6 +337,10 @@ case_tamanegi:
 case_habatan:
 	jsr appear_habatan
 	jmp break
+case_habatako:
+	jsr appear_tako_haba
+	jmp break
+
 
 break:
 	

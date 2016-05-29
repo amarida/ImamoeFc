@@ -12,6 +12,7 @@
 .include "player.asm"
 .include "inosisi.asm"
 .include "tako.asm"
+.include "tako_haba.asm"
 .include "tamanegi.asm"
 .include "TamanegiFire.asm"
 .include "Habatan.asm"
@@ -52,6 +53,7 @@
 	sta inosisi_alive_flag	; 生存イノシシフラグ
 	sta tako_alive_flag		; 生存タコフラグ
 	sta tamanegi_alive_flag	; 生存タマネギフラグ
+	sta tako_haba_alive_flag; 生存はばタコフラグ
 	lda #2
 	sta inosisi_max_count	; 最大同時登場数
 	sta tako_max_count		; 最大同時登場数タコ
@@ -1327,15 +1329,15 @@ map_chip_attribute_game_over:
 ; 敵の登場位置情報テーブル
 ; x位置上位、x座標下位、y位置、敵のタイプ
 ; $00:イノシシ、$01:タコ、$02:タマネギ、$03:はばタン
+; $04:はばタコ
 map_enemy_info:
-	.byte	$01, $a2, $b8, $01
-	.byte	$01, $aa, $b8, $01
+	.byte	$01, $a2, $b8, $00
+	.byte	$01, $b2, $b8, $01
 	.byte	$01, $c7, $b8, $03
 	.byte	$01, $d7, $b0, $02
 ;	.byte	$02, $02, $b8, $01
-	.byte	$02, $ec, $b8, $03
-	.byte	$02, $f0, $b8, $00
-	.byte	$02, $fc, $b8, $00
+	.byte	$02, $f0, $b8, $04
+	.byte	$02, $fc, $b8, $04
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
 ; BGM情報テーブル

@@ -179,11 +179,15 @@ skip_fire:
 ;;;;; 更新 ;;;;;
 .proc	HabatanFire_Update
 	lda is_dead
-	bne skip_update
+	beq not_skip_update1
+	jmp skip_update
+	not_skip_update1:
 
 	; 居ない
 	lda habatan_fire_alive_flag
-	beq skip_update
+	bne not_skip_update2
+	jmp skip_update
+	not_skip_update2:
 
 	; 存在している
 	
@@ -263,10 +267,22 @@ loop_tamanegi:
 	sta tako_alive_flag_current
 	ldx #0
 loop_tako:
-	lda tako_alive_flag
+	lda tako_haba_alive_flag
 	and tako_alive_flag_current
 	beq next_tako
-;	jsr HabatanFire_CollisionTako
+	; 既に燃えているか
+	lda tako00_status,x
+	cmp #1
+	beq next_tako		; 既に燃えている
+	jsr HabatanFire_CollisionTakoHaba
+	lda char_collision_result
+	beq skip_tako_haba_fire
+	; タコ燃える
+	lda #1
+	sta tako00_status,x
+
+	skip_tako_haba_fire:
+
 	next_tako:
 	asl tako_alive_flag_current
 	inx
@@ -619,3 +635,72 @@ exit:
 
 	rts
 .endproc	; HabatanFire_CollisionTamanegi
+
+; はばタコとの当たり判定
+.proc HabatanFire_CollisionTakoHaba
+
+	; 炎のXとタコのXの大きい方
+	clc
+	lda habatan_window_pos_x
+	adc #56
+	sta REG2	; 炎の中心
+	clc
+	lda tako0_window_pos_x,x
+	adc #8
+	sta REG3	; タコの中心
+	
+	sec
+	lda REG2
+	sbc REG3
+	bpl big_player_x	; 炎の方が大きい
+	; タコの方が大きい
+	sec
+	lda REG3
+	sbc REG2
+big_player_x:
+	sta REG0	; X差分
+
+	; 炎のYとタコのYの大きい方
+	clc
+	lda habatan_pos_y
+	adc #24
+	sta REG2	; 炎の中心
+	clc
+	lda tako0_pos_y,x
+	adc #8
+	sta REG3	; タコの中心
+	
+	sec
+	lda REG2
+	sbc REG3
+	bpl big_player_y	; 炎の方が大きい
+	; タコの方が大きい
+	sec
+	lda REG3
+	sbc REG2
+big_player_y:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	next_update	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #25
+	bpl	next_update	; 差分が24より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+	next_update:
+
+exit:
+
+	rts
+.endproc	; HabatanFire_CollisionTakoHaba
