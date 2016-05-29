@@ -323,6 +323,7 @@ skip_update:
 .proc	Habatan_UpdateLeave
 
 	jsr Habatan_Clear
+	jsr HabatanFire_Clear
 	
 	rts
 .endproc	; Habatan_UpdateLeave
