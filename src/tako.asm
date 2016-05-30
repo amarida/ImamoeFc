@@ -6,8 +6,6 @@
 	sta tako1_world_pos_x_hi
 	sta tako00_status
 	sta tako01_status
-	sta tako00_update_dead_step
-	sta tako01_update_dead_step
 	lda #224	; 画面外;#184
 	sta tako0_pos_y
 	sta tako1_pos_y
@@ -67,7 +65,6 @@ set_tako:
 	; 色々初期化
 	lda #0
 	sta tako00_status,x
-	sta tako00_update_dead_step,x
 	; タコ属性を通常に変える
 	lda #%00000010	; パレット3を使用
 	sta REG0

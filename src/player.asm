@@ -1731,6 +1731,9 @@ skip3:
 
 ; キャラとのあたり判定
 .proc collision_char
+	lda #0
+	sta char_collision_result
+
 	; プレイヤのX座標とイノシシのX座標と
 	; プレイヤのY座標とイノシシのY座標を
 	; 比較して、ともに差分が一定以下なら
@@ -1805,7 +1808,7 @@ next_update:
 loop_tako_type:
 	lda tako_alive_flag
 	sta REG3		; タコ生存フラグ
-	lda REG2
+	lda REG2		; ｎ個目のタコ
 	beq skip_alive_flag
 	lda tako_haba_alive_flag
 	sta REG3		; はばタコ生存フラグ
@@ -1823,6 +1826,11 @@ loop_x_tako:
 	lda REG3
 	and tako_alive_flag_current
 	beq next_update_tako	; 存在していない
+	
+	; 燃えていないか
+	lda tako00_status,x
+	cmp #1
+	beq next_update_tako	; 燃えている
 
 	; 存在している
 	; プレイヤのXとタコのXの大きい方
@@ -1872,10 +1880,10 @@ next_update_tako:
 	asl tako_alive_flag_current
 	inx
 	cpx tako_max_count	; ループ最大数
-	bne loop_x_tako				; ループ
+	bne loop_x_tako		; ループ
 	
 
-	inc REG2
+	inc REG2			; ｎ個目のタコ
 	lda REG2
 	cmp #2
 	bne loop_tako_type
@@ -1893,9 +1901,14 @@ loop_x_tamanegi:
 	lda tamanegi_alive_flag
 	and tamanegi_alive_flag_current
 	beq next_update_tamanegi	; 存在していない
+	
+	; 燃えていないか
+	lda tamanegi00_status,x
+	cmp #3
+	beq next_update_tamanegi	; 燃えている
 
 	; 存在している
-	; プレイヤのXとタコのXの大きい方
+	; プレイヤのXとタマネギのXの大きい方
 	sec
 	lda window_player_x_low
 	sbc tamanegi0_window_pos_x,x
