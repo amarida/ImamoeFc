@@ -383,6 +383,12 @@ skip_first_sea_hit:
 	
 skip_first_hit:
 
+	; アイテム当たり判定
+	jsr collision_item
+	lda char_collision_result
+	beq not_get
+	jsr Item_GetAction
+	not_get:
 
 	rts
 .endproc
@@ -1962,3 +1968,69 @@ exit:
 
 	rts
 .endproc
+
+
+; アイテムとのあたり判定
+.proc collision_item
+	lda #0
+	sta char_collision_result
+
+	; プレイヤのX座標とアイテムのX座標と
+	; プレイヤのY座標とアイテムのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+
+	; 生存しているか
+	lda item_alive_flag
+	beq exit		; 存在していない
+	
+	; 通常状態か
+	lda item_status
+	bne exit		; 通常状態ではない
+
+	; 存在している
+	; プレイヤのXとアイテムのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc item_window_pos_x
+	bpl big_player	; プレイヤの方が大きい
+	; アイテムの方が大きい
+	sec
+	lda item_window_pos_x
+	sbc window_player_x_low
+big_player:
+	sta REG0	; X差分
+
+	; プレイヤのYとアイテムのYの大きい方
+	sec
+	lda player_y
+	sbc item_pos_y
+	bpl big_player_y	; プレイヤの方が大きい
+	; アイテムの方が大きい
+	sec
+	lda item_pos_y
+	sbc player_y
+big_player_y:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	exit	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #17
+	bpl	exit	; 差分が16より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+exit:
+
+	rts
+.endproc	; collision_item

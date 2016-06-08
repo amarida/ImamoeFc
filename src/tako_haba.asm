@@ -188,11 +188,6 @@ loop_x:
 	bcc skip_dead
 	; ‰æ–ÊŠOˆ—
 	jsr TakoHaba_Clear
-;	lda tako_alive_flag
-;	eor tako_alive_flag_current
-;	sta tako_alive_flag
-;	lda #224	; ‰æ–ÊŠO
-;	sta tako0_pos_y,x
 
 skip_dead:
 

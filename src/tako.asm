@@ -485,6 +485,8 @@ skip_return:
 
 	lda #0
 	sta obj_collision_sea
+	lda #0
+	sta obj_collision_result
 
 	; TODO:	¶ã‚Ì¶‚Í¶‰º‚Ì¶‚ğ—¬—p‚·‚é
 	;		‰E‰º‚Ì‰º‚Í¶‰º‚Ì‰º‚ğ—¬—p‚·‚é

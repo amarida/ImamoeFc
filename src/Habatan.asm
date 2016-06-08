@@ -8,18 +8,18 @@
 	sta habatan_status
 	; 属性は変わらない
 	lda #%00000000     ; 0(10進数)をAにロード
-	sta habatan01_s
-	sta habatan08_s
-	sta habatan09_s
+	sta char_12_type01_s
+	sta char_12_type08_s
+	sta char_12_type09_s
 	lda #%00000011
-	sta habatan02_s
-	sta habatan03_s
-	sta habatan04_s
-	sta habatan05_s
-	sta habatan06_s
-	sta habatan07_s
-	sta habatan10_s
-	sta habatan11_s
+	sta char_12_type02_s
+	sta char_12_type03_s
+	sta char_12_type04_s
+	sta char_12_type05_s
+	sta char_12_type06_s
+	sta char_12_type07_s
+	sta char_12_type10_s
+	sta char_12_type11_s
 
 	rts
 .endproc
@@ -57,29 +57,29 @@ set_habatan:
 
 	; 属性は変わらない
 	lda #%00000000     ; 0(10進数)をAにロード
-	sta habatan01_s
-	sta habatan08_s
-	sta habatan09_s
-	sta habatan01_s2
-	sta habatan08_s2
-	sta habatan09_s2
+	sta char_12_type01_s
+	sta char_12_type08_s
+	sta char_12_type09_s
+	sta char_12_type01_s2
+	sta char_12_type08_s2
+	sta char_12_type09_s2
 	lda #%00000011
-	sta habatan02_s
-	sta habatan03_s
-	sta habatan04_s
-	sta habatan05_s
-	sta habatan06_s
-	sta habatan07_s
-	sta habatan10_s
-	sta habatan11_s
-	sta habatan02_s2
-	sta habatan03_s2
-	sta habatan04_s2
-	sta habatan05_s2
-	sta habatan06_s2
-	sta habatan07_s2
-	sta habatan10_s2
-	sta habatan11_s2
+	sta char_12_type02_s
+	sta char_12_type03_s
+	sta char_12_type04_s
+	sta char_12_type05_s
+	sta char_12_type06_s
+	sta char_12_type07_s
+	sta char_12_type10_s
+	sta char_12_type11_s
+	sta char_12_type02_s2
+	sta char_12_type03_s2
+	sta char_12_type04_s2
+	sta char_12_type05_s2
+	sta char_12_type06_s2
+	sta char_12_type07_s2
+	sta char_12_type10_s2
+	sta char_12_type11_s2
 
 	; フラグを立てる
 	lda #1
@@ -100,94 +100,94 @@ skip_habatan:
 	not_skip_clear:
 
 	lda #0
-	sta habatan01_y
-	sta habatan01_t
-	sta habatan01_s
-	sta habatan01_x
-	sta habatan02_y
-	sta habatan02_t
-	sta habatan02_s
-	sta habatan02_x
-	sta habatan03_y
-	sta habatan03_t
-	sta habatan03_s
-	sta habatan03_x
-	sta habatan04_y
-	sta habatan04_t
-	sta habatan04_s
-	sta habatan04_x
-	sta habatan05_y
-	sta habatan05_t
-	sta habatan05_s
-	sta habatan05_x
-	sta habatan06_y
-	sta habatan06_t
-	sta habatan06_s
-	sta habatan06_x
-	sta habatan07_y
-	sta habatan07_t
-	sta habatan07_s
-	sta habatan07_x
-	sta habatan08_y
-	sta habatan08_t
-	sta habatan08_s
-	sta habatan08_x
-	sta habatan09_y
-	sta habatan09_t
-	sta habatan09_s
-	sta habatan09_x
-	sta habatan10_y
-	sta habatan10_t
-	sta habatan10_s
-	sta habatan10_x
-	sta habatan11_y
-	sta habatan11_t
-	sta habatan11_s
-	sta habatan11_x
-	sta habatan01_y2
-	sta habatan01_t2
-	sta habatan01_s2
-	sta habatan01_x2
-	sta habatan02_y2
-	sta habatan02_t2
-	sta habatan02_s2
-	sta habatan02_x2
-	sta habatan03_y2
-	sta habatan03_t2
-	sta habatan03_s2
-	sta habatan03_x2
-	sta habatan04_y2
-	sta habatan04_t2
-	sta habatan04_s2
-	sta habatan04_x2
-	sta habatan05_y2
-	sta habatan05_t2
-	sta habatan05_s2
-	sta habatan05_x2
-	sta habatan06_y2
-	sta habatan06_t2
-	sta habatan06_s2
-	sta habatan06_x2
-	sta habatan07_y2
-	sta habatan07_t2
-	sta habatan07_s2
-	sta habatan07_x2
-	sta habatan08_y2
-	sta habatan08_t2
-	sta habatan08_s2
-	sta habatan08_x2
-	sta habatan09_y2
-	sta habatan09_t2
-	sta habatan09_s2
-	sta habatan09_x2
-	sta habatan10_y2
-	sta habatan10_t2
-	sta habatan10_s2
-	sta habatan10_x2
-	sta habatan11_y2
-	sta habatan11_t2
-	sta habatan11_s2
-	sta habatan11_x2
+	sta char_12_type01_y
+	sta char_12_type01_t
+	sta char_12_type01_s
+	sta char_12_type01_x
+	sta char_12_type02_y
+	sta char_12_type02_t
+	sta char_12_type02_s
+	sta char_12_type02_x
+	sta char_12_type03_y
+	sta char_12_type03_t
+	sta char_12_type03_s
+	sta char_12_type03_x
+	sta char_12_type04_y
+	sta char_12_type04_t
+	sta char_12_type04_s
+	sta char_12_type04_x
+	sta char_12_type05_y
+	sta char_12_type05_t
+	sta char_12_type05_s
+	sta char_12_type05_x
+	sta char_12_type06_y
+	sta char_12_type06_t
+	sta char_12_type06_s
+	sta char_12_type06_x
+	sta char_12_type07_y
+	sta char_12_type07_t
+	sta char_12_type07_s
+	sta char_12_type07_x
+	sta char_12_type08_y
+	sta char_12_type08_t
+	sta char_12_type08_s
+	sta char_12_type08_x
+	sta char_12_type09_y
+	sta char_12_type09_t
+	sta char_12_type09_s
+	sta char_12_type09_x
+	sta char_12_type10_y
+	sta char_12_type10_t
+	sta char_12_type10_s
+	sta char_12_type10_x
+	sta char_12_type11_y
+	sta char_12_type11_t
+	sta char_12_type11_s
+	sta char_12_type11_x
+	sta char_12_type01_y2
+	sta char_12_type01_t2
+	sta char_12_type01_s2
+	sta char_12_type01_x2
+	sta char_12_type02_y2
+	sta char_12_type02_t2
+	sta char_12_type02_s2
+	sta char_12_type02_x2
+	sta char_12_type03_y2
+	sta char_12_type03_t2
+	sta char_12_type03_s2
+	sta char_12_type03_x2
+	sta char_12_type04_y2
+	sta char_12_type04_t2
+	sta char_12_type04_s2
+	sta char_12_type04_x2
+	sta char_12_type05_y2
+	sta char_12_type05_t2
+	sta char_12_type05_s2
+	sta char_12_type05_x2
+	sta char_12_type06_y2
+	sta char_12_type06_t2
+	sta char_12_type06_s2
+	sta char_12_type06_x2
+	sta char_12_type07_y2
+	sta char_12_type07_t2
+	sta char_12_type07_s2
+	sta char_12_type07_x2
+	sta char_12_type08_y2
+	sta char_12_type08_t2
+	sta char_12_type08_s2
+	sta char_12_type08_x2
+	sta char_12_type09_y2
+	sta char_12_type09_t2
+	sta char_12_type09_s2
+	sta char_12_type09_x2
+	sta char_12_type10_y2
+	sta char_12_type10_t2
+	sta char_12_type10_s2
+	sta char_12_type10_x2
+	sta char_12_type11_y2
+	sta char_12_type11_t2
+	sta char_12_type11_s2
+	sta char_12_type11_x2
 
 	lda #0
 	sta habatan_world_pos_x_low
@@ -360,76 +360,76 @@ break_pat:
 	clc
 	lda #$42
 	adc REG0
-	sta habatan01_t
+	sta char_12_type01_t
 	clc
 	lda #$43
 	adc REG0
-	sta habatan02_t
+	sta char_12_type02_t
 	clc
 	lda #$44
 	adc REG0
-	sta habatan03_t
+	sta char_12_type03_t
 	; 2列目
 	clc
 	lda #$51
 	adc REG0
-	sta habatan04_t
+	sta char_12_type04_t
 	clc
 	lda #$52
 	adc REG0
-	sta habatan05_t
+	sta char_12_type05_t
 	clc
 	lda #$53
 	adc REG0
-	sta habatan06_t
+	sta char_12_type06_t
 	clc
 	lda #$54
 	adc REG0
-	sta habatan07_t
+	sta char_12_type07_t
 	; 3列目
 	clc
 	lda #$60
 	adc REG0
-	sta habatan08_t
+	sta char_12_type08_t
 	clc
 	lda #$61
 	adc REG0
-	sta habatan09_t
+	sta char_12_type09_t
 	clc
 	lda #$62
 	adc REG0
-	sta habatan10_t
+	sta char_12_type10_t
 	clc
 	lda #$63
 	adc REG0
-	sta habatan11_t
+	sta char_12_type11_t
 
 ; Y座標
 	; 1列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #7
-	sta habatan01_y
-	sta habatan02_y
-	sta habatan03_y
+	sta char_12_type01_y
+	sta char_12_type02_y
+	sta char_12_type03_y
 	
 	; 2列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #15
-	sta habatan04_y
-	sta habatan05_y
-	sta habatan06_y
-	sta habatan07_y
+	sta char_12_type04_y
+	sta char_12_type05_y
+	sta char_12_type06_y
+	sta char_12_type07_y
 	
 	; 3列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #23
-	sta habatan08_y
-	sta habatan09_y
-	sta habatan10_y
-	sta habatan11_y
+	sta char_12_type08_y
+	sta char_12_type09_y
+	sta char_12_type10_y
+	sta char_12_type11_y
 	
 
 ; X座標
@@ -444,33 +444,33 @@ break_pat:
 	sta habatan_window_pos_x
 
 	lda habatan_window_pos_x
-	sta habatan08_x
+	sta char_12_type08_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #8
-	sta habatan04_x
-	sta habatan09_x
+	sta char_12_type04_x
+	sta char_12_type09_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #16
-	sta habatan01_x
-	sta habatan05_x
-	sta habatan10_x
+	sta char_12_type01_x
+	sta char_12_type05_x
+	sta char_12_type10_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #24
-	sta habatan02_x
-	sta habatan06_x
-	sta habatan11_x
+	sta char_12_type02_x
+	sta char_12_type06_x
+	sta char_12_type11_x
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #32
-	sta habatan03_x
-	sta habatan07_x
+	sta char_12_type03_x
+	sta char_12_type07_x
 
 skip_draw:
 
@@ -510,76 +510,76 @@ break_pat:
 	clc
 	lda #$42
 	adc REG0
-	sta habatan01_t2
+	sta char_12_type01_t2
 	clc
 	lda #$43
 	adc REG0
-	sta habatan02_t2
+	sta char_12_type02_t2
 	clc
 	lda #$44
 	adc REG0
-	sta habatan03_t2
+	sta char_12_type03_t2
 	; 2列目
 	clc
 	lda #$51
 	adc REG0
-	sta habatan04_t2
+	sta char_12_type04_t2
 	clc
 	lda #$52
 	adc REG0
-	sta habatan05_t2
+	sta char_12_type05_t2
 	clc
 	lda #$53
 	adc REG0
-	sta habatan06_t2
+	sta char_12_type06_t2
 	clc
 	lda #$54
 	adc REG0
-	sta habatan07_t2
+	sta char_12_type07_t2
 	; 3列目
 	clc
 	lda #$60
 	adc REG0
-	sta habatan08_t2
+	sta char_12_type08_t2
 	clc
 	lda #$61
 	adc REG0
-	sta habatan09_t2
+	sta char_12_type09_t2
 	clc
 	lda #$62
 	adc REG0
-	sta habatan10_t2
+	sta char_12_type10_t2
 	clc
 	lda #$63
 	adc REG0
-	sta habatan11_t2
+	sta char_12_type11_t2
 
 ; Y座標
 	; 1列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #7
-	sta habatan01_y2
-	sta habatan02_y2
-	sta habatan03_y2
+	sta char_12_type01_y2
+	sta char_12_type02_y2
+	sta char_12_type03_y2
 	
 	; 2列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #15
-	sta habatan04_y2
-	sta habatan05_y2
-	sta habatan06_y2
-	sta habatan07_y2
+	sta char_12_type04_y2
+	sta char_12_type05_y2
+	sta char_12_type06_y2
+	sta char_12_type07_y2
 	
 	; 3列目
 	clc			; キャリーフラグOFF
 	lda habatan_pos_y
 	adc #23
-	sta habatan08_y2
-	sta habatan09_y2
-	sta habatan10_y2
-	sta habatan11_y2
+	sta char_12_type08_y2
+	sta char_12_type09_y2
+	sta char_12_type10_y2
+	sta char_12_type11_y2
 	
 
 ; X座標
@@ -594,33 +594,33 @@ break_pat:
 	sta habatan_window_pos_x
 
 	lda habatan_window_pos_x
-	sta habatan08_x2
+	sta char_12_type08_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #8
-	sta habatan04_x2
-	sta habatan09_x2
+	sta char_12_type04_x2
+	sta char_12_type09_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #16
-	sta habatan01_x2
-	sta habatan05_x2
-	sta habatan10_x2
+	sta char_12_type01_x2
+	sta char_12_type05_x2
+	sta char_12_type10_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #24
-	sta habatan02_x2
-	sta habatan06_x2
-	sta habatan11_x2
+	sta char_12_type02_x2
+	sta char_12_type06_x2
+	sta char_12_type11_x2
 
 	lda habatan_window_pos_x
 	clc			; キャリーフラグOFF
 	adc #32
-	sta habatan03_x2
-	sta habatan07_x2
+	sta char_12_type03_x2
+	sta char_12_type07_x2
 
 skip_draw:
 

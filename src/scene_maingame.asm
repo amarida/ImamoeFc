@@ -29,7 +29,8 @@ player_dma7:
 	jsr TamanegiDrawDma7		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma7	; タマネギファイアーマスク
 	jsr HabatanDrawDma7			; はばタン描画
-	jsr HabatanFire_DrawDma7		; はばタンファイアー描画
+	jsr HabatanFire_DrawDma7	; はばタンファイアー描画
+	jsr Item_DrawDma7			; 酒描画
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
@@ -39,7 +40,8 @@ player_dma6:
 	jsr TamanegiDrawDma6		; タマネギ描画関数
 	jsr TamanegiFire_DrawDma6	; タマネギファイアーマスク
 	jsr HabatanDrawDma6			; はばタン描画
-	jsr HabatanFire_DrawDma6		; はばタンファイアー描画
+	jsr HabatanFire_DrawDma6	; はばタンファイアー描画
+	jsr Item_DrawDma6			; 酒描画
 	jmp player_dma_break
 player_dma_break:
 	
@@ -192,6 +194,7 @@ break:
 	jsr TamanegiFire_Update
 	jsr HabatanUpdate
 	jsr HabatanFire_Update
+	jsr Item_Update
 
 ;	jsr confirm_appear_enemy
 
@@ -324,6 +327,8 @@ appear_skip:
 	beq case_habatan
 	cmp #4
 	beq case_habatako
+	cmp #5
+	beq case_item
 
 case_inosisi:
 	jsr appear_inosisi
@@ -340,7 +345,9 @@ case_habatan:
 case_habatako:
 	jsr appear_tako_haba
 	jmp break
-
+case_item:
+	jsr Item_Appear
+	jmp break
 
 break:
 	
@@ -717,6 +724,10 @@ skip_bcd1hi:
 	beq case_2tako
 	cmp #6
 	beq case_3tako
+	cmp #7
+	beq case_34sake
+	cmp #8
+	beq case_34sake_get
 
 case_none:
 	jmp break
@@ -732,6 +743,10 @@ case_2tako:
 	jmp change_palette_2_tako
 case_3tako:
 	jmp change_palette_3_tako
+case_34sake:
+	jmp change_palette_34_sake
+case_34sake_get:
+	jmp change_palette_34_sake_get
 
 
 change_palette_2_tamanegi:
@@ -888,6 +903,60 @@ copypal_3tako:
 	inx
 	dey
 	bne	copypal_3tako
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+	
+change_palette_34_sake:
+	; パレット3を酒下4を酒上色に変更
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$18
+	sta	$2006
+	ldx	#$18
+	ldy	#8
+copypal_34_sake:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_34_sake
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_34_sake_get:
+	; パレット3を酒下獲得色4を酒上獲得色
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$18
+	sta	$2006
+	ldx	#0
+	ldy	#8
+copypal_34_sake_get:
+	lda	palette_sake_get, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_34_sake_get
 
 	clc
 	lda #%10001100	; VRAM増加量32byte
