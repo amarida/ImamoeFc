@@ -69,6 +69,10 @@ set_tako:
 	lda #%00000010	; パレット3を使用
 	sta REG0
 	jsr Tako_SetAttribute
+	
+	; パレット3をタコ
+	lda #6
+	sta palette_change_state
 
 	; フラグを立てる
 	clc

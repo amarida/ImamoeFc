@@ -210,7 +210,7 @@ break:
 
 	jsr UpdateTimer
 	jsr ConvertTimerBinaryToBCD
-	jsr ConvertBinaryToBCD
+	jsr ConvertScoreBinaryToBCD
 
 	rts	; サブルーチンから復帰します。
 .endproc
@@ -515,7 +515,7 @@ time_loop_first_x:
 .endproc
 
 ; スコアのBCDへの変換
-.proc ConvertBinaryToBCD
+.proc ConvertScoreBinaryToBCD
 
 	lda score_b0
 	sta REG1
