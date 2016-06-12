@@ -312,11 +312,6 @@ case_normal:
 	jmp case_break
 
 case_fire:
-	; タコ属性を燃えに変える
-	lda #%00000010	; パレット3を使用
-	sta REG0
-	jsr TakoHaba_SetAttribute
-
 ; 燃えタイル
 	clc
 	lda #$C7     ; 
@@ -334,6 +329,11 @@ case_fire:
 	lda #$9C
 	adc REG0
 	sta tako4_t,y
+
+	; タコ属性を燃えに変える
+	lda #%00000010	; パレット3を使用
+	sta REG0
+	jsr TakoHaba_SetAttribute
 
 	jmp case_break
 
@@ -465,10 +465,6 @@ case_normal:
 	jmp case_break
 
 case_fire:
-	; タコ属性を燃えに変える
-	lda #%00000010	; パレット3を使用
-	sta REG0
-	jsr TakoHaba_SetAttribute
 ; 燃えタイル
 	clc
 	lda #$C7     ; 
@@ -486,6 +482,11 @@ case_fire:
 	lda #$9C
 	adc REG0
 	sta tako4_t2,y
+
+	; タコ属性を燃えに変える
+	lda #%00000010	; パレット3を使用
+	sta REG0
+	jsr TakoHaba_SetAttribute
 
 	jmp case_break
 
