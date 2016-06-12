@@ -481,6 +481,8 @@ skip_draw:
 	
 	lda #60
 	sta item_wait
+
+	jsr Sound_PlayItem
 	
 	; パレット3を酒下獲得色4を酒上獲得色
 	lda #8

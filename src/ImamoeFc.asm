@@ -1401,6 +1401,10 @@ se_fire_noise:
 	.byte $1F, $0F, $B0, $20
 	.byte $00, $00, $00, $1
 
+se_item_kukei:
+	;     4000 4001 4002 4003 ŸƒtƒŒ[ƒ€‘Ò‚¿
+	.byte $CF, $8A, $FD, $B0, $10	; ’á‚¢ƒ‰‚`
+	.byte $00, $00, $00, $00, $1
 
 .segment "VECINFO"
 	.word	VBlank
