@@ -255,7 +255,7 @@ skip_inosisi:
 .proc	Inosisi_UpdateNormal
 	; èdóÕ
 	clc
-	lda #2
+	lda #4
 	adc inosisi0_pos_y,x
 	sta inosisi0_pos_y,x
 
@@ -287,7 +287,7 @@ roll_skip:
 	; ç∂à⁄ìÆ
 	sec
 	lda inosisi0_world_pos_x_low,x
-	sbc #1
+	sbc #2
 	sta inosisi0_world_pos_x_low,x
 	lda inosisi0_world_pos_x_hi,x
 	sbc #0
@@ -957,9 +957,9 @@ hit0:
 skip0:
 
 	lda map_table_char_pos_value
-	cmp #$05
+	cmp #$13
 	beq hit_sea
-	cmp #$06
+	cmp #$14
 	beq hit_sea
 	jmp skip_sea
 hit_sea:

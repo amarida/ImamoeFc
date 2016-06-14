@@ -61,6 +61,9 @@ set_tako:
 	sta tako0_world_pos_x_low,x
 	lda enemy_pos_y
 	sta tako0_pos_y,x
+
+	lda #0
+	sta tako0_world_pos_x_decimal,x
 	
 	; FX‰Šú‰»
 	lda #0
@@ -210,7 +213,7 @@ skip_tako:
 .proc	Tako_UpdateNormal
 	; d—Í
 	clc
-	lda #2
+	lda #3
 	adc tako0_pos_y,x
 	sta tako0_pos_y,x
 
@@ -232,6 +235,9 @@ roll_skip:
 
 	; ¶ˆÚ“®
 	sec
+	lda tako0_world_pos_x_decimal,x
+	sbc #$40
+	sta tako0_world_pos_x_decimal,x
 	lda tako0_world_pos_x_low,x
 	sbc #1
 	sta tako0_world_pos_x_low,x
