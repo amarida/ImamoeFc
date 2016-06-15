@@ -1,5 +1,7 @@
 .proc	TamanegiInit
 	lda #0
+	sta tamanegi0_world_pos_x_decimal
+	sta tamanegi1_world_pos_x_decimal
 	sta tamanegi0_world_pos_x_low
 	sta tamanegi1_world_pos_x_low
 	sta tamanegi0_world_pos_x_hi
@@ -68,6 +70,9 @@ set_tamanegi:
 	sta tamanegi0_world_pos_x_low,x
 	lda enemy_pos_y
 	sta tamanegi0_pos_y,x
+
+	lda #0
+	sta tamanegi0_world_pos_x_decimal,x
 	
 	; タマネギタイプ
 	lda REG0
@@ -351,14 +356,21 @@ step_update:
 	case_type_cannon:
 	lda #1
 	sta REG1
+	lda #$80
+	sta REG2
 	jmp case_type_break
 	case_type_suddenly:
 	lda #2
 	sta REG1
+	lda #0
+	sta REG2
 	case_type_break:
 	
 	; 横位置更新
 	sec
+	lda tamanegi0_world_pos_x_decimal,x
+	sbc REG2
+	sta tamanegi0_world_pos_x_decimal,x
 	lda tamanegi0_world_pos_x_low,x
 	sbc REG1
 	sta tamanegi0_world_pos_x_low,x
@@ -495,6 +507,9 @@ roll_skip:
 
 	; 左移動
 	sec
+	lda tamanegi0_world_pos_x_decimal,x
+	sbc #$50
+	sta tamanegi0_world_pos_x_decimal,x
 	lda tamanegi0_world_pos_x_low,x
 	sbc #1
 	sta tamanegi0_world_pos_x_low,x
@@ -524,7 +539,7 @@ roll_skip:
 	sta REG0
 	bcc not_burst	; キャリーフラグが立っていない
 	sec
-	lda #48
+	lda #32
 	sbc REG0
 	bcs not_burst; キャリーフラグがセットされている場合スキップ
 	
@@ -559,7 +574,7 @@ step_init:
 	lda #1
 	sta tamanegi00_update_step,x
 
-	lda #15
+	lda #12
 	sta tamanegi00_wait,x
 
 	; 火の登場
@@ -574,7 +589,7 @@ step_burst1:
 	dec tamanegi00_wait,x
 	bne case_break
 	; 0になったら
-	lda #15
+	lda #12
 	sta tamanegi00_wait,x
 	lda #2
 	sta tamanegi00_update_step,x
@@ -587,7 +602,7 @@ step_burst2:
 	dec tamanegi00_wait,x
 	bne case_break
 	; 0になったら
-	lda #10
+	lda #6
 	sta tamanegi00_wait,x
 	lda #3
 	sta tamanegi00_update_step,x
