@@ -479,7 +479,7 @@ skip_draw:
 	lda #1
 	sta item_status
 	
-	lda #60
+	lda #24
 	sta item_wait
 
 	jsr Sound_PlayItem
