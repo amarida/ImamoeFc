@@ -69,6 +69,30 @@ set_tamanegi:
 	lda enemy_pos_y
 	sta tamanegi0_pos_y,x
 	
+	; タマネギタイプ
+	lda REG0
+	cmp #0
+	beq case_type_cannon
+	cmp #1
+	beq case_type_suddenly
+	
+	case_type_cannon:
+	lda tamanegi_alive_flag_current
+	eor #%11111111
+	and tamanegi_type_flag
+	sta tamanegi_type_flag	; 該当フラグをOFF 
+	
+	jmp case_type_break
+
+	case_type_suddenly:
+	lda tamanegi_alive_flag_current
+	ora tamanegi_type_flag
+	sta tamanegi_type_flag	; 該当フラグをON
+	
+	jmp case_type_break
+	
+	case_type_break:
+	
 	; 色々初期化
 
 	lda #0
@@ -231,6 +255,22 @@ skip_tamanegi:
 
 ; 更新大砲の中
 .proc	Tamanegi_UpdateInTheCannon
+
+	; xの0,1でどちらか判断する
+	lda #%00000001
+	sta REG0
+	txa
+	beq not_set16
+	lda #%00000010
+	sta REG0
+	not_set16:
+	
+	lda tamanegi_type_flag
+	and REG0
+	beq case_type_cannon
+	bne case_type_suddenly
+	
+	case_type_cannon:
 	; 距離が近づくと次へ
 	; タマネギのX座標
 	; プレイヤーのX座標
@@ -249,6 +289,18 @@ skip_tamanegi:
 	sta tamanegi00_update_step,x
 
 skip:
+	jmp case_type_break
+
+	case_type_suddenly:
+	; 次へ
+	lda #1
+	sta tamanegi00_status,x
+
+	lda #0
+	sta tamanegi00_update_step,x
+	
+	
+	case_type_break:
 	
 	rts
 .endproc	; Tamanegi_UpdateInTheCannon
@@ -261,7 +313,9 @@ skip:
 	cmp #1
 	beq step_update
 	cmp #2
-	beq step_next
+	bne skip_step_next
+	jmp step_next
+	skip_step_next:
 
 step_init:
 
@@ -280,15 +334,38 @@ step_init:
 	jmp step_break
 
 step_update:
+	; xの0,1でどちらか判断する
+	lda #%00000001
+	sta REG0
+	txa
+	beq not_set16
+	lda #%00000010
+	sta REG0
+	not_set16:
+	
+	lda tamanegi_type_flag
+	and REG0
+	beq case_type_cannon
+	bne case_type_suddenly
 
+	case_type_cannon:
+	lda #1
+	sta REG1
+	jmp case_type_break
+	case_type_suddenly:
+	lda #2
+	sta REG1
+	case_type_break:
+	
 	; 横位置更新
 	sec
 	lda tamanegi0_world_pos_x_low,x
-	sbc #1
+	sbc REG1
 	sta tamanegi0_world_pos_x_low,x
 	lda tamanegi0_world_pos_x_hi,x
 	sbc #0
 	sta tamanegi0_world_pos_x_hi,x
+
 
 	; 上下方向
 	lda tamanegi00_spd_vec,x

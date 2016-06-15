@@ -247,5 +247,6 @@ item_status									= $F5	; アイテム状態（0:表示、1:点滅）
 item_window_pos_x							= $F6	; アイテムウィンドウX座標
 item_pos_y									= $F7	; アイテムY座標
 item_wait									= $F8	; アイテム待ち
+tamanegi_type_flag							= $F9	; タマネギタイプ
 
 debug_var									= $FF	; デバッグ用
