@@ -228,6 +228,9 @@ roll_skip:
 
 	; ¶ˆÚ“®
 	sec
+	lda tako0_world_pos_x_decimal,x
+	sbc #$80
+	sta tako0_world_pos_x_decimal,x
 	lda tako0_world_pos_x_low,x
 	sbc #1
 	sta tako0_world_pos_x_low,x
