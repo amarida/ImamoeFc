@@ -283,7 +283,7 @@ skip_tamanegi:
 	lda tamanegi0_window_pos_x,x
 	sbc window_player_x_low
 	sec
-	sbc #104
+	sbc #112
 	bcs skip; キャリーフラグがセットされている場合スキップ
 
 	; キャリーフラグがクリアされている場合、距離が64未満
@@ -539,7 +539,7 @@ roll_skip:
 	sta REG0
 	bcc not_burst	; キャリーフラグが立っていない
 	sec
-	lda #32
+	lda #24
 	sbc REG0
 	bcs not_burst; キャリーフラグがセットされている場合スキップ
 	
