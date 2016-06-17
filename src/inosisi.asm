@@ -515,7 +515,6 @@ break_tile:
 	adc #7
 	sta char_6type1_y,y
 	sta char_6type2_y,y
-	sta char_6type3_y,y
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y,x
@@ -523,6 +522,9 @@ break_tile:
 	sta char_6type4_y,y
 	sta char_6type5_y,y
 	sta char_6type6_y,y
+
+	lda #0
+	sta char_6type3_y,y
 
 ; X座標
 
@@ -717,7 +719,6 @@ break_tile:
 	adc #7
 	sta char_6type1_y2,y
 	sta char_6type2_y2,y
-	sta char_6type3_y2,y
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y,x
@@ -725,6 +726,9 @@ break_tile:
 	sta char_6type4_y2,y
 	sta char_6type5_y2,y
 	sta char_6type6_y2,y
+
+	lda #0
+	sta char_6type3_y2,y
 
 ; X座標
 
