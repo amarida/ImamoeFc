@@ -24,7 +24,7 @@
 	sta player_draw_status
 
 	; 速度と方向をセット
-	lda	#10
+	lda	#6;#10
 	sta	spd_y
 
 	lda	#1		; 速度上方向
@@ -88,8 +88,11 @@ exit:
 	beq skip; ゼロフラグが立っていないときスキップ
 
 	sec					; キャリーフラグON
+	lda player_x_decimal
+	sbc #$80
+	sta player_x_decimal
 	lda	player_x_low	; 下位
-	sbc	#1
+	sbc	#0
 	sta	player_x_low
 
 	lda	player_x_up		; 上位
@@ -121,9 +124,15 @@ skip:
 	lda is_dead
 	bne skip
 
+	lda habatan_fire_alive_flag
+	bne skip
+
 	clc					; キャリーフラグOFF
+	lda player_x_decimal
+	adc #$80;#$a0
+	sta player_x_decimal
 	lda	player_x_low	; 下位
-	adc	#1
+	adc	#0
 	sta	player_x_low
 
 	lda	player_x_up		; 上位
@@ -414,7 +423,7 @@ skip_first_hit:
 	; 小数部の減速
 	sec			; キャリーフラグON
 	lda	spd_y+1
-	sbc	#$80
+	sbc	#$40
 	sta	spd_y+1
 	; 実数部の減速
 	lda	spd_y
@@ -450,7 +459,7 @@ tashizan:
 	; 小数部の加算
 	clc			; キャリーフラグOFF
 	lda	spd_y+1
-	adc	#$80
+	adc	#$40
 	sta	spd_y+1
 	; 実数部の加算
 	lda	spd_y
@@ -577,7 +586,7 @@ case_jump:
 	sta is_jump
 
 	; 速度と方向をセット
-	lda	#10
+	lda	#6;#10
 	sta	spd_y
 
 	lda	#1		; 速度上方向
