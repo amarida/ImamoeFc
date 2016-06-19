@@ -16,7 +16,7 @@
 	lda item_alive_flag
 	beq set_item
 	
-	jmp skip_appear
+;	jmp skip_appear
 
 set_item:
 	lda enemy_pos_x_hi
@@ -338,6 +338,11 @@ not_skip_draw:
 	lda item_window_pos_x
 	clc
 	adc #4
+	bcc not_overflow_4
+	lda #231	; ‰æ–ÊŠO
+	sta char_12_type01_y
+	sta char_12_type02_y
+not_overflow_4:
 	sta char_12_type01_x
 	sta char_12_type02_x
 
@@ -448,6 +453,11 @@ not_skip_draw:
 	lda item_window_pos_x
 	clc
 	adc #4
+	bcc not_overflow_4
+	lda #231	; ‰æ–ÊŠO
+	sta char_12_type01_y2
+	sta char_12_type02_y2
+not_overflow_4:
 	sta char_12_type01_x2
 	sta char_12_type02_x2
 
