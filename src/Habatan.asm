@@ -262,7 +262,7 @@ skip_update:
 	; ‰EˆÚ“®
 	clc
 	lda habatan_world_pos_x_low
-	adc #3
+	adc #2
 	sta habatan_world_pos_x_low
 	lda habatan_world_pos_x_hi
 	adc #0
@@ -277,7 +277,7 @@ skip_update:
 	sta habatan_status
 	lda #255
 	sta habatan_wait_low
-	lda #2
+	lda #1
 	sta habatan_wait_hi
 	
 	next_skip:
