@@ -2018,13 +2018,13 @@ big_player_y:
 	
 	sec
 	lda REG0
-	sbc #25
-	bpl	exit	; ·•ª‚ª24‚æ‚è‘å‚«‚¢
+	sbc #17
+	bpl	exit	; ·•ª‚ª16‚æ‚è‘å‚«‚¢
 	
 	sec
 	lda REG1
-	sbc #25
-	bpl	exit	; ·•ª‚ª24‚æ‚è‘å‚«‚¢
+	sbc #49
+	bpl	exit	; ·•ª‚ª48‚æ‚è‘å‚«‚¢
 
 	lda #1
 	sta char_collision_result
