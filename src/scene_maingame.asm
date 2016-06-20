@@ -253,24 +253,24 @@ skip:
 	; 敵を登場させて、登場済みフラグを立てる
 
 	lda field_scroll_x_up
-	sta field_scroll_x_up_tmp
+	sta REG0
 	lda field_scroll_x_low
-	sta field_scroll_x_low_tmp
+	sta REG1
 
 	clc
-	lda field_scroll_x_low_tmp
+	lda REG1
 	adc #255
-	sta field_scroll_x_low_tmp
-	lda field_scroll_x_up_tmp
+	sta REG1
+	lda REG0
 	adc #0
-	sta field_scroll_x_up_tmp
+	sta REG0
 
 	ldy #0
 	lda (map_enemy_info_address_low), y
 	sta enemy_pos_x_hi
 	; 上位の比較で達しているか
 	sec
-	lda field_scroll_x_up_tmp
+	lda REG0
 	sbc enemy_pos_x_hi
 	bcc appear_skip	; キャリーフラグがクリア（超過）されている場合
 
@@ -279,7 +279,7 @@ skip:
 	sta enemy_pos_x_low
 	; 下位の比較で達しているか
 	sec
-	lda field_scroll_x_low_tmp
+	lda REG1
 	sbc enemy_pos_x_low
 	bcc appear_skip	; キャリーフラグがクリア（超過）されている場合
 

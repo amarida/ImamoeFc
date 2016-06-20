@@ -598,7 +598,6 @@ End:
 	lda bg_already_draw;
 	sbc scroll_count_8dot_count
 
-;	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
@@ -655,7 +654,6 @@ skip:
 	sec
 	lda bg_already_draw_attribute;
 	sbc scroll_count_32dot_count
-;	sbc field_scroll_x_low_tmp
 	beq not_skip
 	jmp skip
 not_skip:
