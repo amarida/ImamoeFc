@@ -95,9 +95,9 @@ exit:
 	sbc	player_spd_low
 	sta	player_x_low
 
-	lda	player_x_up		; 上位
+	lda	player_x_hi		; 上位
 	sbc	#0
-	sta	player_x_up
+	sta	player_x_hi
 
 	lda #1
 	sta chr_lr
@@ -111,9 +111,9 @@ exit:
 	lda player_x_low
 	adc #1
 	sta player_x_low
-	lda player_x_up
+	lda player_x_hi
 	adc #0
-	sta player_x_up
+	sta player_x_hi
 skip:
 
 	rts
@@ -139,14 +139,14 @@ skip:
 	adc	player_spd_low
 	sta	player_x_low
 
-	lda	player_x_up		; 上位
+	lda	player_x_hi		; 上位
 	adc	#0
-	sta	player_x_up
+	sta	player_x_hi
 
 	; 速度変更確認
 	lda player_speed_hi_or_low
 	beq not_speed_change
-	lda player_x_up
+	lda player_x_hi
 	beq not_speed_change
 	sec
 	lda player_x_low
@@ -171,9 +171,9 @@ skip:
 	lda player_x_low
 	sbc #1
 	sta player_x_low
-	lda player_x_up
+	lda player_x_hi
 	sbc #0
-	sta player_x_up
+	sta player_x_hi
 	jmp skip
 roll_skip:
 
@@ -1248,7 +1248,7 @@ skip_return:
 	adc #31
 	sta player_y_bottom_for_collision	; あたり判定用下Y座標（Y座標+31）
 
-	lda player_x_up
+	lda player_x_hi
 	sta player_x_left_hi_for_collision	; あたり判定用左X座標上位（X座標）
 	lda player_x_low
 	sta player_x_left_low_for_collision	; あたり判定用左X座標下位（X座標）

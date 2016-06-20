@@ -44,7 +44,7 @@ set_habatan:
 	lda player_x_low
 	sbc #124
 	sta habatan_world_pos_x_low
-	lda player_x_up
+	lda player_x_hi
 	sbc #0
 	sta habatan_world_pos_x_hi
 
@@ -289,7 +289,7 @@ skip_update:
 .proc	Habatan_UpdateNormal
 
 	; ƒvƒŒƒCƒ„‚É’Ç]
-	lda player_x_up
+	lda player_x_hi
 	sta habatan_world_pos_x_hi
 	lda player_x_low
 	sta habatan_world_pos_x_low

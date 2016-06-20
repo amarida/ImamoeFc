@@ -509,7 +509,7 @@ skip_return:
 	adc #15
 	sta player_y_bottom_for_collision	; あたり判定用下Y座標（Y座標+15）
 
-	lda tako0_world_pos_x_hi,x ;player_x_up
+	lda tako0_world_pos_x_hi,x
 	sta player_x_left_hi_for_collision	; あたり判定用左X座標上位（X座標）
 	lda tako0_world_pos_x_low,x ;player_x_low
 	sta player_x_left_low_for_collision	; あたり判定用左X座標下位（X座標）

@@ -91,7 +91,7 @@
 	lda	#128		; 128(10i)
 	sta	player_x_low
 	lda	#0			; 0(10i)
-	sta	player_x_up
+	sta	player_x_hi
 	lda	#168		; (10i)
 	sta	player_y
 
