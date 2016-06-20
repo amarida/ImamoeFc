@@ -196,8 +196,6 @@ break:
 	jsr HabatanFire_Update
 	jsr Item_Update
 
-;	jsr confirm_appear_enemy
-
 	lda bgm_type
 	beq skip_bgm
 	jsr UpdateBgm

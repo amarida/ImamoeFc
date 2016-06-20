@@ -89,10 +89,10 @@ exit:
 
 	sec					; キャリーフラグON
 	lda player_x_decimal
-	sbc #$80
+	sbc player_spd_decial
 	sta player_x_decimal
 	lda	player_x_low	; 下位
-	sbc	#0
+	sbc	player_spd_low
 	sta	player_x_low
 
 	lda	player_x_up		; 上位
@@ -122,22 +122,45 @@ skip:
 ; 右移動
 .proc	PlayerMoveRight
 	lda is_dead
-	bne skip
+	beq skip_skip
+	jmp skip
+	skip_skip:
 
 	lda habatan_fire_alive_flag
-	bne skip
+	beq skip_skip2
+	jmp skip
+	skip_skip2:
 
 	clc					; キャリーフラグOFF
 	lda player_x_decimal
-	adc #$80;#$a0
+	adc player_spd_decial
 	sta player_x_decimal
 	lda	player_x_low	; 下位
-	adc	#0
+	adc	player_spd_low
 	sta	player_x_low
 
 	lda	player_x_up		; 上位
 	adc	#0
 	sta	player_x_up
+
+	; 速度変更確認
+	lda player_speed_hi_or_low
+	beq not_speed_change
+	lda player_x_up
+	beq not_speed_change
+	sec
+	lda player_x_low
+	sbc #$60
+	bcc not_speed_change	; キャリーフラグがクリアされている時
+	
+	; 速度変更
+	lda #$80
+	sta REG0
+	lda #0
+	sta REG1
+	jsr Player_SetSpeed
+	
+	not_speed_change:
 
 	; あたり判定
 	jsr collision_object
@@ -187,17 +210,7 @@ skip_scroll_count_8dot_off:
 	inc scroll_count_32dot_count
 skip_scroll_count_32dot_off:
 
-;	; スクロール情報の更新とともに
-;	; イノシシ座標ずらす
-;	sec
-;	lda inosisi0_pos_x
-;	sbc #1
-;	sta inosisi0_pos_x
-;	bne skip_inosisi_reset
-;	lda #255
-;	sta inosisi0_pos_x
-;skip_inosisi_reset:
-
+	; スクロール情報の更新
 	clc
 	lda field_scroll_x_low
 	adc #1
@@ -2043,3 +2056,12 @@ exit:
 
 	rts
 .endproc	; collision_item
+
+.proc Player_SetSpeed
+	lda REG0
+	sta player_spd_decial
+	lda REG1
+	sta player_spd_low
+	
+	rts
+.endproc	; Player_SetSpeed

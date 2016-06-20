@@ -222,6 +222,16 @@
 	lda #%11110011
 	sta score_b0
 
+	; 初期プレイヤー速度
+	lda #0
+	sta REG0
+	lda #1
+	sta REG1
+	jsr Player_SetSpeed
+	
+	lda #1
+	sta player_speed_hi_or_low
+
 	; スプライト0番の情報
 	lda #23
 	sta spriteZero_y
