@@ -93,7 +93,6 @@ break:
 loop_attribute_first_x:
 ; •`‰æ
 	lda #0
-	sta offset_y_attribute
 	sta draw_bg_y
 	lda bg_already_draw_attribute_pos
 	sta draw_bg_x

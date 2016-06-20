@@ -384,8 +384,6 @@ draw_loop:
 	ldx #7	; ‰¡8ŒÂ
 loop_attribute_first_x:
 ; •`‰æ
-	lda #0
-	sta offset_y_attribute
 	lda #1	; 1‚©‚çŽn‚ß‚é
 	sta draw_bg_y
 	lda bg_already_draw_attribute_pos
@@ -659,8 +657,6 @@ skip:
 not_skip:
 
 ; •`‰æ
-	lda #0
-	sta offset_y_attribute
 	lda #1
 	sta draw_bg_y
 	lda bg_already_draw_attribute_pos
