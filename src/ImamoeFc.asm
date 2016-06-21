@@ -392,14 +392,14 @@ loop_attribute_first_x:
 	; 1度だけ座標からアドレスを求める
 	; draw_bg_x(in)
 	; draw_bg_y(in)
-	; attribute_pos_adress_up(out)
+	; attribute_pos_adress_hi(out)
 	; attribute_pos_adress_low(out)
 	jsr CalcAttributeAdressFromCoord
 
 	ldy #6	; 縦7個
 attribute_loop:
 
-	lda attribute_pos_adress_up
+	lda attribute_pos_adress_hi
 	sta $2006
 	lda attribute_pos_adress_low
 	sta $2006
@@ -665,14 +665,14 @@ not_skip:
 	; 1度だけ座標からアドレスを求める
 	; draw_bg_x(in)
 	; draw_bg_y(in)
-	; attribute_pos_adress_up(out)
+	; attribute_pos_adress_hi(out)
 	; attribute_pos_adress_low(out)
 	jsr CalcAttributeAdressFromCoord
 
 	ldy #6	; 7個
 draw_loop:
 
-	lda attribute_pos_adress_up
+	lda attribute_pos_adress_hi
 	sta $2006
 	lda attribute_pos_adress_low
 	sta $2006
@@ -910,7 +910,7 @@ noset24:
 .proc CalcAttributeAdressFromCoord
 	; draw_bg_x	X座標(0,0)-(7,7)
 	; draw_bg_y	Y座標
-	; attribute_pos_adress_up
+	; attribute_pos_adress_hi
 	; attribute_pos_adress_low
 	lda draw_bg_x
 	sta conv_coord_bit_x
@@ -983,18 +983,9 @@ noset24:
 ;;;;;↑ 座標をアドレス空間に変換 ;;;;;
 
 	lda conv_coord_bit_up
-	sta attribute_pos_adress_up
+	sta attribute_pos_adress_hi
 	lda conv_coord_bit_low
 	sta attribute_pos_adress_low
-
-	rts
-.endproc
-
-.proc DrawMapChip
-	; draw_bg_tile	タイル番号
-
-	lda draw_bg_tile
-	sta $2007
 
 	rts
 .endproc

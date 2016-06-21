@@ -223,7 +223,7 @@ break:
 
 	; ‰æ–ÊŠO”»’è
 	sec
-	lda field_scroll_x_up
+	lda field_scroll_x_hi
 	sbc inosisi0_world_pos_x_hi,x
 	bcc skip_dead
 	sec

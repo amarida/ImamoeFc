@@ -252,7 +252,7 @@ skip:
 	; スクロール位置が達していたら
 	; 敵を登場させて、登場済みフラグを立てる
 
-	lda field_scroll_x_up
+	lda field_scroll_x_hi
 	sta REG0
 	lda field_scroll_x_low
 	sta REG1

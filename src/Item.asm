@@ -221,7 +221,7 @@ break:
 
 	; ‰æ–ÊŠO”»’è
 	sec
-	lda field_scroll_x_up
+	lda field_scroll_x_hi
 	sbc item_world_pos_x_hi
 	bcc skip_dead
 	sec

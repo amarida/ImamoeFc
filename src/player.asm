@@ -222,9 +222,9 @@ skip_scroll_count_32dot_off:
 	sta current_draw_display_no
 eor_skip:
 
-	lda field_scroll_x_up
+	lda field_scroll_x_hi
 	adc #0
-	sta field_scroll_x_up
+	sta field_scroll_x_hi
 
 skip:
 
@@ -734,9 +734,7 @@ break_fuki_attack2:
 	lda player_x_low
 	sbc field_scroll_x_low
 	sta window_player_x_low
-	;lda player_x_up
-	;sbc field_scroll_x_up
-	;sta window_player_x_up
+
 	clc
 	lda window_player_x_low
 	adc #8
@@ -1027,9 +1025,7 @@ break_fuki_attack2:
 	lda player_x_low
 	sbc field_scroll_x_low
 	sta window_player_x_low
-	;lda player_x_up
-	;sbc field_scroll_x_up
-	;sta window_player_x_up
+
 	clc
 	lda window_player_x_low
 	adc #8
