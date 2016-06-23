@@ -14,39 +14,39 @@ playerFuki2_t: .byte 0
 playerFuki2_s: .byte 0
 playerFuki2_x: .byte 0
 
-tako1_y:	.byte 0;	=	$0720	; 
-tako1_t:	.byte 0;	=	$0721	; 
-tako1_s:	.byte 0;	=	$0722	; ‘®«
-tako1_x:	.byte 0;	=	$0723	; 
-tako2_y:	.byte 0;	=	$0724	; 
-tako2_t:	.byte 0;	=	$0725	; 
-tako2_s:	.byte 0;	=	$0726	; 
-tako2_x:	.byte 0;	=	$0727	; 
-tako3_y:	.byte 0;	=	$0728	; 
-tako3_t:	.byte 0;	=	$0729	; 
-tako3_s:	.byte 0;	=	$072A	; 
-tako3_x:	.byte 0;	=	$072B	; 
-tako4_y:	.byte 0;	=	$072C	; 
-tako4_t:	.byte 0;	=	$072D	; 
-tako4_s:	.byte 0;	=	$072A	; 
-tako4_x:	.byte 0;	=	$072B	; 
+char4_p1_index1_y:	.byte 0
+char4_p1_index1_t:	.byte 0
+char4_p1_index1_s:	.byte 0
+char4_p1_index1_x:	.byte 0
+char4_p1_index2_y:	.byte 0
+char4_p1_index2_t:	.byte 0
+char4_p1_index2_s:	.byte 0
+char4_p1_index2_x:	.byte 0
+char4_p1_index3_y:	.byte 0
+char4_p1_index3_t:	.byte 0
+char4_p1_index3_s:	.byte 0
+char4_p1_index3_x:	.byte 0
+char4_p1_index4_y:	.byte 0
+char4_p1_index4_t:	.byte 0
+char4_p1_index4_s:	.byte 0
+char4_p1_index4_x:	.byte 0
 
-tako21_y:	.byte 0;	=	$0740
-tako21_t:	.byte 0;	=	$0741	; 
-tako21_s:	.byte 0;	=	$0742	; ‘®«
-tako21_x:	.byte 0;	=	$0743	; 
-tako22_y:	.byte 0;	=	$0744	; 
-tako22_t:	.byte 0;	=	$0745	; 
-tako22_s:	.byte 0;	=	$0746	; 
-tako22_x:	.byte 0;	=	$0747	; 
-tako23_y:	.byte 0;	=	$0748	; 
-tako23_t:	.byte 0;	=	$0749	; 
-tako23_s:	.byte 0;	=	$074A	; 
-tako23_x:	.byte 0;	=	$074B	; 
-tako24_y:	.byte 0;	=	$074C	; 
-tako24_t:	.byte 0;	=	$074D	; 
-tako24_s:	.byte 0;	=	$074E	; 
-tako24_x:	.byte 0;	=	$074F	; 
+char4_p2_index1_y:	.byte 0
+char4_p2_index1_t:	.byte 0
+char4_p2_index1_s:	.byte 0
+char4_p2_index1_x:	.byte 0
+char4_p2_index2_y:	.byte 0
+char4_p2_index2_t:	.byte 0
+char4_p2_index2_s:	.byte 0
+char4_p2_index2_x:	.byte 0
+char4_p2_index3_y:	.byte 0
+char4_p2_index3_t:	.byte 0
+char4_p2_index3_s:	.byte 0
+char4_p2_index3_x:	.byte 0
+char4_p2_index4_y:	.byte 0
+char4_p2_index4_t:	.byte 0
+char4_p2_index4_s:	.byte 0
+char4_p2_index4_x:	.byte 0
 
 player1_y:	.byte 0;	=	$0700	; 
 player1_t:	.byte 0;	=	$0701	; 
@@ -80,40 +80,6 @@ player8_y:	.byte 0;	=	$071C	;
 player8_t:	.byte 0;	=	$071D	; 
 player8_s:	.byte 0;	=	$071E	; 
 player8_x:	.byte 0;	=	$071F	; 
-
-tamanegi1_y:	.byte 0;	=	$0720	; 
-tamanegi1_t:	.byte 0;	=	$0721	; 
-tamanegi1_s:	.byte 0;	=	$0722	; ‘®«
-tamanegi1_x:	.byte 0;	=	$0723	; 
-tamanegi2_y:	.byte 0;	=	$0724	; 
-tamanegi2_t:	.byte 0;	=	$0725	; 
-tamanegi2_s:	.byte 0;	=	$0726	; 
-tamanegi2_x:	.byte 0;	=	$0727	; 
-tamanegi3_y:	.byte 0;	=	$0728	; 
-tamanegi3_t:	.byte 0;	=	$0729	; 
-tamanegi3_s:	.byte 0;	=	$072A	; 
-tamanegi3_x:	.byte 0;	=	$072B	; 
-tamanegi4_y:	.byte 0;	=	$072C	; 
-tamanegi4_t:	.byte 0;	=	$072D	; 
-tamanegi4_s:	.byte 0;	=	$072A	; 
-tamanegi4_x:	.byte 0;	=	$072B	; 
-
-tamanegi21_y:	.byte 0;	=	$0720	; 
-tamanegi21_t:	.byte 0;	=	$0721	; 
-tamanegi21_s:	.byte 0;	=	$0722	; ‘®«
-tamanegi21_x:	.byte 0;	=	$0723	; 
-tamanegi22_y:	.byte 0;	=	$0724	; 
-tamanegi22_t:	.byte 0;	=	$0725	; 
-tamanegi22_s:	.byte 0;	=	$0726	; 
-tamanegi22_x:	.byte 0;	=	$0727	; 
-tamanegi23_y:	.byte 0;	=	$0728	; 
-tamanegi23_t:	.byte 0;	=	$0729	; 
-tamanegi23_s:	.byte 0;	=	$072A	; 
-tamanegi23_x:	.byte 0;	=	$072B	; 
-tamanegi24_y:	.byte 0;	=	$072C	; 
-tamanegi24_t:	.byte 0;	=	$072D	; 
-tamanegi24_s:	.byte 0;	=	$072A	; 
-tamanegi24_x:	.byte 0;	=	$072B	; 
 
 char_6type1_y:	.byte 0;	=	$0720	; 
 char_6type1_t:	.byte 0;	=	$0721	; 
@@ -251,7 +217,7 @@ haba_fire9_t:	.byte 0
 haba_fire9_s:	.byte 0
 haba_fire9_x:	.byte 0
 
-; 60
+; 52
 
 
 .org $0600
@@ -268,40 +234,6 @@ playerFuki2_y2: .byte 0
 playerFuki2_t2: .byte 0
 playerFuki2_s2: .byte 0
 playerFuki2_x2: .byte 0
-
-tamanegi1_y2:	.byte 0
-tamanegi1_t2:	.byte 0
-tamanegi1_s2:	.byte 0
-tamanegi1_x2:	.byte 0
-tamanegi2_y2:	.byte 0
-tamanegi2_t2:	.byte 0
-tamanegi2_s2:	.byte 0
-tamanegi2_x2:	.byte 0
-tamanegi3_y2:	.byte 0
-tamanegi3_t2:	.byte 0
-tamanegi3_s2:	.byte 0
-tamanegi3_x2:	.byte 0
-tamanegi4_y2:	.byte 0
-tamanegi4_t2:	.byte 0
-tamanegi4_s2:	.byte 0
-tamanegi4_x2:	.byte 0
-
-tamanegi21_y2:	.byte 0
-tamanegi21_t2:	.byte 0
-tamanegi21_s2:	.byte 0
-tamanegi21_x2:	.byte 0
-tamanegi22_y2:	.byte 0
-tamanegi22_t2:	.byte 0
-tamanegi22_s2:	.byte 0
-tamanegi22_x2:	.byte 0
-tamanegi23_y2:	.byte 0
-tamanegi23_t2:	.byte 0
-tamanegi23_s2:	.byte 0
-tamanegi23_x2:	.byte 0
-tamanegi24_y2:	.byte 0
-tamanegi24_t2:	.byte 0
-tamanegi24_s2:	.byte 0
-tamanegi24_x2:	.byte 0
 
 player1_y2:	.byte 0
 player1_t2:	.byte 0
@@ -422,6 +354,40 @@ char_12_type12_t2:	.byte 0
 char_12_type12_s2:	.byte 0
 char_12_type12_x2:	.byte 0
 
+char4_p1_index1_y2:	.byte 0
+char4_p1_index1_t2:	.byte 0
+char4_p1_index1_s2:	.byte 0
+char4_p1_index1_x2:	.byte 0
+char4_p1_index2_y2:	.byte 0
+char4_p1_index2_t2:	.byte 0
+char4_p1_index2_s2:	.byte 0
+char4_p1_index2_x2:	.byte 0
+char4_p1_index3_y2:	.byte 0
+char4_p1_index3_t2:	.byte 0
+char4_p1_index3_s2:	.byte 0
+char4_p1_index3_x2:	.byte 0
+char4_p1_index4_y2:	.byte 0
+char4_p1_index4_t2:	.byte 0
+char4_p1_index4_s2:	.byte 0
+char4_p1_index4_x2:	.byte 0
+
+char4_p2_index1_y2:	.byte 0
+char4_p2_index1_t2:	.byte 0
+char4_p2_index1_s2:	.byte 0
+char4_p2_index1_x2:	.byte 0
+char4_p2_index2_y2:	.byte 0
+char4_p2_index2_t2:	.byte 0
+char4_p2_index2_s2:	.byte 0
+char4_p2_index2_x2:	.byte 0
+char4_p2_index3_y2:	.byte 0
+char4_p2_index3_t2:	.byte 0
+char4_p2_index3_s2:	.byte 0
+char4_p2_index3_x2:	.byte 0
+char4_p2_index4_y2:	.byte 0
+char4_p2_index4_t2:	.byte 0
+char4_p2_index4_s2:	.byte 0
+char4_p2_index4_x2:	.byte 0
+
 char_6type1_y2:	.byte 0
 char_6type1_t2:	.byte 0
 char_6type1_s2:	.byte 0
@@ -471,37 +437,3 @@ char_6type26_y2:	.byte 0
 char_6type26_t2:	.byte 0
 char_6type26_s2:	.byte 0
 char_6type26_x2:	.byte 0
-
-tako1_y2:	.byte 0
-tako1_t2:	.byte 0
-tako1_s2:	.byte 0
-tako1_x2:	.byte 0
-tako2_y2:	.byte 0
-tako2_t2:	.byte 0
-tako2_s2:	.byte 0
-tako2_x2:	.byte 0
-tako3_y2:	.byte 0
-tako3_t2:	.byte 0
-tako3_s2:	.byte 0
-tako3_x2:	.byte 0
-tako4_y2:	.byte 0
-tako4_t2:	.byte 0
-tako4_s2:	.byte 0
-tako4_x2:	.byte 0
-
-tako21_y2:	.byte 0
-tako21_t2:	.byte 0
-tako21_s2:	.byte 0
-tako21_x2:	.byte 0
-tako22_y2:	.byte 0
-tako22_t2:	.byte 0
-tako22_s2:	.byte 0
-tako22_x2:	.byte 0
-tako23_y2:	.byte 0
-tako23_t2:	.byte 0
-tako23_s2:	.byte 0
-tako23_x2:	.byte 0
-tako24_y2:	.byte 0
-tako24_t2:	.byte 0
-tako24_s2:	.byte 0
-tako24_x2:	.byte 0

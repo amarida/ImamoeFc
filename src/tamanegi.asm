@@ -15,24 +15,6 @@
 	lda #224	; 画面外;#184
 	sta tamanegi0_pos_y
 	sta tamanegi1_pos_y
-	; 属性は変わらない
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta tamanegi1_s
-	sta tamanegi2_s
-	sta tamanegi3_s
-	sta tamanegi4_s
-	sta tamanegi21_s
-	sta tamanegi22_s
-	sta tamanegi23_s
-	sta tamanegi24_s
-	sta tamanegi1_s2
-	sta tamanegi2_s2
-	sta tamanegi3_s2
-	sta tamanegi4_s2
-	sta tamanegi21_s2
-	sta tamanegi22_s2
-	sta tamanegi23_s2
-	sta tamanegi24_s2
 
 	rts
 .endproc
@@ -141,38 +123,38 @@ skip_tamanegi:
 	beq skip_clear		; 存在していない
 
 	lda #0
-	sta tamanegi1_y,y
-	sta tamanegi1_t,y
-	sta tamanegi1_s,y
-	sta tamanegi1_x,y
-	sta tamanegi2_y,y
-	sta tamanegi2_t,y
-	sta tamanegi2_s,y
-	sta tamanegi2_x,y
-	sta tamanegi3_y,y
-	sta tamanegi3_t,y
-	sta tamanegi3_s,y
-	sta tamanegi3_x,y
-	sta tamanegi4_y,y
-	sta tamanegi4_t,y
-	sta tamanegi4_s,y
-	sta tamanegi4_x,y
-	sta tamanegi1_y2,y
-	sta tamanegi1_t2,y
-	sta tamanegi1_s2,y
-	sta tamanegi1_x2,y
-	sta tamanegi2_y2,y
-	sta tamanegi2_t2,y
-	sta tamanegi2_s2,y
-	sta tamanegi2_x2,y
-	sta tamanegi3_y2,y
-	sta tamanegi3_t2,y
-	sta tamanegi3_s2,y
-	sta tamanegi3_x2,y
-	sta tamanegi4_y2,y
-	sta tamanegi4_t2,y
-	sta tamanegi4_s2,y
-	sta tamanegi4_x2,y
+	sta char4_p1_index1_y,y
+	sta char4_p1_index1_t,y
+	sta char4_p1_index1_s,y
+	sta char4_p1_index1_x,y
+	sta char4_p1_index2_y,y
+	sta char4_p1_index2_t,y
+	sta char4_p1_index2_s,y
+	sta char4_p1_index2_x,y
+	sta char4_p1_index3_y,y
+	sta char4_p1_index3_t,y
+	sta char4_p1_index3_s,y
+	sta char4_p1_index3_x,y
+	sta char4_p1_index4_y,y
+	sta char4_p1_index4_t,y
+	sta char4_p1_index4_s,y
+	sta char4_p1_index4_x,y
+	sta char4_p1_index1_y2,y
+	sta char4_p1_index1_t2,y
+	sta char4_p1_index1_s2,y
+	sta char4_p1_index1_x2,y
+	sta char4_p1_index2_y2,y
+	sta char4_p1_index2_t2,y
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index2_x2,y
+	sta char4_p1_index3_y2,y
+	sta char4_p1_index3_t2,y
+	sta char4_p1_index3_s2,y
+	sta char4_p1_index3_x2,y
+	sta char4_p1_index4_y2,y
+	sta char4_p1_index4_t2,y
+	sta char4_p1_index4_s2,y
+	sta char4_p1_index4_x2,y
 
 	lda #0
 	sta tamanegi0_world_pos_x_low,x
@@ -683,18 +665,22 @@ case_in_the_cannon:
 case_parabola:
 	; ななめタイル
 	lda #$AB
-	sta tamanegi1_t,y
+	sta char4_p1_index1_t,y
 	lda #$AC
-	sta tamanegi2_t,y
+	sta char4_p1_index2_t,y
 	lda #$BB
-	sta tamanegi3_t,y
+	sta char4_p1_index3_t,y
 	lda #$BC
-	sta tamanegi4_t,y
+	sta char4_p1_index4_t,y
 	
 	; 反転なし、後ろ
 	lda #%00100001
-	sta tamanegi2_s,y
-	sta tamanegi4_s,y
+	sta char4_p1_index2_s,y
+	sta char4_p1_index4_s,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s,y
+	sta char4_p1_index3_s,y
 
 	jmp break;
 
@@ -715,24 +701,28 @@ case_normal:
 	clc
 	lda #$AD     ; 
 	adc REG0
-	sta tamanegi1_t,y
+	sta char4_p1_index1_t,y
 	clc
 	lda #$AD
 	adc REG1
-	sta tamanegi2_t,y
+	sta char4_p1_index2_t,y
 	clc
 	lda #$BD
 	adc REG0
-	sta tamanegi3_t,y
+	sta char4_p1_index3_t,y
 	clc
 	lda #$BD
 	adc REG1
-	sta tamanegi4_t,y
+	sta char4_p1_index4_t,y
 	
 	; 反転あり
 	lda #%01000001
-	sta tamanegi2_s,y
-	sta tamanegi4_s,y
+	sta char4_p1_index2_s,y
+	sta char4_p1_index4_s,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s,y
+	sta char4_p1_index3_s,y
 
 	jmp break;
 
@@ -754,31 +744,35 @@ case_burst:
 	type_show:
 	; 生存タイル
 	lda #$AD     ; 
-	sta tamanegi1_t,y
+	sta char4_p1_index1_t,y
 	lda #$AD
-	sta tamanegi2_t,y
+	sta char4_p1_index2_t,y
 	lda #$BD
-	sta tamanegi3_t,y
+	sta char4_p1_index3_t,y
 	lda #$BD
-	sta tamanegi4_t,y
+	sta char4_p1_index4_t,y
 	
 	; 反転あり
 	lda #%01000001
-	sta tamanegi2_s,y
-	sta tamanegi4_s,y
+	sta char4_p1_index2_s,y
+	sta char4_p1_index4_s,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s,y
+	sta char4_p1_index3_s,y
 
 	jmp type_break
 
 	type_hide:
 	; 本体は非表示
 	lda #$00
-	sta tamanegi1_t,y
+	sta char4_p1_index1_t,y
 	lda #$00
-	sta tamanegi2_t,y
+	sta char4_p1_index2_t,y
 	lda #$00
-	sta tamanegi3_t,y
+	sta char4_p1_index3_t,y
 	lda #$00
-	sta tamanegi4_t,y
+	sta char4_p1_index4_t,y
 
 	jmp type_break
 
@@ -794,14 +788,14 @@ break:
 	clc			; キャリーフラグOFF
 	lda tamanegi0_pos_y,x
 	adc #7
-	sta tamanegi1_y,y
-	sta tamanegi2_y,y
+	sta char4_p1_index1_y,y
+	sta char4_p1_index2_y,y
 
 	clc			; キャリーフラグOFF
 	lda tamanegi0_pos_y,x
 	adc #15
-	sta tamanegi3_y,y
-	sta tamanegi4_y,y
+	sta char4_p1_index3_y,y
+	sta char4_p1_index4_y,y
 
 ; Y座標以外は非表示時スキップ
 
@@ -812,8 +806,8 @@ break:
 	sta tamanegi0_window_pos_x,x
 
 	lda tamanegi0_window_pos_x,x
-	sta tamanegi1_x,y
-	sta tamanegi3_x,y
+	sta char4_p1_index1_x,y
+	sta char4_p1_index3_x,y
 
 	lda tamanegi0_window_pos_x,x
 	clc			; キャリーフラグOFF
@@ -821,20 +815,20 @@ break:
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tamanegi2_y,y
-	sta tamanegi4_y,y
+	sta char4_p1_index2_y,y
+	sta char4_p1_index4_y,y
 not_overflow_8:
-	sta tamanegi2_x,y
-	sta tamanegi4_x,y
+	sta char4_p1_index2_x,y
+	sta char4_p1_index4_x,y
 	
 	; タイルが空(炎上中)は画面外
-	lda tamanegi1_t,y
+	lda char4_p1_index1_t,y
 	bne skip_y_hide
 	lda #231	; 画面外
-	sta tamanegi1_y,y
-	sta tamanegi2_y,y	
-	sta tamanegi3_y,y
-	sta tamanegi4_y,y	
+	sta char4_p1_index1_y,y
+	sta char4_p1_index2_y,y	
+	sta char4_p1_index3_y,y
+	sta char4_p1_index4_y,y	
 	skip_y_hide:
 
 next_draw:
@@ -903,18 +897,22 @@ case_in_the_cannon:
 case_parabola:
 	; ななめタイル
 	lda #$AB
-	sta tamanegi1_t2,y
+	sta char4_p1_index1_t2,y
 	lda #$AC
-	sta tamanegi2_t2,y
+	sta char4_p1_index2_t2,y
 	lda #$BB
-	sta tamanegi3_t2,y
+	sta char4_p1_index3_t2,y
 	lda #$BC
-	sta tamanegi4_t2,y
+	sta char4_p1_index4_t2,y
 	
 	; 反転なし、後ろ
 	lda #%00100001
-	sta tamanegi2_s2,y
-	sta tamanegi4_s2,y
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index4_s2,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s2,y
+	sta char4_p1_index3_s2,y
 	
 	jmp break;
 
@@ -934,24 +932,28 @@ case_normal:
 	clc
 	lda #$AD     ; 
 	adc REG0
-	sta tamanegi1_t2,y
+	sta char4_p1_index1_t2,y
 	clc
 	lda #$AD
 	adc REG1
-	sta tamanegi2_t2,y
+	sta char4_p1_index2_t2,y
 	clc
 	lda #$BD
 	adc REG0
-	sta tamanegi3_t2,y
+	sta char4_p1_index3_t2,y
 	clc
 	lda #$BD
 	adc REG1
-	sta tamanegi4_t2,y
+	sta char4_p1_index4_t2,y
 	
 	; 反転あり
 	lda #%01000001
-	sta tamanegi2_s2,y
-	sta tamanegi4_s2,y
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index4_s2,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s2,y
+	sta char4_p1_index3_s2,y
 
 	jmp break;
 
@@ -973,31 +975,35 @@ case_burst:
 	type_show:
 	; 生存タイル
 	lda #$AD     ; 
-	sta tamanegi1_t2,y
+	sta char4_p1_index1_t2,y
 	lda #$AD
-	sta tamanegi2_t2,y
+	sta char4_p1_index2_t2,y
 	lda #$BD
-	sta tamanegi3_t2,y
+	sta char4_p1_index3_t2,y
 	lda #$BD
-	sta tamanegi4_t2,y
+	sta char4_p1_index4_t2,y
 	
 	; 反転あり
 	lda #%01000001
-	sta tamanegi2_s2,y
-	sta tamanegi4_s2,y
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index4_s2,y
+	; 反転なし
+	lda #%00000001
+	sta char4_p1_index1_s2,y
+	sta char4_p1_index3_s2,y
 
 	jmp type_break
 
 	type_hide:
 	; 本体は非表示
 	lda #$00
-	sta tamanegi1_t2,y
+	sta char4_p1_index1_t2,y
 	lda #$00
-	sta tamanegi2_t2,y
+	sta char4_p1_index2_t2,y
 	lda #$00
-	sta tamanegi3_t2,y
+	sta char4_p1_index3_t2,y
 	lda #$00
-	sta tamanegi4_t2,y
+	sta char4_p1_index4_t2,y
 
 	jmp type_break
 
@@ -1015,14 +1021,14 @@ break:
 	clc			; キャリーフラグOFF
 	lda tamanegi0_pos_y,x
 	adc #7
-	sta tamanegi1_y2,y
-	sta tamanegi2_y2,y
+	sta char4_p1_index1_y2,y
+	sta char4_p1_index2_y2,y
 
 	clc			; キャリーフラグOFF
 	lda tamanegi0_pos_y,x
 	adc #15
-	sta tamanegi3_y2,y
-	sta tamanegi4_y2,y
+	sta char4_p1_index3_y2,y
+	sta char4_p1_index4_y2,y
 
 ; Y座標以外は非表示時スキップ
 
@@ -1033,8 +1039,8 @@ break:
 	sta tamanegi0_window_pos_x,x
 
 	lda tamanegi0_window_pos_x,x
-	sta tamanegi1_x2,y
-	sta tamanegi3_x2,y
+	sta char4_p1_index1_x2,y
+	sta char4_p1_index3_x2,y
 
 	lda tamanegi0_window_pos_x,x
 	clc			; キャリーフラグOFF
@@ -1042,20 +1048,20 @@ break:
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tamanegi2_y2,y
-	sta tamanegi4_y2,y
+	sta char4_p1_index2_y2,y
+	sta char4_p1_index4_y2,y
 not_overflow_8:
-	sta tamanegi2_x2,y
-	sta tamanegi4_x2,y
+	sta char4_p1_index2_x2,y
+	sta char4_p1_index4_x2,y
 
 	; タイルが空(炎上中)は画面外
-	lda tamanegi1_t2,y
+	lda char4_p1_index1_t2,y
 	bne skip_y_hide
 	lda #231	; 画面外
-	sta tamanegi1_y2,y
-	sta tamanegi2_y2,y	
-	sta tamanegi3_y2,y
-	sta tamanegi4_y2,y	
+	sta char4_p1_index1_y2,y
+	sta char4_p1_index2_y2,y	
+	sta char4_p1_index3_y2,y
+	sta char4_p1_index4_y2,y	
 	skip_y_hide:
 
 next_draw:
@@ -1604,28 +1610,28 @@ skip3:
 	beq tamanegi2
 tamanegi1:
 	lda REG0
-	sta tamanegi1_s
-	sta tamanegi3_s
-	sta tamanegi1_s2
-	sta tamanegi3_s2
+	sta char4_p1_index1_s
+	sta char4_p1_index3_s
+	sta char4_p1_index1_s2
+	sta char4_p1_index3_s2
 	lda REG1
-	sta tamanegi2_s
-	sta tamanegi4_s
-	sta tamanegi2_s2
-	sta tamanegi4_s2
+	sta char4_p1_index2_s
+	sta char4_p1_index4_s
+	sta char4_p1_index2_s2
+	sta char4_p1_index4_s2
 	
 	jmp break
 tamanegi2:
 	lda REG0
-	sta tamanegi21_s
-	sta tamanegi23_s
-	sta tamanegi21_s2
-	sta tamanegi23_s2
+	sta char4_p2_index1_s
+	sta char4_p2_index3_s
+	sta char4_p2_index1_s2
+	sta char4_p2_index3_s2
 	lda REG1
-	sta tamanegi22_s
-	sta tamanegi24_s
-	sta tamanegi22_s2
-	sta tamanegi24_s2
+	sta char4_p2_index2_s
+	sta char4_p2_index4_s
+	sta char4_p2_index2_s2
+	sta char4_p2_index4_s2
 
 break:
 	rts

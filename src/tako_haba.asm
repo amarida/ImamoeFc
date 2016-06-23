@@ -9,24 +9,6 @@
 	lda #224	; 画面外;#184
 	sta tako0_pos_y
 	sta tako1_pos_y
-	; 属性は変わらない
-	lda #%00000001     ; 0(10進数)をAにロード
-	sta tako1_s
-	sta tako2_s
-	sta tako3_s
-	sta tako4_s
-	sta tako21_s
-	sta tako22_s
-	sta tako23_s
-	sta tako24_s
-	sta tako1_s2
-	sta tako2_s2
-	sta tako3_s2
-	sta tako4_s2
-	sta tako21_s2
-	sta tako22_s2
-	sta tako23_s2
-	sta tako24_s2
 
 	rts
 .endproc
@@ -107,38 +89,38 @@ skip_tako:
 	not_skip_clear:
 
 	lda #0
-	sta tako1_y,y
-	sta tako1_t,y
-	sta tako1_s,y
-	sta tako1_x,y
-	sta tako2_y,y
-	sta tako2_t,y
-	sta tako2_s,y
-	sta tako2_x,y
-	sta tako3_y,y
-	sta tako3_t,y
-	sta tako3_s,y
-	sta tako3_x,y
-	sta tako4_y,y
-	sta tako4_t,y
-	sta tako4_s,y
-	sta tako4_x,y
-	sta tako1_y2,y
-	sta tako1_t2,y
-	sta tako1_s2,y
-	sta tako1_x2,y
-	sta tako2_y2,y
-	sta tako2_t2,y
-	sta tako2_s2,y
-	sta tako2_x2,y
-	sta tako3_y2,y
-	sta tako3_t2,y
-	sta tako3_s2,y
-	sta tako3_x2,y
-	sta tako4_y2,y
-	sta tako4_t2,y
-	sta tako4_s2,y
-	sta tako4_x2,y
+	sta char4_p1_index1_y,y
+	sta char4_p1_index1_t,y
+	sta char4_p1_index1_s,y
+	sta char4_p1_index1_x,y
+	sta char4_p1_index2_y,y
+	sta char4_p1_index2_t,y
+	sta char4_p1_index2_s,y
+	sta char4_p1_index2_x,y
+	sta char4_p1_index3_y,y
+	sta char4_p1_index3_t,y
+	sta char4_p1_index3_s,y
+	sta char4_p1_index3_x,y
+	sta char4_p1_index4_y,y
+	sta char4_p1_index4_t,y
+	sta char4_p1_index4_s,y
+	sta char4_p1_index4_x,y
+	sta char4_p1_index1_y2,y
+	sta char4_p1_index1_t2,y
+	sta char4_p1_index1_s2,y
+	sta char4_p1_index1_x2,y
+	sta char4_p1_index2_y2,y
+	sta char4_p1_index2_t2,y
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index2_x2,y
+	sta char4_p1_index3_y2,y
+	sta char4_p1_index3_t2,y
+	sta char4_p1_index3_s2,y
+	sta char4_p1_index3_x2,y
+	sta char4_p1_index4_y2,y
+	sta char4_p1_index4_t2,y
+	sta char4_p1_index4_s2,y
+	sta char4_p1_index4_x2,y
 
 	lda #0
 	sta tako0_world_pos_x_low,x
@@ -298,19 +280,19 @@ case_normal:
 	clc
 	lda #$8B     ; 
 	adc REG0
-	sta tako1_t,y
+	sta char4_p1_index1_t,y
 	clc
 	lda #$8C
 	adc REG0
-	sta tako2_t,y
+	sta char4_p1_index2_t,y
 	clc
 	lda #$9B
 	adc REG0
-	sta tako3_t,y
+	sta char4_p1_index3_t,y
 	clc
 	lda #$9C
 	adc REG0
-	sta tako4_t,y
+	sta char4_p1_index4_t,y
 
 	jmp case_break
 
@@ -319,19 +301,19 @@ case_fire:
 	clc
 	lda #$C7     ; 
 	adc REG0
-	sta tako1_t,y
+	sta char4_p1_index1_t,y
 	clc
 	lda #$C8
 	adc REG0
-	sta tako2_t,y
+	sta char4_p1_index2_t,y
 	clc
 	lda #$9B
 	adc REG0
-	sta tako3_t,y
+	sta char4_p1_index3_t,y
 	clc
 	lda #$9C
 	adc REG0
-	sta tako4_t,y
+	sta char4_p1_index4_t,y
 
 	; タコ属性を燃えに変える
 	lda #%00000010	; パレット3を使用
@@ -346,14 +328,14 @@ case_break:
 	clc			; キャリーフラグOFF
 	lda tako0_pos_y,x
 	adc #7
-	sta tako1_y,y
-	sta tako2_y,y
+	sta char4_p1_index1_y,y
+	sta char4_p1_index2_y,y
 
 	clc			; キャリーフラグOFF
 	lda tako0_pos_y,x
 	adc #15
-	sta tako3_y,y
-	sta tako4_y,y
+	sta char4_p1_index3_y,y
+	sta char4_p1_index4_y,y
 
 ; X座標
 
@@ -364,8 +346,8 @@ case_break:
 	sta tako0_window_pos_x,x
 
 	lda tako0_window_pos_x,x
-	sta tako1_x,y
-	sta tako3_x,y
+	sta char4_p1_index1_x,y
+	sta char4_p1_index3_x,y
 
 	lda tako0_window_pos_x,x
 	clc			; キャリーフラグOFF
@@ -373,11 +355,11 @@ case_break:
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tako2_y,y
-	sta tako4_y,y
+	sta char4_p1_index2_y,y
+	sta char4_p1_index4_y,y
 not_overflow_8:
-	sta tako2_x,y
-	sta tako4_x,y
+	sta char4_p1_index2_x,y
+	sta char4_p1_index4_x,y
 
 skip_draw:
 
@@ -451,19 +433,19 @@ case_normal:
 	clc
 	lda #$8B     ; 
 	adc REG0
-	sta tako1_t2,y
+	sta char4_p1_index1_t2,y
 	clc
 	lda #$8C
 	adc REG0
-	sta tako2_t2,y
+	sta char4_p1_index2_t2,y
 	clc
 	lda #$9B
 	adc REG0
-	sta tako3_t2,y
+	sta char4_p1_index3_t2,y
 	clc
 	lda #$9C
 	adc REG0
-	sta tako4_t2,y
+	sta char4_p1_index4_t2,y
 	
 	jmp case_break
 
@@ -472,19 +454,19 @@ case_fire:
 	clc
 	lda #$C7     ; 
 	adc REG0
-	sta tako1_t2,y
+	sta char4_p1_index1_t2,y
 	clc
 	lda #$C8
 	adc REG0
-	sta tako2_t2,y
+	sta char4_p1_index2_t2,y
 	clc
 	lda #$9B
 	adc REG0
-	sta tako3_t2,y
+	sta char4_p1_index3_t2,y
 	clc
 	lda #$9C
 	adc REG0
-	sta tako4_t2,y
+	sta char4_p1_index4_t2,y
 
 	; タコ属性を燃えに変える
 	lda #%00000010	; パレット3を使用
@@ -499,14 +481,14 @@ case_break:
 	clc			; キャリーフラグOFF
 	lda tako0_pos_y,x
 	adc #7
-	sta tako1_y2,y
-	sta tako2_y2,y
+	sta char4_p1_index1_y2,y
+	sta char4_p1_index2_y2,y
 
 	clc			; キャリーフラグOFF
 	lda tako0_pos_y,x
 	adc #15
-	sta tako3_y2,y
-	sta tako4_y2,y
+	sta char4_p1_index3_y2,y
+	sta char4_p1_index4_y2,y
 
 ; X座標
 
@@ -517,8 +499,8 @@ case_break:
 	sta tako0_window_pos_x,x
 
 	lda tako0_window_pos_x,x
-	sta tako1_x2,y
-	sta tako3_x2,y
+	sta char4_p1_index1_x2,y
+	sta char4_p1_index3_x2,y
 
 	lda tako0_window_pos_x,x
 	clc			; キャリーフラグOFF
@@ -526,11 +508,11 @@ case_break:
 	bcc not_overflow_8	; キャリーフラグが立っていない
 	; オーバーフローしている場合はY座標を画面外
 	lda #231	; 画面外
-	sta tako2_y2,y
-	sta tako4_y2,y
+	sta char4_p1_index2_y2,y
+	sta char4_p1_index4_y2,y
 not_overflow_8:
-	sta tako2_x2,y
-	sta tako4_x2,y
+	sta char4_p1_index2_x2,y
+	sta char4_p1_index4_x2,y
 
 skip_draw:
 
@@ -559,26 +541,26 @@ skip_alltako:
 	beq tako2
 tako1:
 	lda REG0
-	sta tako1_s
-	sta tako2_s
-	sta tako3_s
-	sta tako4_s
-	sta tako1_s2
-	sta tako2_s2
-	sta tako3_s2
-	sta tako4_s2
+	sta char4_p1_index1_s
+	sta char4_p1_index2_s
+	sta char4_p1_index3_s
+	sta char4_p1_index4_s
+	sta char4_p1_index1_s2
+	sta char4_p1_index2_s2
+	sta char4_p1_index3_s2
+	sta char4_p1_index4_s2
 	
 	jmp break
 tako2:
 	lda REG0
-	sta tako21_s
-	sta tako22_s
-	sta tako23_s
-	sta tako24_s
-	sta tako21_s2
-	sta tako22_s2
-	sta tako23_s2
-	sta tako24_s2
+	sta char4_p2_index1_s
+	sta char4_p2_index2_s
+	sta char4_p2_index3_s
+	sta char4_p2_index4_s
+	sta char4_p2_index1_s2
+	sta char4_p2_index2_s2
+	sta char4_p2_index3_s2
+	sta char4_p2_index4_s2
 
 break:
 	rts

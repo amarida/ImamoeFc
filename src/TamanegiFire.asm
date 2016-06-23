@@ -133,16 +133,22 @@ set_fire:
 	; ƒ^ƒCƒ‹”Ô†
 	lda #$D4
 	sta char_6type1_t,y
+	sta char_6type1_t2,y
 	lda #$D5
 	sta char_6type2_t,y
+	sta char_6type2_t2,y
 	lda #$E4
 	sta char_6type3_t,y
+	sta char_6type3_t2,y
 	lda #$E5
 	sta char_6type4_t,y
+	sta char_6type4_t2,y
 	lda #$F4
 	sta char_6type5_t,y
+	sta char_6type5_t2,y
 	lda #$F5
 	sta char_6type6_t,y
+	sta char_6type6_t2,y
 	; ‘®«
 	lda #%00000010
 	sta char_6type1_s,y
