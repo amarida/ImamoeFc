@@ -1459,8 +1459,8 @@ map_chip_attribute_game_over:
 map_enemy_info:
 	.byte	$01, $e2, $b8, $00	; イノシシ
 
-	.byte	$02, $2a, $b8, $01	; タコ
-	.byte	$02, $42, $b8, $01	; タコ
+	.byte	$02, $1a, $b8, $01	; タコ
+	.byte	$02, $32, $b8, $01	; タコ
 	.byte	$02, $57, $b0, $02	; タマネギ
 	.byte	$02, $b2, $88, $05	; アイテム
 	.byte	$02, $e2, $b8, $00	; イノシシ
