@@ -612,7 +612,7 @@ case_wait:
 	lda #224
 	cmp player_y
 	bne break
-	lda #2
+	lda #4					; ゲームオーバー
 	sta scene_type			; シーン
 	lda #0
 	sta scene_update_step	; シーン内ステップ

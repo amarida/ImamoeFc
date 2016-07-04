@@ -206,3 +206,97 @@ draw_loop:
 
 	rts
 .endproc
+
+.proc DrawGameOver
+	ldx #0
+	lda #10
+	sta REG0
+	;current_draw_display_no ; スクロール画面が１か２か
+	;scroll_x				; スクロール位置
+	; スクロール位置から(8ピクセルx10ブロック)
+	; 80ピクセル加えて
+	; キャリーフラグが立ったら隣の画面
+	clc
+	lda scroll_x
+	adc #80
+	bcs display2
+	bcc display1
+	
+	; キャリーフラグが立たないかつ
+	; 152(80+72)ピクセル加えてキャリーフラグが
+	; 立たなければ、今の画面のみ
+;	clc
+;	lda scroll_x
+;	adc #152
+;	bcc display1
+
+	; キャリーフラグが立たないかつ
+	; 152(80+72)ピクセル加えてキャリーフラグが
+	; 立つ場合、2画面に分かれる
+	; 分割する位置
+	; 255-scroll_xの8で割った値が
+	; その画面で表示する文字数
+;	sec
+;	lda #255
+;	sbc scroll_x
+;	sta REG1
+;	clc
+;	lsr REG1	; 右ローテート
+;	lsr REG1	; 右ローテート
+;	lsr REG1	; 右ローテート
+;	
+;	jmp display1and2
+
+display1:
+	; スクロール位置÷８に10加える
+	lda scroll_x
+	sta REG1
+	lsr REG1	; 右シフト
+	lsr REG1	; 右シフト
+	lsr REG1	; 右シフト
+	clc
+	lda #10
+	adc REG1
+	sta REG0
+	
+
+jmp skip_ready
+display2:
+	; なにかから10引く
+
+jmp skip_ready
+display1and2:
+
+skip_ready:
+
+	lda current_draw_display_no
+	sta REG2
+	lda #1
+	sta current_draw_display_no
+
+	lda #12
+	sta REG0
+
+loop_x:
+	lda #12
+	sta draw_bg_y	; Y座標（ブロック）
+	lda REG0	; X座標（ブロック）
+	sta draw_bg_x	; X座標（ブロック）
+	jsr SetPosition
+
+	lda string_game_over, x
+	sta $2007
+
+	inc REG0
+	
+	inx
+	cpx #9
+	bne loop_x
+
+	; 画面１か２の設定を戻す
+	lda REG2
+	sta current_draw_display_no
+
+	rts
+.endproc
+

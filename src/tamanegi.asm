@@ -618,8 +618,7 @@ case_break:
 
 ; •`‰æ
 .proc	TamanegiDrawDma7
-	lda #7
-	sta debug_var
+
 	; ‚»‚à‚»‚àˆê‘Ì‚à‹‚È‚¢
 ;	lda tamanegi_alive_flag
 ;	bne not_skip_tamanegi
@@ -850,8 +849,7 @@ skip_tamanegi:
 
 ; •`‰æ
 .proc	TamanegiDrawDma6
-	lda #6
-	sta debug_var
+
 	; ‚»‚à‚»‚àˆê‘Ì‚à‹‚È‚¢
 ;	lda tamanegi_alive_flag
 ;	bne not_skip_tamanegi

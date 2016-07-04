@@ -85,7 +85,7 @@ update_dead_step							= $53	; 死亡時更新ステップ
 wait_frame									= $54	; 待つフレーム
 test_address_low							= $55
 test_address_hi								= $56
-scene_type									= $57	; シーン（0:TITLE 1:メイン 2:ゲームオーバー）
+scene_type									= $57	; シーン（0:TITLE、1:イントロダクション、2:メイン準備、3:メイン、4:ゲームオーバー）
 scene_update_step							= $58	; シーン用の更新ステップ
 map_enemy_info_address_low					= $59
 map_enemy_info_address_hi					= $5A
@@ -218,5 +218,6 @@ item_status									= $D8	; アイテム状態（0:表示、1:点滅）
 item_window_pos_x							= $D9	; アイテムウィンドウX座標
 item_pos_y									= $DA	; アイテムY座標
 item_wait									= $DB	; アイテム待ち
+toggle										= $DC	; トグル
 
 debug_var									= $FF	; デバッグ用

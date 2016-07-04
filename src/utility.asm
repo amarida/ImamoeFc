@@ -80,3 +80,92 @@ noset24:
 
 	rts
 .endproc
+
+.proc UpdateInputKey
+
+	; ‰Šú‰»
+	lda #$01
+	sta $4016
+	lda #$00
+	sta $4016
+
+	; ‘O‰ñ‚Ìó‘Ô‚ğŠi”[
+	lda key_state_on
+	sta key_state_on_old
+
+	lda #0
+	sta key_state_on
+
+	; A,B,SELECT,START,UP,DOWN,LEFT,RIGHT‚Ì‡”Ô
+	lda $4016	; A
+	and #1
+	beq SkipPushA
+	lda key_state_on
+	ora #%00000001
+	sta key_state_on
+	SkipPushA:
+	
+	lda $4016	; B
+	and #1
+	beq SkipPushB
+	lda key_state_on
+	ora #%00000010
+	sta key_state_on
+	SkipPushB:
+
+	lda $4016	; SELECT
+	and #1
+	beq SkipPushSelect
+	lda key_state_on
+	ora #%00000100
+	sta key_state_on
+	SkipPushSelect:
+	
+	lda $4016	; START
+	and #1
+	beq SkipPushStart
+	lda key_state_on
+	ora #%00001000
+	sta key_state_on
+	SkipPushStart:
+	
+	lda $4016	; ã
+	and #1
+	beq SkipPushUp
+	lda key_state_on
+	ora #%00010000
+	sta key_state_on
+	SkipPushUp:
+	
+	lda $4016	; ‰º
+	and #1
+	beq SkipPushDown
+	lda key_state_on
+	ora #%00100000
+	sta key_state_on
+	SkipPushDown:
+	
+	lda $4016	; ¶
+	and #1
+	beq SkipPushLeft
+	lda key_state_on
+	ora #%01000000
+	sta key_state_on
+	SkipPushLeft:
+	
+	lda $4016	; ‰E
+	and #1
+	beq SkipPushRight
+	lda key_state_on
+	ora #%10000000
+	sta key_state_on
+	SkipPushRight:
+	
+
+	lda key_state_on
+	eor key_state_on_old
+	and key_state_on
+	sta key_state_push
+
+	rts
+.endproc	; UpdateInputKey

@@ -107,7 +107,6 @@ waitScanSub:
 	jsr PlayBgmIntroduction
 
 first_skip:
-	inc loop_count
 
 	inc timer_count
 
