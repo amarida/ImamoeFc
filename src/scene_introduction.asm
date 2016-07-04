@@ -73,21 +73,23 @@ case_enable:
 	lda	#%00011110
 	sta	$2001
 
+	lda #120
+	sta wait_frame
+
 	inc scene_update_step
 
 	jmp case_break
 	
 ; キー入力待ち
 case_wait:
-	jsr UpdateInputKey
-	lda key_state_push
-	and #%00001000		; START
-	beq case_break
-
+	dec wait_frame
+	lda wait_frame
+	bne case_break
 	lda #2			; メイン準備
 	sta scene_type	; シーン
 	lda #0
 	sta scene_update_step
+
 
 	jmp case_break
 
