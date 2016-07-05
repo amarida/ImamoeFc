@@ -204,6 +204,22 @@ draw_loop:
 	sta bg_already_draw_pos
 	sta bg_already_draw
 
+	; ステータス部分
+	lda #%10001000
+	sta $2000
+	lda #0
+	sta draw_bg_x
+	lda #2
+	sta draw_bg_y
+	jsr SetPosition
+	lda #00
+	ldx #0
+	loop_x:
+	sta $2007
+	inx
+	cpx #32
+	bne loop_x
+	
 	rts
 .endproc
 
