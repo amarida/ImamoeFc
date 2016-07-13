@@ -388,7 +388,7 @@ case_wait:
 	cmp #0
 	bne break
 	lda se_kukei_count
-	cmp #3
+	cmp #2
 	beq case_loop_end
 	
 	case_next:
