@@ -219,5 +219,6 @@ item_window_pos_x							= $D9	; アイテムウィンドウX座標
 item_pos_y									= $DA	; アイテムY座標
 item_wait									= $DB	; アイテム待ち
 toggle										= $DC	; トグル
+palette_bg_change_state						= $DD	; BGパレットチェンジ用(	0:なにもしない、1:4をキリン
 
 debug_var									= $FF	; デバッグ用

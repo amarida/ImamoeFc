@@ -2,6 +2,7 @@
 
 	jsr confirm_appear_enemy
 	jsr change_palette_table
+	jsr change_palette_bg_table
 
 	; 画面外背景の描画
 	jsr draw_bg_name_table	; ネームテーブル
@@ -978,3 +979,54 @@ break:
 
 	rts
 .endproc	; change_palette_table
+
+; パレットBGテーブル変更
+.proc change_palette_bg_table
+
+	lda palette_bg_change_state
+
+	cmp #0
+	beq case_none
+	cmp #1
+	beq case_4_kirin
+
+case_none:
+	jmp break
+case_4_kirin:
+	jmp change_palette_4_kirin
+
+change_palette_4_kirin:
+; パレット4をキリン色にする
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$0c
+	sta	$2006
+	ldx	#$0
+	ldy	#4
+copypal_4kirin:
+	lda	palette_bg_kirin, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_4kirin
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+
+break:
+
+	lda #0
+	sta palette_bg_change_state
+
+	rts
+.endproc	; change_palette_bg_table

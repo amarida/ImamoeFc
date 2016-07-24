@@ -272,6 +272,19 @@ scene_break:
 	rti			; 割り込みから復帰命令
 .endproc
 
+.proc ChangePaletteBgState
+
+	lda REG0
+	cmp #$c9
+	bne skip
+
+	lda #1
+	sta palette_bg_change_state
+
+	skip:
+	rts
+.endproc	; ChangePaletteBgState
+
 ; 画面外BG描画
 .proc draw_bg_name_table
 
@@ -300,6 +313,8 @@ not_skip:
 draw_loop:
 	lda (map_table_screen_low), y
 	sta $2007
+	sta REG0
+	jsr ChangePaletteBgState
 
 	dey	; 25個
 	bpl	draw_loop
@@ -712,6 +727,8 @@ palette_bg_title:
 	.byte	$21, $0a, $1a, $2a	; タイトル用bg色4
 palette_bg_introduction:
 	.byte	$0f, $0f, $0f, $30	; タイトル用bg色 白
+palette_bg_kirin:
+	.byte	$21, $17, $07, $0f	; キリン用
 
 	; 星テーブルデータ(20個)
 Star_Tbl:
