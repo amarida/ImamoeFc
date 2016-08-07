@@ -1,3 +1,5 @@
+.include "macro.asm"
+
 .proc	Item_Init
 	lda #0
 	sta item_world_pos_x_low
@@ -486,6 +488,9 @@ skip_draw:
 .endproc	; Item_DrawDma6
 
 .proc Item_GetAction
+	; “¾“_‚ð‰Á‚¦‚é
+	AddScore #250
+
 	lda #1
 	sta item_status
 	

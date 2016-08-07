@@ -1,3 +1,5 @@
+.include "macro.asm"
+
 .proc	HabatanFire_Init
 	jsr HabatanFire_Clear
 	
@@ -253,6 +255,7 @@ loop_tamanegi:
 	sta tamanegi00_status,x
 	lda #0
 	sta tamanegi00_update_step,x
+	AddScore #100
 
 	skip_tamanegi_fire:
 	next_tamanegi:
@@ -280,6 +283,7 @@ loop_tako:
 	; ƒ^ƒR”R‚¦‚é
 	lda #1
 	sta tako00_status,x
+	AddScore #150
 
 	skip_tako_haba_fire:
 

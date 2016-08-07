@@ -408,7 +408,6 @@ break:
 ;	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 ;	sta $2000
 
-rts
 	; ƒXƒRƒA
 	lda #$20
 	sta $2006
@@ -427,6 +426,48 @@ rts
 	lda #$71
 	sta $2006
 	lda score_bcd2
+	and #%00001111
+	adc #$30
+	sta $2007
+
+	lda #$20
+	sta $2006
+	lda #$72
+	sta $2006
+	lda score_bcd1
+	lsr
+	lsr
+	lsr
+	lsr
+	adc #$30
+	sta $2007
+
+	lda #$20
+	sta $2006
+	lda #$73
+	sta $2006
+	lda score_bcd1
+	and #%00001111
+	adc #$30
+	sta $2007
+
+	lda #$20
+	sta $2006
+	lda #$74
+	sta $2006
+	lda score_bcd0
+	lsr
+	lsr
+	lsr
+	lsr
+	adc #$30
+	sta $2007
+
+	lda #$20
+	sta $2006
+	lda #$75
+	sta $2006
+	lda score_bcd0
 	and #%00001111
 	adc #$30
 	sta $2007

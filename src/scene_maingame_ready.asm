@@ -107,9 +107,10 @@ copypal2:
 	lda #%10010000
 	sta timer_b0
 
-	lda #%11110011
+	; スコア初期値(0)
+	lda #0
 	sta score_b1
-	lda #%11110011
+	lda #0
 	sta score_b0
 
 	; 初期プレイヤー速度
