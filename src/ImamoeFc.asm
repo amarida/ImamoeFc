@@ -275,11 +275,22 @@ scene_break:
 .proc ChangePaletteBgState
 
 	lda REG0
-	cmp #$c9
-	bne skip
+	cmp #$9a	; キリン
+	beq case_kirin
+	cmp #$d0	; 鉄人
+	beq case_tetsujin
 
+	jmp skip
+
+	case_kirin:
 	lda #1
 	sta palette_bg_change_state
+	jmp skip
+
+	case_tetsujin:
+	lda #2
+	sta palette_bg_change_state
+	jmp skip
 
 	skip:
 	rts
@@ -728,7 +739,11 @@ palette_bg_title:
 palette_bg_introduction:
 	.byte	$0f, $0f, $0f, $30	; タイトル用bg色 白
 palette_bg_kirin:
-	.byte	$21, $17, $07, $0f	; キリン用
+	.byte	$21, $07, $16, $0f	; キリン用
+palette_bg_tetsujin:
+	.byte	$21, $02, $12, $0f	; 鉄人用　　青系
+	.byte	$21, $12, $16, $30	;			青赤混合
+	.byte	$21, $07, $16, $0f	;			赤系
 
 	; 星テーブルデータ(20個)
 Star_Tbl:

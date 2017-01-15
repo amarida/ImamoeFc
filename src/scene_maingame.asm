@@ -1030,11 +1030,15 @@ break:
 	beq case_none
 	cmp #1
 	beq case_4_kirin
+	cmp #2
+	beq case_2_tetsujin
 
 case_none:
 	jmp break
 case_4_kirin:
 	jmp change_palette_4_kirin
+case_2_tetsujin:
+	jmp change_palette_2_tetsujin
 
 change_palette_4_kirin:
 ; パレット4をキリン色にする
@@ -1055,6 +1059,33 @@ copypal_4kirin:
 	inx
 	dey
 	bne	copypal_4kirin
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_2_tetsujin:
+; パレット2,3,4を鉄人色にする
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$04
+	sta	$2006
+	ldx	#$0
+	ldy	#12
+copypal_2tetsujin:
+	lda	palette_bg_tetsujin, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_2tetsujin
 
 	clc
 	lda #%10001100	; VRAM増加量32byte
