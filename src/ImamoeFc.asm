@@ -290,7 +290,7 @@ scene_break:
 .proc ChangePaletteBgState
 
 	lda REG0
-	cmp #$9a	; ƒLƒŠƒ“
+	cmp #$91	; ƒLƒŠƒ“
 	beq case_kirin
 	cmp #$d0	; “Sl
 	beq case_tetsujin
