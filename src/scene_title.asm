@@ -94,6 +94,10 @@ case_break:
 
 .proc scene_title_init
 
+	; バンクをタイトルバンクにする
+	lda	#1
+	sta	$8000
+
 	; 割り込みOFF　増加値1byte
 	lda #%00001000
 	;     |||||||`- 

@@ -32,8 +32,8 @@
 .segment "HEADER"
 	.byte	$4E, $45, $53, $1A	; "NES" Header
 	.byte	$02			; PRG-BANKS
-	.byte	$01			; CHR-BANKS
-	.byte	$01			; 垂直ミラーVertical Mirror
+	.byte	$02			; CHR-BANKS
+	.byte	$31			; マッパー3、垂直ミラーVertical Mirror
 	.byte	$00			; 
 	.byte	$00, $00, $00, $00	; 
 	.byte	$00, $00, $00, $00	; 
@@ -84,6 +84,10 @@
 	lda #0
 	sta debug_var
 
+		lda	#60
+		sta	mapper_cnt
+		lda	#0
+		sta	mapper_no
 
 	; サウンド
 	lda #0
@@ -215,6 +219,17 @@ vblank_wait:
 	and	#%10000000
 	beq	vblank_wait
 
+		;60フレーム毎にマッパー切り替え
+;		dec	mapper_cnt
+;		bne	no_mapper_set
+;		lda	#60
+;		sta	mapper_cnt
+;		lda	mapper_no
+;		eor	#1
+;		sta	mapper_no
+;		lda	mapper_no
+;		sta	$8000
+no_mapper_set:
 	inc loop_count
 
 ; デバッグ
@@ -889,3 +904,5 @@ se_item_kukei:
 ; パターンテーブル
 .segment "CHARS"
 	.incbin	"character.chr"
+.segment "CHARS2"
+	.incbin	"character2.chr"

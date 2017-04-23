@@ -52,6 +52,7 @@ case_fill_wait:
 	bne skip_next
 	; 有効にする
 	inc scene_update_step
+
 	skip_next:
 	jmp case_break
 
@@ -107,6 +108,11 @@ case_break:
 .endproc
 
 .proc scene_introduction_init
+
+
+	; バンクをメインバンクにする
+	lda	#0
+	sta	$8000
 
 	; 割り込みOFF　増加値1byte
 	lda #%00001000

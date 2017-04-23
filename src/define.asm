@@ -220,5 +220,7 @@ item_pos_y									= $DA	; アイテムY座標
 item_wait									= $DB	; アイテム待ち
 toggle										= $DC	; トグル
 palette_bg_change_state						= $DD	; BGパレットチェンジ用(	0:なにもしない、1:4をキリン
+mapper_cnt	=	$DE		;マッパー切り替えテスト用カウンタ
+mapper_no	=	$DF		;現在のマッパー番号
 
 debug_var									= $FF	; デバッグ用
