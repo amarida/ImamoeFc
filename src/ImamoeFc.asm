@@ -903,6 +903,6 @@ se_item_kukei:
 
 ; パターンテーブル
 .segment "CHARS"
-	.incbin	"character.chr"
+	.incbin	"maingame.chr"
 .segment "CHARS2"
-	.incbin	"character2.chr"
+	.incbin	"title_ending.chr"
