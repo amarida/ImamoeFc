@@ -745,7 +745,7 @@ palettes_bg:
 	.byte	$0f, $0f, $00, $10	; bg色1
 	.byte	$0f, $0f, $12, $30	; bg色2
 	.byte	$0f, $0f, $0f, $30	; bg色3
-	.byte	$21, $0a, $1a, $2a	; bg色4
+	.byte	$21, $07, $16, $0f; $21, $0a, $1a, $2a	; bg色4
 palette_bg_title:
 	.byte	$0f, $23, $21, $27	; タイトル用bg色1 オレンジ
 	.byte	$0f, $23, $21, $30	; タイトル用bg色2 白

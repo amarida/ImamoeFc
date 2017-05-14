@@ -55,6 +55,7 @@ set_tamanegi:
 
 	lda #0
 	sta tamanegi0_world_pos_x_decimal,x
+	sta firing_frame
 	
 	; タマネギタイプ
 	lda REG0
@@ -321,6 +322,8 @@ step_init:
 	jmp step_break
 
 step_update:
+	; フレームカウントアップ
+	inc firing_frame
 	; xの0,1でどちらか判断する
 	lda #%00000001
 	sta REG0
@@ -671,11 +674,29 @@ case_parabola:
 	sta char4_p1_index3_t,y
 	lda #$BC
 	sta char4_p1_index4_t,y
+	sec
+
+	lda #4
+	sbc firing_frame
+	bcc attribute_front	; 表
+	bcs attribute_back	; 裏
+
+	attribute_front:
+	; 反転なし、表
+	lda #%00000001
+	sta char4_p1_index2_s,y
+	sta char4_p1_index4_s,y
+	jmp break_attribute
 	
+	attribute_back: 
 	; 反転なし、後ろ
 	lda #%00100001
 	sta char4_p1_index2_s,y
 	sta char4_p1_index4_s,y
+	jmp break_attribute
+
+	break_attribute:
+	
 	; 反転なし
 	lda #%00000001
 	sta char4_p1_index1_s,y
@@ -903,10 +924,27 @@ case_parabola:
 	lda #$BC
 	sta char4_p1_index4_t2,y
 	
+	sec
+	lda #4
+	sbc firing_frame
+	bcc attribute_front	; 表
+	bcs attribute_back	; 裏
+
+	attribute_front:
+	; 反転なし、表
+	lda #%00000001
+	sta char4_p1_index2_s2,y
+	sta char4_p1_index4_s2,y
+	jmp break_attribute
+	
+	attribute_back: 
 	; 反転なし、後ろ
 	lda #%00100001
 	sta char4_p1_index2_s2,y
 	sta char4_p1_index4_s2,y
+	jmp break_attribute
+
+	break_attribute:
 	; 反転なし
 	lda #%00000001
 	sta char4_p1_index1_s2,y
@@ -1634,3 +1672,10 @@ tamanegi2:
 break:
 	rts
 .endproc	; Tamanegi_SetSplashAttribute
+
+; BGとの優先順位を手前にする
+.proc Tamanegi_SetFrontPriority
+
+	
+	rts
+.endproc	; Tamanegi_SetFrontPriority
