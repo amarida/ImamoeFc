@@ -468,7 +468,7 @@ drown_tail:
 	adc REG0
 	sta char_6type5_t,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t,y
 	sta char_6type6_t,y
 
@@ -484,7 +484,7 @@ splash1_tail:
 	lda #$9A
 	sta char_6type5_t,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t,y
 	sta char_6type6_t,y
 
@@ -501,7 +501,7 @@ splash2_tail:
 	lda #$BA
 	sta char_6type5_t,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t,y
 	sta char_6type6_t,y
 
@@ -672,7 +672,7 @@ drown_tail:
 	adc REG0
 	sta char_6type5_t2,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t2,y
 	sta char_6type6_t2,y
 
@@ -688,7 +688,7 @@ splash1_tail:
 	lda #$9A
 	sta char_6type5_t2,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t2,y
 	sta char_6type6_t2,y
 
@@ -705,7 +705,7 @@ splash2_tail:
 	lda #$BA
 	sta char_6type5_t2,y
 
-	lda #$03	; ブランク
+	lda #$00	; ブランク
 	sta char_6type3_t2,y
 	sta char_6type6_t2,y
 
