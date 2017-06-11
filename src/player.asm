@@ -4,6 +4,7 @@
 	sta is_dead
 	sta update_dead_step
 	sta player_draw_status
+	sta item_count
 	rts
 .endproc
 
@@ -89,7 +90,7 @@ exit:
 
 	sec					; キャリーフラグON
 	lda player_x_decimal
-	sbc player_spd_decial
+	sbc player_spd_decimal
 	sta player_x_decimal
 	lda	player_x_low	; 下位
 	sbc	player_spd_low
@@ -133,7 +134,7 @@ skip:
 
 	clc					; キャリーフラグOFF
 	lda player_x_decimal
-	adc player_spd_decial
+	adc player_spd_decimal
 	sta player_x_decimal
 	lda	player_x_low	; 下位
 	adc	player_spd_low
@@ -142,25 +143,6 @@ skip:
 	lda	player_x_hi		; 上位
 	adc	#0
 	sta	player_x_hi
-
-	; 速度変更確認
-	lda player_speed_hi_or_low
-	beq not_speed_change
-	lda player_x_hi
-	beq not_speed_change
-	sec
-	lda player_x_low
-	sbc #$60
-	bcc not_speed_change	; キャリーフラグがクリアされている時
-	
-	; 速度変更
-	lda #$80
-	sta REG0
-	lda #0
-	sta REG1
-	jsr Player_SetSpeed
-	
-	not_speed_change:
 
 	; あたり判定
 	jsr collision_object
@@ -343,6 +325,9 @@ not_jump_exit:
 skip_not_jump:
 
 	; その他の必ず通る処理
+
+	; 速度変化更新
+	jsr Player_UpdateSpeed
 
 	lda player_draw_status
 	cmp #0	; 通常
@@ -2044,8 +2029,9 @@ big_player_y:
 	sbc #49
 	bpl	exit	; 差分が48より大きい
 
-	lda #1
+	lda #1	; 当たった
 	sta char_collision_result
+	inc item_count
 	jmp exit
 
 exit:
@@ -2055,9 +2041,53 @@ exit:
 
 .proc Player_SetSpeed
 	lda REG0
-	sta player_spd_decial
+	sta player_spd_decimal
 	lda REG1
 	sta player_spd_low
 	
 	rts
 .endproc	; Player_SetSpeed
+
+; 速度変化更新
+.proc Player_UpdateSpeed
+	; 最初の着地時の速度変化
+		; 座標が256+140から512の間
+		; 速度が速い時
+	; 速度変更確認(最初の着地)
+	lda player_speed_hi_or_low
+	beq not_speed_change
+	lda player_x_hi
+	beq not_speed_change
+	sec
+	lda player_x_low
+	sbc #$60
+	bcc not_speed_change	; キャリーフラグがクリアされている時
+	
+	; 速度変更
+	lda #$80
+	sta REG0
+	lda #0
+	sta REG1
+	jsr Player_SetSpeed
+	lda #0	; 速度落とした
+	sta player_speed_hi_or_low
+	
+	not_speed_change:
+
+	; アイテム取得による速度変化
+		; アイテム3つ取得したか
+		; 速度が遅いとき
+	lda player_speed_hi_or_low
+	bne skip_speedup	; 速度が速い(1)の時は処理しない
+	lda item_count
+	cmp #3
+	bne skip_speedup
+	lda #0
+	sta REG0
+	lda #1
+	sta REG1
+	jsr Player_SetSpeed
+	skip_speedup:
+	
+	rts
+.endproc	; Player_UpdateSpeed

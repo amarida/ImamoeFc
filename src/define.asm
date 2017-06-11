@@ -17,7 +17,7 @@ player_y									= $0E	; プレイヤ位置Y（+1は小数部）
 spd_y										= $10	; Y方向速度（+1は小数部）
 ; 小数部									= $11
 spd_vec										= $12	; 速度方向（0下方向、1上方向）
-player_spd_decial							= $13
+player_spd_decimal							= $13
 player_spd_low								= $14
 player_speed_hi_or_low						= $15	; プレイヤースピード速い
 is_jump										= $16
@@ -221,6 +221,7 @@ item_wait									= $DB	; アイテム待ち
 toggle										= $DC	; トグル
 palette_bg_change_state						= $DD	; BGパレットチェンジ用(	0:なにもしない、1:4をキリン
 firing_frame								= $DE	; 発射後フレーム
+item_count									= $DF	; アイテムカウント
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号
 
