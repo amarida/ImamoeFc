@@ -275,7 +275,7 @@ skip_update:
 
 	lda #1
 	sta habatan_status
-	lda #255
+	lda #195
 	sta habatan_wait_low
 	lda #1
 	sta habatan_wait_hi
