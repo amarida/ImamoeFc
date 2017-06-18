@@ -32,6 +32,7 @@ player_dma7:
 	jsr HabatanDrawDma7			; はばタン描画
 	jsr HabatanFire_DrawDma7	; はばタンファイアー描画
 	jsr Item_DrawDma7			; 酒描画
+	jsr String_DrawDma7			; 文字列描画
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
@@ -43,6 +44,7 @@ player_dma6:
 	jsr HabatanDrawDma6			; はばタン描画
 	jsr HabatanFire_DrawDma6	; はばタンファイアー描画
 	jsr Item_DrawDma6			; 酒描画
+	jsr String_DrawDma6			; 文字列描画
 	jmp player_dma_break
 player_dma_break:
 	
@@ -195,6 +197,11 @@ break:
 	jsr HabatanUpdate
 	jsr HabatanFire_Update
 	jsr Item_Update
+
+	lda str_speedup_state
+	beq skip_str
+	jsr String_Update
+	skip_str:
 
 	lda bgm_type
 	beq skip_bgm

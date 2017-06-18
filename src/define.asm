@@ -222,6 +222,10 @@ toggle										= $DC	; トグル
 palette_bg_change_state						= $DD	; BGパレットチェンジ用(	0:なにもしない、1:4をキリン
 firing_frame								= $DE	; 発射後フレーム
 item_count									= $DF	; アイテムカウント
+str_speedup_state							= $E0	; SPEEDUP文字の状態：0非表示、1表示中
+str_speedup_pos_x							= $E1	; SPEEDUP文字のX座標
+str_speedup_pos_y							= $E2	; SPEEDUP文字のY座標
+str_speedup_frame							= $E3	; SPEEDUP文字の表示フレーム
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号
 

@@ -2032,6 +2032,12 @@ big_player_y:
 	lda #1	; “–‚½‚Á‚½
 	sta char_collision_result
 	inc item_count
+	; “–‚½‚Á‚½ê‡‚Æ‚è‚ ‚¦‚¸•\¦ˆÊ’u‚ğŠi”[‚·‚é
+	lda item_window_pos_x
+	sta REG0
+	lda item_pos_y
+	sta REG1
+	jsr String_Init
 	jmp exit
 
 exit:
@@ -2057,7 +2063,8 @@ exit:
 	lda player_speed_hi_or_low
 	beq not_speed_change
 	lda player_x_hi
-	beq not_speed_change
+	cmp #1
+	bne not_speed_change
 	sec
 	lda player_x_low
 	sbc #$60
@@ -2087,6 +2094,10 @@ exit:
 	lda #1
 	sta REG1
 	jsr Player_SetSpeed
+	lda #1
+	sta str_speedup_state
+	lda #1	; ‘¬“xã‚°‚½
+	sta player_speed_hi_or_low
 	skip_speedup:
 	
 	rts

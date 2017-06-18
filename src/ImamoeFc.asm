@@ -20,6 +20,7 @@
 .include "Item.asm"
 .include "utility.asm"
 .include "sound.asm"
+.include "String.asm"
 
 .include "scene_title.asm"
 .include "scene_introduction.asm"
@@ -835,7 +836,7 @@ map_enemy_info:
 	.byte	$04, $c2, $b8, $00	; イノシシ
 	.byte	$04, $f2, $b8, $00	; イノシシ
 
-	.byte	$05, $e4, $88, $05	; アイテム	5
+	.byte	$05, $54, $88, $05	; アイテム	5
 
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 

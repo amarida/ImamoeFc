@@ -217,7 +217,24 @@ haba_fire9_t:	.byte 0
 haba_fire9_s:	.byte 0
 haba_fire9_x:	.byte 0
 
-; 52
+str4_index1_y:	.byte 0
+str4_index1_t:	.byte 0
+str4_index1_s:	.byte 0
+str4_index1_x:	.byte 0
+str4_index2_y:	.byte 0
+str4_index2_t:	.byte 0
+str4_index2_s:	.byte 0
+str4_index2_x:	.byte 0
+str4_index3_y:	.byte 0
+str4_index3_t:	.byte 0
+str4_index3_s:	.byte 0
+str4_index3_x:	.byte 0
+str4_index4_y:	.byte 0
+str4_index4_t:	.byte 0
+str4_index4_s:	.byte 0
+str4_index4_x:	.byte 0
+
+; 56
 
 
 .org $0600
@@ -437,3 +454,20 @@ char_12_type12_y2:	.byte 0
 char_12_type12_t2:	.byte 0
 char_12_type12_s2:	.byte 0
 char_12_type12_x2:	.byte 0
+
+str4_index1_y2:	.byte 0
+str4_index1_t2:	.byte 0
+str4_index1_s2:	.byte 0
+str4_index1_x2:	.byte 0
+str4_index2_y2:	.byte 0
+str4_index2_t2:	.byte 0
+str4_index2_s2:	.byte 0
+str4_index2_x2:	.byte 0
+str4_index3_y2:	.byte 0
+str4_index3_t2:	.byte 0
+str4_index3_s2:	.byte 0
+str4_index3_x2:	.byte 0
+str4_index4_y2:	.byte 0
+str4_index4_t2:	.byte 0
+str4_index4_s2:	.byte 0
+str4_index4_x2:	.byte 0
