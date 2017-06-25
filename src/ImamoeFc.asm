@@ -295,6 +295,8 @@ scene_break:
 	beq case_kirin
 	cmp #$d0	; 鉄人
 	beq case_tetsujin
+	cmp #$63	; ビル
+	beq case_building
 
 	jmp skip
 
@@ -305,6 +307,11 @@ scene_break:
 
 	case_tetsujin:
 	lda #2
+	sta palette_bg_change_state
+	jmp skip
+
+	case_building:
+	lda #3
 	sta palette_bg_change_state
 	jmp skip
 
@@ -761,7 +768,8 @@ palette_bg_tetsujin:
 	.byte	$21, $12, $16, $30	;			青赤混合
 	.byte	$21, $07, $16, $0f	;			赤系
 palette_bg_bill:
-	.byte	$21, $3A, $20, $30	; ビル用
+	.byte	$21, $37, $10, $30	; ビル用
+	.byte	$21, $2d, $10, $30	; ビル用濃いグレイ
 
 	; 星テーブルデータ(20個)
 Star_Tbl:
@@ -836,7 +844,7 @@ map_enemy_info:
 	.byte	$04, $c2, $b8, $00	; イノシシ
 	.byte	$04, $f2, $b8, $00	; イノシシ
 
-	.byte	$05, $54, $88, $05	; アイテム	5
+	.byte	$05, $14, $88, $05	; アイテム	5
 
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
