@@ -13,7 +13,7 @@
 	lda #224	; 画面外;#184
 	sta inosisi0_pos_y
 	sta inosisi1_pos_y
-	; 属性は変わらない
+	; 属性は変わらないことはない
 	lda #%00000001     ; 0(10進数)をAにロード
 	sta char_6type1_s
 	sta char_6type2_s
@@ -70,6 +70,20 @@ loop_x:
 	jmp skip_inosisi
 
 set_inosisi:
+	lda REG0
+	beq skip_zero
+
+	; 左から出てくるので250引いた値にする
+	sec
+	lda enemy_pos_x_low
+	sbc #250
+	sta enemy_pos_x_low
+	lda enemy_pos_x_hi
+	sbc #0
+	sta enemy_pos_x_hi
+
+	skip_zero:
+
 	; 空いているイノシシに情報をセットする
 	lda enemy_pos_x_hi
 	sta inosisi0_world_pos_x_hi,x
@@ -78,13 +92,63 @@ set_inosisi:
 	lda enemy_pos_y
 	sta inosisi0_pos_y,x
 	
+	; イノシシタイプ
+	; x(REG1)：何体目、REG0：種別（0前から、1後ろから）
+	; 00 00 00 00
+	;       ↑ ↑
+	;		｜	`-- 1体目の種別(01,前から 10後ろから)
+	;		 `----- 2体目の種別(01,前から 10後ろから)
+	txa
+	sta REG1	;(n体目)
+	asl			; aを2倍
+	sta REG2	;(左シフト数)
+	
+	lda #1
+	ldy REG2
+
+	; (n体目ｘ2bit)左シフト
+	loop_y:
+	dey
+	bmi break_loop_y	; ネガティブフラグがセットされているときブランチ
+	asl
+	jmp loop_y
+	break_loop_y:
+
+	pha			; Aをスタックにプッシュします
+	lda REG0
+	beq skip_last_asl 
+	pla			; Aをポップします
+	asl			; 後ろだから左シフト
+	jmp do_last_asl
+	skip_last_asl:
+	pla			; Aをポップします
+	do_last_asl:
+	
+	ora inosisi_type_flag
+	sta inosisi_type_flag
+	
 	; 色々初期化
 	lda #0
 	sta inosisi00_status,x
 	sta inosisi00_update_dead_step,x
-	; イノシシ属性を通常に変える
+
+	lda REG0
+	sta REG1
+
+	;						右向き			左向き
+	; REG0 = (REG1 == 0) ? #%00000001 : #%01000001;
+	; 左右判定
+	lda #%01000001
+	sta REG0
+
+	lda REG1
+	bne ContinueLR
+
 	lda #%00000001
 	sta REG0
+
+ContinueLR:
+
 	jsr Inosisi_SetAttribute
 
 	; フラグを立てる
@@ -179,6 +243,44 @@ skip_inosisi:
 	eor REG0
 	sta inosisi_alive_flag
 
+	; イノシシタイプ（前からか後ろからの）を落とす
+	; x(REG1)：何体目、REG0：種別（0前から、1後ろから）
+	; 00 00 00 00
+	;       ↑ ↑
+	;		｜	`-- 1体目の種別(01,前から 10後ろから)
+	;		 `----- 2体目の種別(01,前から 10後ろから)
+	txa
+	sta REG1	;(n体目)
+	asl			; aを2倍
+	sta REG2	;(左シフト数)
+	
+	lda #1
+	ldy REG2
+
+	; (n体目ｘ2bit)左シフト
+	loop_y:
+	dey
+	bmi break_loop_y	; ネガティブフラグがセットされているときブランチ
+	asl
+	jmp loop_y
+	break_loop_y:
+
+	pha			; Aをスタックにプッシュします
+	and inosisi_type_flag	; AとのANDが0なら後ろ、AとのANDが0以外なら前
+	bne skip_last_asl 
+	pla			; Aをポップします
+	asl			; 後ろだから左シフト
+	jmp do_last_asl
+	skip_last_asl:
+	pla			; Aをポップします
+	do_last_asl:
+
+	; aには下ろすフラグが立ってる
+	; 反転させて下ろすフラグ以外を立てる
+	eor #%11111111
+	and inosisi_type_flag
+	sta inosisi_type_flag
+
 skip_clear:
 
 	rts
@@ -221,24 +323,63 @@ case_dead:
 
 break:
 
-	; 画面外判定
+	cpx #0
+	beq case_0
+	cpx #1
+	beq case_1
+
+	case_0:
+	lda inosisi_type_flag
+	and #%00000001
+	bne move_from_front
+	jmp move_from_back
+
+	case_1:
+	lda inosisi_type_flag
+	and #%00000100
+	bne move_from_front
+	jmp move_from_back
+
+	move_from_front:
+
+	; 左画面外判定
 	sec
 	lda field_scroll_x_hi
 	sbc inosisi0_world_pos_x_hi,x
-	bcc skip_dead
+	bcc skip_dead1
 	sec
 	lda field_scroll_x_low
 	sbc inosisi0_world_pos_x_low,x
-	bcc skip_dead
-	; 画面外処理
+	bcc skip_dead1
+	; 左画面外処理
 	jsr Inosisi_Clear
-;	lda inosisi_alive_flag
-;	eor inosisi_alive_flag_current
-;	sta inosisi_alive_flag
-;	lda #224	; 画面外
-;	sta inosisi0_pos_y,x
 
-skip_dead:
+skip_dead1:
+
+	jmp move_end
+
+	move_from_back:
+	; 右画面外判定
+	sec
+	lda inosisi0_world_pos_x_hi,x
+	sbc field_scroll_x_hi
+	bcc skip_dead2
+	sec
+	lda inosisi0_world_pos_x_low,x
+	sbc field_scroll_x_low
+	sbc #245
+	bcc skip_dead2
+	; 右画面外処理
+	jsr Inosisi_Clear
+
+skip_dead2:
+
+	jmp move_end
+
+	move_end:
+
+
+
 
 next_update:
 	; 次
@@ -284,6 +425,24 @@ skip_sea:
 	
 roll_skip:
 
+	cpx #0
+	beq case_0
+	cpx #1
+	beq case_1
+
+	case_0:
+	lda inosisi_type_flag
+	and #%00000001
+	bne move_from_front
+	jmp move_from_back
+
+	case_1:
+	lda inosisi_type_flag
+	and #%00000100
+	bne move_from_front
+	jmp move_from_back
+
+	move_from_front:
 	; 左移動
 	sec
 	lda inosisi0_world_pos_x_low,x
@@ -292,6 +451,22 @@ roll_skip:
 	lda inosisi0_world_pos_x_hi,x
 	sbc #0
 	sta inosisi0_world_pos_x_hi,x
+
+	jmp move_end
+
+	move_from_back:
+	; 右移動
+	clc
+	lda inosisi0_world_pos_x_low,x
+	adc #2
+	sta inosisi0_world_pos_x_low,x
+	lda inosisi0_world_pos_x_hi,x
+	adc #0
+	sta inosisi0_world_pos_x_hi,x
+
+	jmp move_end
+
+	move_end:
 
 	rts
 .endproc	; Inosisi_UpdateNormal
@@ -422,31 +597,8 @@ break_pat:
 	beq splash2_tail
 	
 nomal_tail:
-; 生存タイル
-	clc
-	lda #$84     ; 
-	adc REG0
-	sta char_6type1_t,y
-	clc
-	lda #$85
-	adc REG0
-	sta char_6type2_t,y
-	clc
-	lda #$86
-	adc REG0
-	sta char_6type3_t,y
-	clc
-	lda #$94
-	adc REG0
-	sta char_6type4_t,y
-	clc
-	lda #$95
-	adc REG0
-	sta char_6type5_t,y
-	clc
-	lda #$96
-	adc REG0
-	sta char_6type6_t,y
+
+	jsr Inosisi_SetNomalTail
 	
 	jmp break_tile
 ; 溺れタイル
@@ -515,6 +667,7 @@ break_tile:
 	adc #7
 	sta char_6type1_y,y
 	sta char_6type2_y,y
+	sta char_6type3_y,y
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y,x
@@ -522,9 +675,6 @@ break_tile:
 	sta char_6type4_y,y
 	sta char_6type5_y,y
 	sta char_6type6_y,y
-
-	lda #0
-	sta char_6type3_y,y
 
 ; X座標
 
@@ -626,31 +776,9 @@ break_pat:
 	beq splash2_tail
 	
 nomal_tail:
+
 ; 生存タイル
-	clc
-	lda #$84     ; 
-	adc REG0
-	sta char_6type1_t2,y
-	clc
-	lda #$85
-	adc REG0
-	sta char_6type2_t2,y
-	clc
-	lda #$86
-	adc REG0
-	sta char_6type3_t2,y
-	clc
-	lda #$94
-	adc REG0
-	sta char_6type4_t2,y
-	clc
-	lda #$95
-	adc REG0
-	sta char_6type5_t2,y
-	clc
-	lda #$96
-	adc REG0
-	sta char_6type6_t2,y
+ 	jsr Inosisi_SetNomalTail
 	
 	jmp break_tile
 ; 溺れタイル
@@ -719,6 +847,7 @@ break_tile:
 	adc #7
 	sta char_6type1_y2,y
 	sta char_6type2_y2,y
+	sta char_6type3_y2,y
 
 	clc			; キャリーフラグOFF
 	lda inosisi0_pos_y,x
@@ -726,9 +855,6 @@ break_tile:
 	sta char_6type4_y2,y
 	sta char_6type5_y2,y
 	sta char_6type6_y2,y
-
-	lda #0
-	sta char_6type3_y2,y
 
 ; X座標
 
@@ -1302,7 +1428,7 @@ skip3:
 .endproc	; inosisi_collision_object
 
 .proc Inosisi_SetAttribute
-	; 引数REG0：属性(0か1)
+	; 引数REG0：属性(0:水しぶき、1:通常)
 	; 引数x：イノシシ１かイノシシ２
 	; xが0か1かで変える属性を判定する
 	txa
@@ -1344,3 +1470,98 @@ inosisi2:
 break:
 	rts
 .endproc	; Inosisi_SetSplashAttribute
+
+
+.proc Inosisi_SetNomalTail
+
+	cpx #0
+	beq case_0
+	cpx #1
+	beq case_1
+
+	case_0:
+	lda inosisi_type_flag
+	and #%00000001
+	bne move_from_front
+	jmp move_from_back
+
+	case_1:
+	lda inosisi_type_flag
+	and #%00000100
+	bne move_from_front
+	jmp move_from_back
+
+	move_from_front:
+	; 生存タイル右から（左向き）
+	clc
+	lda #$84     ; 
+	adc REG0
+	sta char_6type1_t,y
+	sta char_6type1_t2,y
+	clc
+	lda #$85
+	adc REG0
+	sta char_6type2_t,y
+	sta char_6type2_t2,y
+	clc
+	lda #$86
+	adc REG0
+	sta char_6type3_t,y
+	sta char_6type3_t2,y
+	clc
+	lda #$94
+	adc REG0
+	sta char_6type4_t,y
+	sta char_6type4_t2,y
+	clc
+	lda #$95
+	adc REG0
+	sta char_6type5_t,y
+	sta char_6type5_t2,y
+	clc
+	lda #$96
+	adc REG0
+	sta char_6type6_t,y
+	sta char_6type6_t2,y
+
+	jmp move_end
+
+	move_from_back:
+	; 生存タイル左から（右向き）
+	clc
+	lda #$86     ; 
+	adc REG0
+	sta char_6type1_t,y
+	sta char_6type1_t2,y
+	clc
+	lda #$85
+	adc REG0
+	sta char_6type2_t,y
+	sta char_6type2_t2,y
+	clc
+	lda #$84
+	adc REG0
+	sta char_6type3_t,y
+	sta char_6type3_t2,y
+	clc
+	lda #$96
+	adc REG0
+	sta char_6type4_t,y
+	sta char_6type4_t2,y
+	clc
+	lda #$95
+	adc REG0
+	sta char_6type5_t,y
+	sta char_6type5_t2,y
+	clc
+	lda #$94
+	adc REG0
+	sta char_6type6_t,y
+	sta char_6type6_t2,y
+
+
+	jmp move_end
+
+	move_end:
+	rts
+.endproc	; Inosisi_SetNomalTail

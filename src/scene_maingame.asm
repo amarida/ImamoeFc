@@ -336,8 +336,12 @@ appear_skip:
 	beq case_item
 	cmp #6
 	beq case_tamanegi2
+	cmp #7
+	beq case_inosisi_b
 
 case_inosisi:
+	lda #0
+	sta REG0
 	jsr appear_inosisi
 	jmp break
 case_tako:
@@ -361,6 +365,11 @@ case_tamanegi2:
 	lda #1
 	sta REG0
 	jsr appear_tamanegi
+	jmp break
+case_inosisi_b:
+	lda #1
+	sta REG0
+	jsr appear_inosisi
 	jmp break
 
 break:

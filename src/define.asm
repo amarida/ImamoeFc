@@ -226,6 +226,7 @@ str_speedup_state							= $E0	; SPEEDUP文字の状態：0非表示、1表示中
 str_speedup_pos_x							= $E1	; SPEEDUP文字のX座標
 str_speedup_pos_y							= $E2	; SPEEDUP文字のY座標
 str_speedup_frame							= $E3	; SPEEDUP文字の表示フレーム
+inosisi_type_flag							= $E4	; イノシシタイプ |00 00 00 00|4体目 3 2 1|
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号
 
