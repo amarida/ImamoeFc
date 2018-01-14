@@ -46,12 +46,58 @@ loop_x:
 
 set_tamanegi:
 	; 空いているタマネギに情報をセットする
+	lda REG0
+	cmp #0
+	beq set_tamanegi_normal
+	cmp #1
+	beq set_tamanegi_normal
+	cmp #2
+	beq set_tamageki_drop1
+	cmp #3
+	beq set_tamageki_drop2
+	
+	set_tamanegi_normal:
 	lda enemy_pos_x_hi
 	sta tamanegi0_world_pos_x_hi,x
 	lda enemy_pos_x_low
 	sta tamanegi0_world_pos_x_low,x
 	lda enemy_pos_y
 	sta tamanegi0_pos_y,x
+	jmp break_set_tamanegi
+
+	set_tamageki_drop1:
+	lda enemy_pos_x_hi
+	sta tamanegi0_world_pos_x_hi,x
+	lda enemy_pos_x_low
+	sta tamanegi0_world_pos_x_low,x
+	lda enemy_pos_y
+	sta tamanegi0_pos_y,x
+	sec
+	lda tamanegi0_world_pos_x_low,x
+	sbc #65
+	sta tamanegi0_world_pos_x_low,x
+	lda tamanegi0_world_pos_x_hi,x
+	sbc #0
+	sta tamanegi0_world_pos_x_hi,x
+	jmp break_set_tamanegi
+
+	set_tamageki_drop2:
+	lda enemy_pos_x_hi
+	sta tamanegi0_world_pos_x_hi,x
+	lda enemy_pos_x_low
+	sta tamanegi0_world_pos_x_low,x
+	lda enemy_pos_y
+	sta tamanegi0_pos_y,x
+	sec
+	lda tamanegi0_world_pos_x_low,x
+	sbc #35
+	sta tamanegi0_world_pos_x_low,x
+	lda tamanegi0_world_pos_x_hi,x
+	sbc #0
+	sta tamanegi0_world_pos_x_hi,x
+	jmp break_set_tamanegi
+
+	break_set_tamanegi:
 
 	lda #0
 	sta tamanegi0_world_pos_x_decimal,x
@@ -60,23 +106,37 @@ set_tamanegi:
 	; タマネギタイプ
 	lda REG0
 	cmp #0
-	beq case_type_cannon
+	beq case_type_cannon	; 大砲から
 	cmp #1
-	beq case_type_suddenly
+	beq case_type_suddenly	; 直接
+	cmp #2
+	beq case_type_fall1		; 真下1
+	cmp #3
+	beq case_type_fall2		; 真下2
 	
 	case_type_cannon:
-	lda tamanegi_alive_flag_current
-	eor #%11111111
-	and tamanegi_type_flag
-	sta tamanegi_type_flag	; 該当フラグをOFF 
-	
+	lda #0
+	sta tamanegi_type_flag1,x
+
 	jmp case_type_break
 
 	case_type_suddenly:
 	lda tamanegi_alive_flag_current
-	ora tamanegi_type_flag
-	sta tamanegi_type_flag	; 該当フラグをON
-	
+	lda #1
+	sta tamanegi_type_flag1,x
+
+	jmp case_type_break
+
+	case_type_fall1:
+	lda #2
+	sta tamanegi_type_flag1,x
+
+	jmp case_type_break
+
+	case_type_fall2:
+	lda #3
+	sta tamanegi_type_flag1,x
+
 	jmp case_type_break
 	
 	case_type_break:
@@ -194,14 +254,16 @@ loop_x:
 
 	; 状態
 	lda tamanegi00_status,x
-	cmp #0
+	cmp #0	; 大砲の中
 	beq case_in_the_cannon
-	cmp #1
+	cmp #1	; 放物線
 	beq case_parabola
-	cmp #2
+	cmp #2	; 通常
 	beq case_normal
-	cmp #3
+	cmp #3	; 炎上
 	beq case_burst
+	cmp #4	; 真下
+	beq case_fall
 
 ; 大砲の中
 case_in_the_cannon:
@@ -228,6 +290,11 @@ case_burst:
 	jsr Tamanegi_UpdateBurst
 	jmp break;
 
+; 真下
+case_fall:
+	jsr Tamanegi_UpdateFall
+	jmp break;
+
 break:
 
 next_update:
@@ -245,18 +312,24 @@ skip_tamanegi:
 .proc	Tamanegi_UpdateInTheCannon
 
 	; xの0,1でどちらか判断する
-	lda #%00000001
+	lda tamanegi_type_flag1
 	sta REG0
 	txa
 	beq not_set16
-	lda #%00000010
+	lda tamanegi_type_flag2
 	sta REG0
 	not_set16:
 	
-	lda tamanegi_type_flag
-	and REG0
+	lda REG0
+	cmp #0
 	beq case_type_cannon
-	bne case_type_suddenly
+	cmp #1
+	beq case_type_suddenly
+	cmp #2
+	beq case_type_fall1
+	cmp #3
+	beq case_type_fall2
+
 	
 	case_type_cannon:
 	; 距離が近づくと次へ
@@ -286,7 +359,18 @@ skip:
 
 	lda #0
 	sta tamanegi00_update_step,x
+	jmp case_type_break
 	
+	; 真下タマネギ
+	case_type_fall1:
+	case_type_fall2:
+	; 次へ
+	lda #4
+	sta tamanegi00_status,x
+
+	lda #0
+	sta tamanegi00_update_step,x
+	jmp case_type_break
 	
 	case_type_break:
 	
@@ -325,18 +409,23 @@ step_update:
 	; フレームカウントアップ
 	inc firing_frame
 	; xの0,1でどちらか判断する
-	lda #%00000001
+	lda tamanegi_type_flag1
 	sta REG0
 	txa
 	beq not_set16
-	lda #%00000010
+	lda tamanegi_type_flag2
 	sta REG0
 	not_set16:
 	
-	lda tamanegi_type_flag
-	and REG0
+	lda REG0
+	cmp #0
 	beq case_type_cannon
-	bne case_type_suddenly
+	cmp #1
+	beq case_type_suddenly
+	lda #0
+	sta debug_var
+	mugen:
+	jmp mugen
 
 	case_type_cannon:
 	lda #1
@@ -618,6 +707,72 @@ case_break:
 
 	rts
 .endproc	; Tamanegi_UpdateBurst
+
+; 更新真下
+.proc	Tamanegi_UpdateFall
+
+	lda tamanegi00_update_step,x
+	cmp #0
+	beq step_init
+	cmp #1
+	beq step_fall
+	cmp #2
+	beq step_next
+
+step_init:
+
+	; 速度を設定
+	lda #2
+	sta tamanegi00_spd_y,x
+	lda #0
+	sta tamanegi00_spd_y_decimal,x
+
+	lda #1
+	sta tamanegi00_update_step,x
+
+	jmp case_break
+
+step_fall:
+
+	; 位置更新
+	clc
+	lda tamanegi0_pos_y,x
+	adc tamanegi00_spd_y,x
+	sta tamanegi0_pos_y,x
+
+	; 着地判定
+	jsr tamanegi_collision_object
+	
+	lda obj_collision_result
+	beq roll_skip
+	; 当たった処理
+
+	sec
+	lda tamanegi0_pos_y,x
+	and #%11111000
+	sta tamanegi0_pos_y,x
+
+	lda #2
+	sta tamanegi00_update_step,x
+
+	roll_skip:
+
+	jmp case_break
+
+step_next:
+
+	lda #2
+	sta tamanegi00_status,x
+
+	lda #0
+	sta tamanegi00_update_step,x
+
+	jmp case_break
+
+case_break:
+
+	rts
+.endproc	; Tamanegi_UpdateFall
 
 ; 描画
 .proc	TamanegiDrawDma7

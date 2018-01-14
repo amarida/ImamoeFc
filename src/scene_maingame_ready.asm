@@ -69,7 +69,7 @@ copypal2:
 	sta tamanegi_alive_flag	; 生存タマネギフラグ
 	sta tako_haba_alive_flag; 生存はばタコフラグ
 	lda #2
-	sta inosisi_max_count	; 最大同時登場数
+	sta inosisi_max_count	; 最大同時登場数イノシシ
 	sta tako_max_count		; 最大同時登場数タコ
 	sta tamanegi_max_count	; 最大同時登場数タマネギ
 	sta fire_max_count		; 最大同時登場数タマネギファイアー

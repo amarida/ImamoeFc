@@ -46,8 +46,14 @@
 ; 登場
 .proc appear_inosisi
 
+	; 0ならnormal,1ならback
 	lda #4
 	sta palette_change_state
+	lda REG0
+	beq skip_9
+	lda #9
+	sta palette_change_state
+	skip_9:
 
 	; 空いているイノシシを探す
 
@@ -135,15 +141,16 @@ set_inosisi:
 	lda REG0
 	sta REG1
 
-	;						右向き			左向き
+	;
 	; REG0 = (REG1 == 0) ? #%00000001 : #%01000001;
-	; 左右判定
-	lda #%01000001
+	; 左右反転かつパレット3
+	lda #%01000010
 	sta REG0
 
 	lda REG1
 	bne ContinueLR
 
+	; 反転なしかつパレット2
 	lda #%00000001
 	sta REG0
 
@@ -1428,7 +1435,7 @@ skip3:
 .endproc	; inosisi_collision_object
 
 .proc Inosisi_SetAttribute
-	; 引数REG0：属性(0:水しぶき、1:通常)
+	; 引数REG0：属性(0:水しぶき、1:通常、2:後ろイノシシ)
 	; 引数x：イノシシ１かイノシシ２
 	; xが0か1かで変える属性を判定する
 	txa

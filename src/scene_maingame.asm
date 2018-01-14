@@ -338,6 +338,10 @@ appear_skip:
 	beq case_tamanegi2
 	cmp #7
 	beq case_inosisi_b
+	cmp #8
+	beq case_tamanegi_free_fall1
+	cmp #9
+	beq case_tamanegi_free_fall2
 
 case_inosisi:
 	lda #0
@@ -370,6 +374,16 @@ case_inosisi_b:
 	lda #1
 	sta REG0
 	jsr appear_inosisi
+	jmp break
+case_tamanegi_free_fall1:
+	lda #2
+	sta REG0
+	jsr appear_tamanegi
+	jmp break
+case_tamanegi_free_fall2:
+	lda #3
+	sta REG0
+	jsr appear_tamanegi
 	jmp break
 
 break:
@@ -792,6 +806,8 @@ skip_bcd1hi:
 	beq case_34sake
 	cmp #8
 	beq case_34sake_get
+	cmp #9
+	beq case_3binosisi
 
 case_none:
 	jmp break
@@ -811,6 +827,8 @@ case_34sake:
 	jmp change_palette_34_sake
 case_34sake_get:
 	jmp change_palette_34_sake_get
+case_3binosisi:
+	jmp change_palette_3_binosisi
 
 
 change_palette_2_tamanegi:
@@ -1021,6 +1039,34 @@ copypal_34_sake_get:
 	inx
 	dey
 	bne	copypal_34_sake_get
+
+	clc
+	lda #%10001100	; VRAM‘‰Á—Ê32byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	sta $2000
+
+	jmp break
+
+change_palette_3_binosisi:
+
+	; ƒpƒŒƒbƒg3‚ğ‚‚ƒCƒmƒVƒVF
+	clc
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$18
+	sta	$2006
+	ldx	#4
+	ldy	#4
+copypal_3_binosisi:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_3_binosisi
 
 	clc
 	lda #%10001100	; VRAM‘‰Á—Ê32byte
