@@ -322,40 +322,6 @@ haba_fire9_t2:	.byte 0
 haba_fire9_s2:	.byte 0
 haba_fire9_x2:	.byte 0
 
-char4_p1_index1_y2:	.byte 0
-char4_p1_index1_t2:	.byte 0
-char4_p1_index1_s2:	.byte 0
-char4_p1_index1_x2:	.byte 0
-char4_p1_index2_y2:	.byte 0
-char4_p1_index2_t2:	.byte 0
-char4_p1_index2_s2:	.byte 0
-char4_p1_index2_x2:	.byte 0
-char4_p1_index3_y2:	.byte 0
-char4_p1_index3_t2:	.byte 0
-char4_p1_index3_s2:	.byte 0
-char4_p1_index3_x2:	.byte 0
-char4_p1_index4_y2:	.byte 0
-char4_p1_index4_t2:	.byte 0
-char4_p1_index4_s2:	.byte 0
-char4_p1_index4_x2:	.byte 0
-
-char4_p2_index1_y2:	.byte 0
-char4_p2_index1_t2:	.byte 0
-char4_p2_index1_s2:	.byte 0
-char4_p2_index1_x2:	.byte 0
-char4_p2_index2_y2:	.byte 0
-char4_p2_index2_t2:	.byte 0
-char4_p2_index2_s2:	.byte 0
-char4_p2_index2_x2:	.byte 0
-char4_p2_index3_y2:	.byte 0
-char4_p2_index3_t2:	.byte 0
-char4_p2_index3_s2:	.byte 0
-char4_p2_index3_x2:	.byte 0
-char4_p2_index4_y2:	.byte 0
-char4_p2_index4_t2:	.byte 0
-char4_p2_index4_s2:	.byte 0
-char4_p2_index4_x2:	.byte 0
-
 char_12_type01_y2:	.byte 0
 char_12_type01_t2:	.byte 0
 char_12_type01_s2:	.byte 0
@@ -454,6 +420,40 @@ char_6type26_y2:	.byte 0
 char_6type26_t2:	.byte 0
 char_6type26_s2:	.byte 0
 char_6type26_x2:	.byte 0
+
+char4_p1_index1_y2:	.byte 0
+char4_p1_index1_t2:	.byte 0
+char4_p1_index1_s2:	.byte 0
+char4_p1_index1_x2:	.byte 0
+char4_p1_index2_y2:	.byte 0
+char4_p1_index2_t2:	.byte 0
+char4_p1_index2_s2:	.byte 0
+char4_p1_index2_x2:	.byte 0
+char4_p1_index3_y2:	.byte 0
+char4_p1_index3_t2:	.byte 0
+char4_p1_index3_s2:	.byte 0
+char4_p1_index3_x2:	.byte 0
+char4_p1_index4_y2:	.byte 0
+char4_p1_index4_t2:	.byte 0
+char4_p1_index4_s2:	.byte 0
+char4_p1_index4_x2:	.byte 0
+
+char4_p2_index1_y2:	.byte 0
+char4_p2_index1_t2:	.byte 0
+char4_p2_index1_s2:	.byte 0
+char4_p2_index1_x2:	.byte 0
+char4_p2_index2_y2:	.byte 0
+char4_p2_index2_t2:	.byte 0
+char4_p2_index2_s2:	.byte 0
+char4_p2_index2_x2:	.byte 0
+char4_p2_index3_y2:	.byte 0
+char4_p2_index3_t2:	.byte 0
+char4_p2_index3_s2:	.byte 0
+char4_p2_index3_x2:	.byte 0
+char4_p2_index4_y2:	.byte 0
+char4_p2_index4_t2:	.byte 0
+char4_p2_index4_s2:	.byte 0
+char4_p2_index4_x2:	.byte 0
 
 str4_index1_y2:	.byte 0
 str4_index1_t2:	.byte 0

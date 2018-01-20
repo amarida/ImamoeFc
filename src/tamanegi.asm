@@ -102,6 +102,7 @@ set_tamanegi:
 	lda #0
 	sta tamanegi0_world_pos_x_decimal,x
 	sta firing_frame
+	sta tamanegi00_status,x
 	
 	; タマネギタイプ
 	lda REG0
@@ -130,12 +131,16 @@ set_tamanegi:
 	case_type_fall1:
 	lda #2
 	sta tamanegi_type_flag1,x
+	lda #4
+	sta tamanegi00_status,x
 
 	jmp case_type_break
 
 	case_type_fall2:
 	lda #3
 	sta tamanegi_type_flag1,x
+	lda #4
+	sta tamanegi00_status,x
 
 	jmp case_type_break
 	
@@ -144,7 +149,6 @@ set_tamanegi:
 	; 色々初期化
 
 	lda #0
-	sta tamanegi00_status,x
 	sta tamanegi00_update_step,x
 	; タマネギ属性を通常に変える
 	lda #%00000001	; パレット2を使用
@@ -814,7 +818,13 @@ loop_x:
 	cmp #2
 	beq case_normal
 	cmp #3
+	bne not_case_burst
 	jmp case_burst
+	not_case_burst:
+	cmp #4
+	bne not_case_fall
+	jmp case_fall
+	not_case_fall:
 
 ; 大砲の中
 case_in_the_cannon:
@@ -861,6 +871,7 @@ case_parabola:
 
 ; 通常
 case_normal:
+case_fall:
 
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$0 : #1;
@@ -1063,7 +1074,13 @@ loop_x:
 	cmp #2
 	beq case_normal
 	cmp #3
+	bne not_case_burst
 	jmp case_burst
+	not_case_burst:
+	cmp #4
+	bne not_case_fall
+	jmp case_fall
+	not_case_fall:
 
 ; 大砲の中
 case_in_the_cannon:
@@ -1109,6 +1126,7 @@ case_parabola:
 
 ; 通常
 case_normal:
+case_fall:
 	; アニメパターン
 	;REG0 = (p_pat == 0) ? #$0 : #1;
 	;REG1 = (p_pat == 0) ? #$1 : #0;
