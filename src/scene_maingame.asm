@@ -1093,18 +1093,26 @@ break:
 	cmp #1
 	beq case_4_kirin
 	cmp #2
-	beq case_2_tetsujin
+	beq case_234_tetsujin
 	cmp #3
-	beq case_2_building
+	beq case_23_building
+	cmp #4
+	beq case_2_umi
+	cmp #5
+	beq case_4_umi
 
 case_none:
 	jmp break
 case_4_kirin:
 	jmp change_palette_4_kirin
-case_2_tetsujin:
-	jmp change_palette_2_tetsujin
-case_2_building:
-	jmp change_palette_2_building
+case_234_tetsujin:
+	jmp change_palette_234_tetsujin
+case_23_building:
+	jmp change_palette_23_building
+case_2_umi:
+	jmp change_palette_2_umi
+case_4_umi:
+	jmp change_palette_4_umi
 
 change_palette_4_kirin:
 ; ƒpƒŒƒbƒg4‚ğƒLƒŠƒ“F‚É‚·‚é
@@ -1133,7 +1141,7 @@ copypal_4kirin:
 
 	jmp break
 
-change_palette_2_tetsujin:
+change_palette_234_tetsujin:
 ; ƒpƒŒƒbƒg2,3,4‚ğ“SlF‚É‚·‚é
 	clc
 	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
@@ -1160,7 +1168,7 @@ copypal_2tetsujin:
 
 	jmp break
 
-change_palette_2_building:
+change_palette_23_building:
 ; ƒpƒŒƒbƒg2,3‚ğƒrƒ‹F‚É‚·‚é
 	clc
 	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
@@ -1179,6 +1187,60 @@ copypal_2building:
 	inx
 	dey
 	bne	copypal_2building
+
+	clc
+	lda #%10001100	; VRAM‘‰Á—Ê32byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	sta $2000
+
+	jmp break
+
+change_palette_2_umi:
+; ƒpƒŒƒbƒg2‚ğŠCF‚É‚·‚é
+	clc
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$04
+	sta	$2006
+	ldx	#$4
+	ldy	#4
+copypal_2umi:
+	lda	palettes_bg, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_2umi
+
+	clc
+	lda #%10001100	; VRAM‘‰Á—Ê32byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	sta $2000
+
+	jmp break
+
+change_palette_4_umi:
+; ƒpƒŒƒbƒg4‚ğŠCF‚É‚·‚é
+	clc
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$0c
+	sta	$2006
+	ldx	#$4
+	ldy	#4
+copypal_4umi:
+	lda	palettes_bg, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_4umi
 
 	clc
 	lda #%10001100	; VRAM‘‰Á—Ê32byte

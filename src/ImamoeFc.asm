@@ -297,7 +297,10 @@ scene_break:
 	beq case_tetsujin
 	cmp #$63	; ƒrƒ‹
 	beq case_building
-
+	cmp #$03	; ŠC1
+	beq case_umi1
+	cmp #$09	; ŠC2
+	beq case_umi2
 	jmp skip
 
 	case_kirin:
@@ -312,6 +315,16 @@ scene_break:
 
 	case_building:
 	lda #3
+	sta palette_bg_change_state
+	jmp skip
+
+	case_umi1:
+	lda #4
+	sta palette_bg_change_state
+	jmp skip
+
+	case_umi2:
+	lda #5
 	sta palette_bg_change_state
 	jmp skip
 
