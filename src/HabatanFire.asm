@@ -407,23 +407,23 @@ step_2:
 
 step_3:
 	; タイル番号
-	lda #$CC
+	lda #$00
 	sta haba_fire1_t
-	lda #$CD
+	lda #$00
 	sta haba_fire2_t
-	lda #$DC
+	lda #$00
 	sta haba_fire3_t
-	lda #$DD
+	lda #$00
 	sta haba_fire4_t
-	lda #$DE
+	lda #$00
 	sta haba_fire5_t
-	lda #$ED
+	lda #$00
 	sta haba_fire6_t
-	lda #$EE
+	lda #$6A
 	sta haba_fire7_t
-	lda #$FE
+	lda #$7A
 	sta haba_fire8_t
-	lda #$FF
+	lda #$7B
 	sta haba_fire9_t
 	jmp case_break
 
@@ -543,23 +543,23 @@ step_2:
 
 step_3:
 	; タイル番号
-	lda #$CC
+	lda #$00
 	sta haba_fire1_t2
-	lda #$CD
+	lda #$00
 	sta haba_fire2_t2
-	lda #$DC
+	lda #$00
 	sta haba_fire3_t2
-	lda #$DD
+	lda #$00
 	sta haba_fire4_t2
-	lda #$DE
+	lda #$00
 	sta haba_fire5_t2
-	lda #$ED
+	lda #$00
 	sta haba_fire6_t2
-	lda #$EE
+	lda #$6A
 	sta haba_fire7_t2
-	lda #$FE
+	lda #$7A
 	sta haba_fire8_t2
-	lda #$FF
+	lda #$7B
 	sta haba_fire9_t2
 	jmp case_break
 
