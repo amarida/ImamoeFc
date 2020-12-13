@@ -15,25 +15,31 @@
 
 ; 登場
 .proc appear_tako
-	; 空いているタコを探す
+;	; 空いているタコを探す
+;
+;	lda #1
+;	sta tako_alive_flag_current	; フラグ参照現在位置
+;	ldx #0
+;loop_x:
+;	; 空いているか
+;	lda tako_alive_flag
+;	and tako_alive_flag_current
+;	beq set_tako
+;	
+;	; 次
+;	asl tako_alive_flag_current
+;	inx
+;	cpx tako_max_count	; ループ最大数
+;	bne loop_x				; ループ
+;
+;	; ここまで来たら空きはないのでスキップ
+;	jmp skip_tako
 
-	lda #1
-	sta tako_alive_flag_current	; フラグ参照現在位置
-	ldx #0
-loop_x:
-	; 空いているか
-	lda tako_alive_flag
-	and tako_alive_flag_current
-	beq set_tako
-	
-	; 次
-	asl tako_alive_flag_current
-	inx
-	cpx tako_max_count	; ループ最大数
-	bne loop_x				; ループ
-
-	; ここまで来たら空きはないのでスキップ
-	jmp skip_tako
+	ldx enemy_dma_area
+	lda enemy_dma_area
+	clc
+	adc #1
+	sta tako_alive_flag_current
 
 set_tako:
 	; 空いているタコに情報をセットする
@@ -267,30 +273,33 @@ loop_x:
 set_pat0:
 	lda #$00
 	sta REG0
+	sta REG1
 	jmp break_pat
 set_pat1:
-	lda #$02
+	lda #$04
 	sta REG0
+	lda #$00
+	sta REG1
 	jmp break_pat
 	
 break_pat:
 
 ; 生存タイル
-	clc
-	lda #$8B     ; 
-	adc REG0
+	sec
+	lda #$68     ; 
+	sbc REG1
 	sta char4_p1_index1_t,y
-	clc
-	lda #$8C
-	adc REG0
+	sec
+	lda #$69
+	sbc REG1
 	sta char4_p1_index2_t,y
-	clc
-	lda #$9B
-	adc REG0
+	sec
+	lda #$78
+	sbc REG0
 	sta char4_p1_index3_t,y
-	clc
-	lda #$9C
-	adc REG0
+	sec
+	lda #$79
+	sbc REG0
 	sta char4_p1_index4_t,y
 	
 
@@ -384,30 +393,33 @@ loop_x:
 set_pat0:
 	lda #$00
 	sta REG0
+	sta REG1
 	jmp break_pat
 set_pat1:
-	lda #$02
+	lda #$04
 	sta REG0
+	lda #$00
+	sta REG1
 	jmp break_pat
 	
 break_pat:
 
 ; 生存タイル
-	clc
-	lda #$8B     ; 
-	adc REG0
+	sec
+	lda #$68     ; 
+	sbc REG1
 	sta char4_p1_index1_t2,y
-	clc
-	lda #$8C
-	adc REG0
+	sec
+	lda #$69
+	sbc REG1
 	sta char4_p1_index2_t2,y
-	clc
-	lda #$9B
-	adc REG0
+	sec
+	lda #$78
+	sbc REG0
 	sta char4_p1_index3_t2,y
-	clc
-	lda #$9C
-	adc REG0
+	sec
+	lda #$79
+	sbc REG0
 	sta char4_p1_index4_t2,y
 	
 

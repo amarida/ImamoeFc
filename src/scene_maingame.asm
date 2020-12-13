@@ -103,13 +103,57 @@ waitScanSub:
 
 ; 更新
 .proc	Update
-	lda scene_maingame_init
-	bne first_skip
-	lda #1
-	sta scene_maingame_init
-	jsr PlayBgmIntroduction
+	lda scene_update_step
+	cmp #0
+	beq case_play_bgm
+	cmp #1
+	beq case_maingame
+	cmp #2
+	beq case_boss_scroll
+	cmp #3
+	beq case_boss_introduction
+	cmp #4
+	beq case_boss
+	cmp #5
+	beq case_boss_conclusion 
 
-first_skip:
+case_play_bgm:
+	jsr PlayBgmIntroduction
+	jsr UpdateMaingame
+
+	inc scene_update_step
+
+	jmp case_break
+
+case_maingame:
+	jsr UpdateMaingame
+
+	jmp case_break
+
+case_boss_scroll:
+	jsr UpdateBossScroll
+
+	jmp case_break
+
+case_boss_introduction:
+	jsr UpdateBossIntroduction
+
+	jmp case_break
+
+case_boss:
+	jmp case_break
+
+case_boss_conclusion:
+	jmp case_break
+
+	case_break:
+
+
+	rts	; サブルーチンから復帰します。
+.endproc
+
+; メインゲーム更新
+.proc UpdateMaingame
 
 	inc timer_count
 
@@ -217,7 +261,117 @@ break:
 	jsr ConvertTimerBinaryToBCD
 	jsr ConvertScoreBinaryToBCD
 
+	jsr UpdateBossCheck
+
 	rts	; サブルーチンから復帰します。
+.endproc
+
+
+; ボスまできたか判定
+.proc UpdateBossCheck
+; 07 field_scroll_x_hi
+; a5 field_scroll_x_low
+
+	; 上位の比較で達しているか
+	sec
+	lda field_scroll_x_hi	; スクロール位置上位
+	sbc #$7
+	bcc check_skip	; キャリーフラグがクリア（超過）されている場合
+
+	; 下位の比較で達しているか
+	sec
+	lda field_scroll_x_low
+	sbc #$a5
+	bcc check_skip	; キャリーフラグがクリア（超過）されている場合
+
+	; ボスエリアに到着
+	lda #2
+	sta scene_update_step
+
+check_skip:
+
+	rts ;  サブルーチンから復帰します。
+.endproc
+
+; ボス戦スクロール
+.proc UpdateBossScroll
+
+	; 所定位置までスクロール
+	; スクロール情報
+	clc
+	lda scroll_x
+	adc #1
+	sta scroll_x
+
+	inc scroll_count_8dot
+	lda scroll_count_8dot
+	cmp #8
+	bne skip_scroll_count_8dot_off
+	lda #0
+	sta scroll_count_8dot
+	inc scroll_count_8dot_count	
+skip_scroll_count_8dot_off:
+
+	inc scroll_count_32dot
+	lda scroll_count_32dot
+	cmp #32
+	bne skip_scroll_count_32dot_off
+	lda #0
+	sta scroll_count_32dot
+	inc scroll_count_32dot_count
+skip_scroll_count_32dot_off:
+
+	; スクロール情報の更新
+	clc
+	lda field_scroll_x_low
+	adc #1
+	sta field_scroll_x_low
+
+	bcc eor_skip
+	lda #%00000001
+	eor current_draw_display_no
+	sta current_draw_display_no
+eor_skip:
+
+	lda field_scroll_x_hi
+	adc #0
+	sta field_scroll_x_hi
+
+	; 所定位置に着いたか
+	jsr ConfirmScrollPos
+
+	rts ;  サブルーチンから復帰します。
+.endproc
+
+; 所定位置に着いたか
+.proc ConfirmScrollPos
+
+	lda field_scroll_x_hi
+	cmp #8
+	bne skip
+
+	; 所定位置に着いたら
+	lda #3
+	sta scene_update_step
+
+skip:
+
+	rts ;  サブルーチンから復帰します。
+.endproc
+
+.proc UpdateBossIntroduction
+
+mugen:
+jmp mugen
+
+	rts ;  サブルーチンから復帰します。
+.endproc
+
+
+; 初期化更新
+.proc UpdatePlaySound
+
+	rts ;  サブルーチンから復帰します。
 .endproc
 
 ; タイマー更新
@@ -260,24 +414,24 @@ skip:
 	; 敵を登場させて、登場済みフラグを立てる
 
 	lda field_scroll_x_hi
-	sta REG0
+	sta REG0	; スクロール位置上位
 	lda field_scroll_x_low
-	sta REG1
+	sta REG1	; スクロール位置下位
 
 	clc
-	lda REG1
-	adc #255
+	lda REG1	; スクロール位置下位
+	adc #255	; スクロール位置下位に255を加算する
 	sta REG1
-	lda REG0
-	adc #0
-	sta REG0
+	lda REG0	; スクロール位置上位
+	adc #0		; スクロール位置上位に繰り上がりを加算する
+	sta REG0	; REG0, REG1には画面右端のスクロール位置が格納されている
 
 	ldy #0
-	lda (map_enemy_info_address_low), y
+	lda (map_enemy_info_address_low), y		; ([map_enemy_info_address_hi][map_enemy_info_address_low])+yの値
 	sta enemy_pos_x_hi
 	; 上位の比較で達しているか
 	sec
-	lda REG0
+	lda REG0	; 画面右端スクロール位置上位
 	sbc enemy_pos_x_hi
 	bcc appear_skip	; キャリーフラグがクリア（超過）されている場合
 
@@ -296,6 +450,18 @@ skip:
 	iny
 	lda (map_enemy_info_address_low), y
 	sta enemy_type
+
+	; 敵ID
+	lda enemy_type
+	and #%00001111
+	sta enemy_id
+	; DMA内のエリア 右4bitシフト
+	lda enemy_type
+	lsr
+	lsr
+	lsr
+	lsr
+	sta enemy_dma_area
 
 	; 敵キャラクターの登場
 	jsr appear_enemy
@@ -321,7 +487,7 @@ appear_skip:
 ;enemy_pos_y							= $C4
 ;enemy_type							= $C5
 
-	lda enemy_type
+	lda enemy_id
 	cmp #0
 	beq case_inosisi
 	cmp #1

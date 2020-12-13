@@ -621,9 +621,9 @@ break:
 	adc #21
 	sta playerFuki1_y
 	sta playerFuki2_y
-	lda #$C4
+	lda #$0C
 	sta playerFuki1_t
-	lda #$C5
+	lda #$0D
 	sta playerFuki2_t
 
 	lda chr_lr
@@ -677,7 +677,7 @@ break_fuki_attack1:
 	sta playerFuki1_y
 	lda #232	; ‰æ–ÊŠO
 	sta playerFuki2_y
-	lda #$C6
+	lda #$1D
 	sta playerFuki1_t
 
 	lda chr_lr
@@ -911,9 +911,9 @@ change_pat_skip:
 	adc #21
 	sta playerFuki1_y2
 	sta playerFuki2_y2
-	lda #$C4
+	lda #$0C
 	sta playerFuki1_t2
-	lda #$C5
+	lda #$0D
 	sta playerFuki2_t2
 
 	lda chr_lr
@@ -967,7 +967,7 @@ break_fuki_attack1:
 	sta playerFuki1_y2
 	lda #232	; ‰æ–ÊŠO
 	sta playerFuki2_y2
-	lda #$C6
+	lda #$1D
 	sta playerFuki1_t2
 
 	lda chr_lr

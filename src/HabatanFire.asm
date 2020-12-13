@@ -117,22 +117,22 @@ set_fire:
 	skip_set24:
 	
 	; タイル番号
-	lda #$4A
-	sta haba_fire1_t
-	lda #$4B
-	sta haba_fire2_t
-	lda #$00
-	sta haba_fire3_t
-	lda #$00
-	sta haba_fire4_t
-	lda #$5A
-	sta haba_fire5_t
-	lda #$5B
-	sta haba_fire6_t
-	lda #$00
-	sta haba_fire7_t
-	lda #$00
-	sta haba_fire8_t
+	;lda #$4A
+	;sta haba_fire1_t
+	;lda #$4B
+	;sta haba_fire2_t
+	;lda #$00
+	;sta haba_fire3_t
+	;lda #$00
+	;sta haba_fire4_t
+	;lda #$5A
+	;sta haba_fire5_t
+	;lda #$5B
+	;sta haba_fire6_t
+	;lda #$00
+	;sta haba_fire7_t
+	;lda #$00
+	;sta haba_fire8_t
 	
 	; 属性
 	; パレット3を使う
@@ -363,13 +363,13 @@ skip_update:
 
 step_1:
 	; タイル番号
-	lda #$4A
+	lda #$45
 	sta haba_fire1_t
-	lda #$4B
+	lda #$46
 	sta haba_fire2_t
-	lda #$5A
+	lda #$55
 	sta haba_fire3_t
-	lda #$5B
+	lda #$56
 	sta haba_fire4_t
 	lda #$00
 	sta haba_fire5_t
@@ -385,23 +385,23 @@ step_1:
 	
 step_2:
 	; タイル番号
-	lda #$4C
+	lda #$49
 	sta haba_fire1_t
-	lda #$4D
+	lda #$4A
 	sta haba_fire2_t
-	lda #$5C
+	lda #$59
 	sta haba_fire3_t
-	lda #$5D
+	lda #$5A
 	sta haba_fire4_t
-	lda #$5E
+	lda #$5B
 	sta haba_fire5_t
-	lda #$6D
+	lda #$6A
 	sta haba_fire6_t
-	lda #$6E
+	lda #$6B
 	sta haba_fire7_t
-	lda #$7E
+	lda #$7B
 	sta haba_fire8_t
-	lda #$7F
+	lda #$7C
 	sta haba_fire9_t
 	jmp case_break
 
@@ -419,11 +419,11 @@ step_3:
 	sta haba_fire5_t
 	lda #$00
 	sta haba_fire6_t
-	lda #$6A
+	lda #$47
 	sta haba_fire7_t
-	lda #$7A
+	lda #$57
 	sta haba_fire8_t
-	lda #$7B
+	lda #$58
 	sta haba_fire9_t
 	jmp case_break
 
@@ -499,13 +499,13 @@ skip_draw:
 
 step_1:
 	; タイル番号
-	lda #$4A
+	lda #$45
 	sta haba_fire1_t2
-	lda #$4B
+	lda #$46
 	sta haba_fire2_t2
-	lda #$5A
+	lda #$55
 	sta haba_fire3_t2
-	lda #$5B
+	lda #$56
 	sta haba_fire4_t2
 	lda #$00
 	sta haba_fire5_t2
@@ -521,23 +521,23 @@ step_1:
 	
 step_2:
 	; タイル番号
-	lda #$4C
+	lda #$49
 	sta haba_fire1_t2
-	lda #$4D
+	lda #$4A
 	sta haba_fire2_t2
-	lda #$5C
+	lda #$59
 	sta haba_fire3_t2
-	lda #$5D
+	lda #$5A
 	sta haba_fire4_t2
-	lda #$5E
+	lda #$5B
 	sta haba_fire5_t2
-	lda #$6D
+	lda #$6A
 	sta haba_fire6_t2
-	lda #$6E
+	lda #$6B
 	sta haba_fire7_t2
-	lda #$7E
+	lda #$7B
 	sta haba_fire8_t2
-	lda #$7F
+	lda #$7C
 	sta haba_fire9_t2
 	jmp case_break
 
@@ -555,11 +555,11 @@ step_3:
 	sta haba_fire5_t2
 	lda #$00
 	sta haba_fire6_t2
-	lda #$6A
+	lda #$47
 	sta haba_fire7_t2
-	lda #$7A
+	lda #$57
 	sta haba_fire8_t2
-	lda #$7B
+	lda #$58
 	sta haba_fire9_t2
 	jmp case_break
 

@@ -257,19 +257,19 @@ no_mapper_set:
 
 case_title:
 	jsr scene_title
-	jmp scene_break;
+	jmp scene_break
 case_introduction:
 	jsr scene_introduction
-	jmp scene_break;
+	jmp scene_break
 case_maingame_ready:
 	jsr scene_maingame_ready
 	jmp scene_break
 case_maingame:
 	jsr scene_maingame
-	jmp scene_break;
+	jmp scene_break
 case_gameover:
 	jsr scene_gameover
-	jmp scene_break;
+	jmp scene_break
 scene_break:
 
 		;VBLANK終了待ち
@@ -843,12 +843,12 @@ string_life_1:
 map_enemy_info:
 	.byte	$01, $e2, $b8, $00	; イノシシ	1
 
-	.byte	$02, $1a, $b8, $01	; タコ		2
-	.byte	$02, $32, $b8, $01	; タコ
+	.byte	$02, $1a, $b8, $01	; タコ		2 #%00000001  ; １個目の2x2エリアを使うという情報を付与する
+	.byte	$02, $32, $b8, $11	; タコ        #%00010001
 	.byte	$02, $57, $b0, $02	; タマネギ
 	.byte	$02, $b2, $88, $05	; アイテム
 	.byte	$02, $e2, $b8, $00	; イノシシ
-	.byte	$02, $f2, $b8, $00	; イノシシ
+	.byte	$02, $f2, $b8, $10	; イノシシ
 
 	.byte	$03, $32, $88, $05	; アイテム	3
 	.byte	$03, $8f, $b0, $02	; タマネギ
@@ -857,13 +857,13 @@ map_enemy_info:
 	.byte	$04, $12, $b8, $04	; はばタコ	4
 	.byte	$04, $52, $a8, $06	; タマネギ2
 	.byte	$04, $c2, $b8, $00	; イノシシ
-	.byte	$04, $f2, $b8, $00	; イノシシ
+	.byte	$04, $f2, $b8, $10	; イノシシ
 
 	.byte	$05, $14, $88, $05	; アイテム	5
 
 	.byte	$06, $02, $b8, $07	; イノシシB	6
 	.byte	$06, $2a, $30, $08	; タマネギ降ってくる
-	.byte	$06, $2a, $40, $09	; タマネギ降ってくる
+	.byte	$06, $2a, $40, $19	; タマネギ降ってくる
 
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 

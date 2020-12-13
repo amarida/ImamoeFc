@@ -11,7 +11,7 @@
 	sta char_12_type01_s
 	sta char_12_type08_s
 	sta char_12_type09_s
-	lda #%00000011
+	lda #%00000011     ; 3(10進数)をAにロード
 	sta char_12_type02_s
 	sta char_12_type03_s
 	sta char_12_type04_s
@@ -347,10 +347,16 @@ not_skip_draw:
 set_pat0:
 	lda #$00
 	sta REG0
+	sta REG1
+	sta REG2
 	jmp break_pat
 set_pat1:
-	lda #$05
+	lda #$04
 	sta REG0
+	lda #$03
+	sta REG1
+	lda #$02
+	sta REG2
 	jmp break_pat
 	
 break_pat:
@@ -358,33 +364,30 @@ break_pat:
 ; 生存タイル
 	; 1列目
 	clc
-	lda #$42
-	adc REG0
+	lda #$40
+	adc REG1
 	sta char_12_type01_t
 	clc
-	lda #$43
-	adc REG0
+	lda #$41
 	sta char_12_type02_t
 	clc
-	lda #$44
-	adc REG0
+	lda #$42
+	adc REG2
 	sta char_12_type03_t
 	; 2列目
 	clc
-	lda #$51
-	adc REG0
+	lda #$00
 	sta char_12_type04_t
 	clc
-	lda #$52
-	adc REG0
+	lda #$50
+	adc REG1
 	sta char_12_type05_t
 	clc
-	lda #$53
-	adc REG0
+	lda #$51
 	sta char_12_type06_t
 	clc
-	lda #$54
-	adc REG0
+	lda #$52
+	adc REG2
 	sta char_12_type07_t
 	; 3列目
 	clc
@@ -497,10 +500,16 @@ not_skip_draw:
 set_pat0:
 	lda #$00
 	sta REG0
+	sta REG1
+	sta REG2
 	jmp break_pat
 set_pat1:
-	lda #$05
+	lda #$04
 	sta REG0
+	lda #$03
+	sta REG1
+	lda #$02
+	sta REG2
 	jmp break_pat
 	
 break_pat:
@@ -508,33 +517,30 @@ break_pat:
 ; 生存タイル
 	; 1列目
 	clc
-	lda #$42
-	adc REG0
+	lda #$40
+	adc REG1
 	sta char_12_type01_t2
 	clc
-	lda #$43
-	adc REG0
+	lda #$41
 	sta char_12_type02_t2
 	clc
-	lda #$44
-	adc REG0
+	lda #$42
+	adc REG2
 	sta char_12_type03_t2
 	; 2列目
 	clc
-	lda #$51
-	adc REG0
+	lda #$00
 	sta char_12_type04_t2
 	clc
-	lda #$52
-	adc REG0
+	lda #$50
+	adc REG1
 	sta char_12_type05_t2
 	clc
-	lda #$53
-	adc REG0
+	lda #$51
 	sta char_12_type06_t2
 	clc
-	lda #$54
-	adc REG0
+	lda #$52
+	adc REG2
 	sta char_12_type07_t2
 	; 3列目
 	clc
@@ -584,7 +590,7 @@ break_pat:
 
 ; X座標
 	; xx123
-	; x4567
+	; xx567
 	; 8901x
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換

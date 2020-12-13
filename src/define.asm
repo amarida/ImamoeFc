@@ -93,7 +93,7 @@ enemy_kind									= $5B	; 敵の種類
 enemy_pos_x_low								= $5C
 enemy_pos_x_hi								= $5D
 enemy_pos_y									= $5E
-enemy_type									= $5F
+enemy_type									= $5F   ; 敵キャラID＋DMA内のどこのエリアを使用するか
 inosisi_alive_flag							= $60	; イノシシ生きているフラグ
 inosisi_max_count							= $61	; 最大同時数
 inosisi_alive_flag_current					= $62	; フラグ参照現在位置
@@ -228,6 +228,9 @@ str_speedup_pos_x							= $E2	; SPEEDUP文字のX座標
 str_speedup_pos_y							= $E3	; SPEEDUP文字のY座標
 str_speedup_frame							= $E4	; SPEEDUP文字の表示フレーム
 inosisi_type_flag							= $E5	; イノシシタイプ |00 00 00 00|4体目 3 2 1|
+enemy_id									= $E6   ; enemy_typeの敵キャラID
+enemy_dma_area							    = $E7   ; enemy_typeのDMA内のどこのエリアを使用するか（DMA6かDMA7というわけではない）
+
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号
 

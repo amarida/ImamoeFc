@@ -22,27 +22,34 @@
 ; 登場
 .proc appear_tamanegi
 
-	; 空いているタマネギを探す
 	lda #1
 	sta palette_change_state
 
-	lda #1
-	sta tamanegi_alive_flag_current	; フラグ参照現在位置
-	ldx #0
-loop_x:
-	; 空いているか
-	lda tamanegi_alive_flag
-	and tamanegi_alive_flag_current
-	beq set_tamanegi
-	
-	; 次
-	asl tamanegi_alive_flag_current
-	inx
-	cpx tamanegi_max_count	; ループ最大数
-	bne loop_x				; ループ
+;	; 空いているタマネギを探す
+;
+;	lda #1
+;	sta tamanegi_alive_flag_current	; フラグ参照現在位置
+;	ldx #0
+;loop_x:
+;	; 空いているか
+;	lda tamanegi_alive_flag
+;	and tamanegi_alive_flag_current
+;	beq set_tamanegi
+;	
+;	; 次
+;	asl tamanegi_alive_flag_current
+;	inx
+;	cpx tamanegi_max_count	; ループ最大数
+;	bne loop_x				; ループ
+;
+;	; ここまで来たら空きはないのでスキップ
+;	jmp skip_tamanegi
 
-	; ここまで来たら空きはないのでスキップ
-	jmp skip_tamanegi
+	ldx enemy_dma_area
+	lda enemy_dma_area
+	clc
+	adc #1
+	sta tamanegi_alive_flag_current
 
 set_tamanegi:
 	; 空いているタマネギに情報をセットする
@@ -831,13 +838,13 @@ case_in_the_cannon:
 ; 放物線
 case_parabola:
 	; ななめタイル
-	lda #$AB
+	lda #$4C
 	sta char4_p1_index1_t,y
-	lda #$AC
+	lda #$4D
 	sta char4_p1_index2_t,y
-	lda #$BB
+	lda #$5C
 	sta char4_p1_index3_t,y
-	lda #$BC
+	lda #$5D
 	sta char4_p1_index4_t,y
 	sec
 
@@ -885,19 +892,19 @@ case_fall:
 
 	; 生存タイル
 	clc
-	lda #$AD     ; 
+	lda #$4E     ; 
 	adc REG0
 	sta char4_p1_index1_t,y
 	clc
-	lda #$AD
+	lda #$4E
 	adc REG1
 	sta char4_p1_index2_t,y
 	clc
-	lda #$BD
+	lda #$5E
 	adc REG0
 	sta char4_p1_index3_t,y
 	clc
-	lda #$BD
+	lda #$5E
 	adc REG1
 	sta char4_p1_index4_t,y
 	
@@ -919,7 +926,7 @@ case_burst:
 	cmp #0
 	beq type_show
 	cmp #1
-	beq type_show
+	beq type_hide
 	cmp #2
 	beq type_hide
 	cmp #3
@@ -929,13 +936,13 @@ case_burst:
 
 	type_show:
 	; 生存タイル
-	lda #$AD     ; 
+	lda #$4E     ; 
 	sta char4_p1_index1_t,y
-	lda #$AD
+	lda #$4E
 	sta char4_p1_index2_t,y
-	lda #$BD
+	lda #$5E
 	sta char4_p1_index3_t,y
-	lda #$BD
+	lda #$5E
 	sta char4_p1_index4_t,y
 	
 	; 反転あり
@@ -1028,7 +1035,7 @@ next_draw:
 	skip_loop_x:
 
 
-skip_tamanegi:
+;skip_tamanegi:
 
 	rts
 
@@ -1087,13 +1094,13 @@ case_in_the_cannon:
 ; 放物線
 case_parabola:
 	; ななめタイル
-	lda #$AB
+	lda #$4C
 	sta char4_p1_index1_t2,y
-	lda #$AC
+	lda #$4D
 	sta char4_p1_index2_t2,y
-	lda #$BB
+	lda #$5C
 	sta char4_p1_index3_t2,y
-	lda #$BC
+	lda #$5D
 	sta char4_p1_index4_t2,y
 	
 	sec
@@ -1139,19 +1146,19 @@ case_fall:
 
 	; 生存タイル
 	clc
-	lda #$AD     ; 
+	lda #$4E     ; 
 	adc REG0
 	sta char4_p1_index1_t2,y
 	clc
-	lda #$AD
+	lda #$4E
 	adc REG1
 	sta char4_p1_index2_t2,y
 	clc
-	lda #$BD
+	lda #$5E
 	adc REG0
 	sta char4_p1_index3_t2,y
 	clc
-	lda #$BD
+	lda #$5E
 	adc REG1
 	sta char4_p1_index4_t2,y
 	
@@ -1173,7 +1180,7 @@ case_burst:
 	cmp #0
 	beq type_show
 	cmp #1
-	beq type_show
+	beq type_hide
 	cmp #2
 	beq type_hide
 	cmp #3
@@ -1183,13 +1190,13 @@ case_burst:
 
 	type_show:
 	; 生存タイル
-	lda #$AD     ; 
+	lda #$4E     ; 
 	sta char4_p1_index1_t2,y
-	lda #$AD
+	lda #$4E
 	sta char4_p1_index2_t2,y
-	lda #$BD
+	lda #$5E
 	sta char4_p1_index3_t2,y
-	lda #$BD
+	lda #$5E
 	sta char4_p1_index4_t2,y
 	
 	; 反転あり

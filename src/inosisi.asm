@@ -57,23 +57,29 @@
 
 	; 空いているイノシシを探す
 
-	lda #1
-	sta inosisi_alive_flag_current	; フラグ参照現在位置
-	ldx #0
-loop_x:
-	; 空いているか
-	lda inosisi_alive_flag
-	and inosisi_alive_flag_current
-	beq set_inosisi
-	
-	; 次
-	asl inosisi_alive_flag_current
-	inx
-	cpx inosisi_max_count	; ループ最大数
-	bne loop_x				; ループ
+;	lda #1
+;	sta inosisi_alive_flag_current	; フラグ参照現在位置
+;	ldx #0
+;loop_x:
+;	; 空いているか
+;	lda inosisi_alive_flag
+;	and inosisi_alive_flag_current
+;	beq set_inosisi
+;	
+;	; 次
+;	asl inosisi_alive_flag_current
+;	inx
+;	cpx inosisi_max_count	; ループ最大数
+;	bne loop_x				; ループ
+;
+;	; ここまで来たら空きはないのでスキップ
+;	jmp skip_inosisi
 
-	; ここまで来たら空きはないのでスキップ
-	jmp skip_inosisi
+	ldx enemy_dma_area
+	lda enemy_dma_area
+	clc
+	adc #1
+	sta inosisi_alive_flag_current
 
 set_inosisi:
 	lda REG0
@@ -634,13 +640,13 @@ drown_tail:
 	jmp break_tile
 ; 水しぶき1タイル
 splash1_tail:
-	lda #$89     ; 
+	lda #$0E     ; 
 	sta char_6type1_t,y
-	lda #$8A
+	lda #$0F
 	sta char_6type2_t,y
-	lda #$99
+	lda #$1E
 	sta char_6type4_t,y
-	lda #$9A
+	lda #$1F
 	sta char_6type5_t,y
 
 	lda #$00	; ブランク
@@ -651,13 +657,13 @@ splash1_tail:
 
 ; 水しぶき2タイル
 splash2_tail:
-	lda #$A9     ; 
+	lda #$2E     ; 
 	sta char_6type1_t,y
-	lda #$AA
+	lda #$2F
 	sta char_6type2_t,y
-	lda #$B9
+	lda #$3E
 	sta char_6type4_t,y
-	lda #$BA
+	lda #$3F
 	sta char_6type5_t,y
 
 	lda #$00	; ブランク
@@ -814,13 +820,13 @@ drown_tail:
 	jmp break_tile
 ; 水しぶき1タイル
 splash1_tail:
-	lda #$89     ; 
+	lda #$0E     ; 
 	sta char_6type1_t2,y
-	lda #$8A
+	lda #$0F
 	sta char_6type2_t2,y
-	lda #$99
+	lda #$1E
 	sta char_6type4_t2,y
-	lda #$9A
+	lda #$1F
 	sta char_6type5_t2,y
 
 	lda #$00	; ブランク
@@ -831,13 +837,13 @@ splash1_tail:
 
 ; 水しぶき2タイル
 splash2_tail:
-	lda #$A9     ; 
+	lda #$2E     ; 
 	sta char_6type1_t2,y
-	lda #$AA
+	lda #$2F
 	sta char_6type2_t2,y
-	lda #$B9
+	lda #$3E
 	sta char_6type4_t2,y
-	lda #$BA
+	lda #$3F
 	sta char_6type5_t2,y
 
 	lda #$00	; ブランク
