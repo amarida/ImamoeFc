@@ -2093,6 +2093,7 @@ exit:
 	sta REG0
 	lda #1
 	sta REG1
+	jsr String_Clear
 	jsr Player_SetSpeed
 	lda #1
 	sta str_speedup_state

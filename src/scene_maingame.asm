@@ -33,6 +33,7 @@ player_dma7:
 	jsr HabatanFire_DrawDma7	; ‚Í‚Îƒ^ƒ“ƒtƒ@ƒCƒA[•`‰æ
 	jsr Item_DrawDma7			; ğ•`‰æ
 	jsr String_DrawDma7			; •¶š—ñ•`‰æ
+	jsr BossDrawDma7			; ƒ{ƒX•`‰æ
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; ƒvƒŒƒCƒ„[•`‰æŠÖ”
@@ -45,6 +46,7 @@ player_dma6:
 	jsr HabatanFire_DrawDma6	; ‚Í‚Îƒ^ƒ“ƒtƒ@ƒCƒA[•`‰æ
 	jsr Item_DrawDma6			; ğ•`‰æ
 	jsr String_DrawDma6			; •¶š—ñ•`‰æ
+	jsr BossDrawDma6			; ƒ{ƒX•`‰æ
 	jmp player_dma_break
 player_dma_break:
 	
@@ -94,7 +96,7 @@ r_skip:
 .endproc
 
 .proc waitScan			; ‰½‚à‚¹‚¸‘Ò‚Â
-	ldx #167	;#167
+	ldx #157	;#167
 waitScanSub:
 	dex
 	bne waitScanSub
@@ -241,6 +243,7 @@ break:
 	jsr HabatanUpdate
 	jsr HabatanFire_Update
 	jsr Item_Update
+	jsr BossUpdate
 
 	lda str_speedup_state
 	beq skip_str
@@ -508,6 +511,8 @@ appear_skip:
 	beq case_tamanegi_free_fall1
 	cmp #9
 	beq case_tamanegi_free_fall2
+	cmp #10
+	beq case_boss
 
 case_inosisi:
 	lda #0
@@ -550,6 +555,9 @@ case_tamanegi_free_fall2:
 	lda #3
 	sta REG0
 	jsr appear_tamanegi
+	jmp break
+case_boss:
+	jsr appear_boss
 	jmp break
 
 break:
@@ -974,6 +982,8 @@ skip_bcd1hi:
 	beq case_34sake_get
 	cmp #9
 	beq case_3binosisi
+	cmp #10
+	beq case_234boss
 
 case_none:
 	jmp break
@@ -995,13 +1005,15 @@ case_34sake_get:
 	jmp change_palette_34_sake_get
 case_3binosisi:
 	jmp change_palette_3_binosisi
+case_234boss:
+	jmp change_palette_234_boss
 
 
 change_palette_2_tamanegi:
 ; ƒpƒŒƒbƒg2‚ğƒ^ƒ}ƒlƒMF‚É‚·‚é
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1027,8 +1039,8 @@ copypal_2tama:
 change_palette_3_fire:
 	; ƒpƒŒƒbƒg3‚ğ”R‚¦‚éF‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1054,8 +1066,8 @@ copypal_3fire:
 change_palette_4_habatan:
 	; ƒpƒŒƒbƒg4‚ğ‚Í‚Îƒ^ƒ“F‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1081,8 +1093,8 @@ copypal_4habatan:
 change_palette_2_inosisi:
 	; ƒpƒŒƒbƒg2‚ğƒCƒmƒVƒVF‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1108,8 +1120,8 @@ copypal_2inosisi:
 change_palette_2_tako:
 	; ƒpƒŒƒbƒg2‚ğƒ^ƒRF‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1135,8 +1147,8 @@ copypal_2tako:
 change_palette_3_tako:
 	; ƒpƒŒƒbƒg3‚ğƒ^ƒRF‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1162,8 +1174,8 @@ copypal_3tako:
 change_palette_34_sake:
 	; ƒpƒŒƒbƒg3‚ğğ‰º4‚ğğãF‚É•ÏX
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1189,8 +1201,8 @@ copypal_34_sake:
 change_palette_34_sake_get:
 	; ƒpƒŒƒbƒg3‚ğğ‰ºŠl“¾F4‚ğğãŠl“¾F
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1217,8 +1229,8 @@ change_palette_3_binosisi:
 
 	; ƒpƒŒƒbƒg3‚ğ‚‚ƒCƒmƒVƒVF
 	clc
-	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
 	sta $2000
 
 	lda	#$3f
@@ -1233,6 +1245,34 @@ copypal_3_binosisi:
 	inx
 	dey
 	bne	copypal_3_binosisi
+
+	clc
+	lda #%10001100	; VRAM‘‰Á—Ê32byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	sta $2000
+
+	jmp break
+
+change_palette_234_boss:
+
+	; ƒpƒŒƒbƒg234‚ğƒ{ƒXF
+	clc
+	lda #%10001000	; VRAM‘‰Á—Ê1byte
+	adc current_draw_display_no	; ‰æ–Ê‚O‚©‚P
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$14
+	sta	$2006
+	ldx	#0
+	ldy	#12
+copypal_234_boss:
+	lda	paletteBoss, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_234_boss
 
 	clc
 	lda #%10001100	; VRAM‘‰Á—Ê32byte

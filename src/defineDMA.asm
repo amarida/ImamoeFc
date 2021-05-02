@@ -14,11 +14,11 @@ playerFuki2_t: .byte 0
 playerFuki2_s: .byte 0
 playerFuki2_x: .byte 0
 
-char4_p1_index1_y:	.byte 0
+char4_p1_index1_y:	.byte 0;	=	$070C	; 
 char4_p1_index1_t:	.byte 0
 char4_p1_index1_s:	.byte 0
 char4_p1_index1_x:	.byte 0
-char4_p1_index2_y:	.byte 0
+char4_p1_index2_y:	.byte 0;    =	$0710	; 
 char4_p1_index2_t:	.byte 0
 char4_p1_index2_s:	.byte 0
 char4_p1_index2_x:	.byte 0
@@ -35,7 +35,7 @@ char4_p2_index1_y:	.byte 0
 char4_p2_index1_t:	.byte 0
 char4_p2_index1_s:	.byte 0
 char4_p2_index1_x:	.byte 0
-char4_p2_index2_y:	.byte 0
+char4_p2_index2_y:	.byte 0;     =	$0720	; 
 char4_p2_index2_t:	.byte 0
 char4_p2_index2_s:	.byte 0
 char4_p2_index2_x:	.byte 0
@@ -46,43 +46,47 @@ char4_p2_index3_x:	.byte 0
 char4_p2_index4_y:	.byte 0
 char4_p2_index4_t:	.byte 0
 char4_p2_index4_s:	.byte 0
-char4_p2_index4_x:	.byte 0
+char4_p2_index4_x:	.byte 0;     = $072B
 
-player1_y:	.byte 0;	=	$0700	; 
-player1_t:	.byte 0;	=	$0701	; 
-player1_s:	.byte 0;	=	$0702	; 
-player1_x:	.byte 0;	=	$0703	; 
-player2_y:	.byte 0;	=	$0704	; 
-player2_t:	.byte 0;	=	$0705	; 
-player2_s:	.byte 0;	=	$0706	; 
-player2_x:	.byte 0;	=	$0707	; 
-player3_y:	.byte 0;	=	$0708	; 
-player3_t:	.byte 0;	=	$0709	; 
-player3_s:	.byte 0;	=	$070A	; 
-player3_x:	.byte 0;	=	$070B	; 
-player4_y:	.byte 0;	=	$070C	; 
-player4_t:	.byte 0;	=	$070D	; 
-player4_s:	.byte 0;	=	$070E	; 
-player4_x:	.byte 0;	=	$070F	; 
-player5_y:	.byte 0;	=	$0710	; 
-player5_t:	.byte 0;	=	$0711	; 
-player5_s:	.byte 0;	=	$0712	; 
-player5_x:	.byte 0;	=	$0713	; 
-player6_y:	.byte 0;	=	$0714	; 
-player6_t:	.byte 0;	=	$0715	; 
-player6_s:	.byte 0;	=	$0716	; 
-player6_x:	.byte 0;	=	$0717	; 
-player7_y:	.byte 0;	=	$0718	; 
-player7_t:	.byte 0;	=	$0719	; 
-player7_s:	.byte 0;	=	$071A	; 
-player7_x:	.byte 0;	=	$071B	; 
-player8_y:	.byte 0;	=	$071C	; 
-player8_t:	.byte 0;	=	$071D	; 
-player8_s:	.byte 0;	=	$071E	; 
-player8_x:	.byte 0;	=	$071F	; 
+; ↑ここまで11 4バイト目 ↓ここから12 4バイト目
 
-char_6type1_y:	.byte 0;	=	$0720	; 
-char_6type1_t:	.byte 0;	=	$0721	; 
+player1_y:	.byte 0
+player1_t:	.byte 0
+player1_s:	.byte 0
+player1_x:	.byte 0
+player2_y:	.byte 0;     =	$0730	; 
+player2_t:	.byte 0
+player2_s:	.byte 0
+player2_x:	.byte 0
+player3_y:	.byte 0
+player3_t:	.byte 0
+player3_s:	.byte 0
+player3_x:	.byte 0
+player4_y:	.byte 0
+player4_t:	.byte 0
+player4_s:	.byte 0
+player4_x:	.byte 0
+player5_y:	.byte 0
+player5_t:	.byte 0
+player5_s:	.byte 0
+player5_x:	.byte 0
+player6_y:	.byte 0;     =	$0740	; 
+player6_t:	.byte 0
+player6_s:	.byte 0
+player6_x:	.byte 0
+player7_y:	.byte 0
+player7_t:	.byte 0
+player7_s:	.byte 0
+player7_x:	.byte 0
+player8_y:	.byte 0
+player8_t:	.byte 0
+player8_s:	.byte 0
+player8_x:	.byte 0
+
+; ↑ここまで19 4バイト目 ↓ここから20 4バイト目
+
+char_6type1_y:	.byte 0;	=	$074C	; 
+char_6type1_t:	.byte 0;	=	
 char_6type1_s:	.byte 0;	=	$0722	; 属性
 char_6type1_x:	.byte 0;	=	$0723	; 
 char_6type2_y:	.byte 0;	=	$0724	; 
@@ -130,6 +134,8 @@ char_6type26_y:	.byte 0;	=	$0754	;
 char_6type26_t:	.byte 0;	=	$0755	; 
 char_6type26_s:	.byte 0;	=	$0756	; 
 char_6type26_x:	.byte 0;	=	$0757	; 
+
+; ↑ここまで31 4バイト目 ↓ここから32 4バイト目
 
 char_12_type01_y:	.byte 0
 char_12_type01_t:	.byte 0
@@ -180,6 +186,8 @@ char_12_type12_t:	.byte 0
 char_12_type12_s:	.byte 0
 char_12_type12_x:	.byte 0
 
+; ↑ここまで43 4バイト目 ↓ここから44 4バイト目
+
 haba_fire1_y:	.byte 0
 haba_fire1_t:	.byte 0
 haba_fire1_s:	.byte 0
@@ -217,6 +225,8 @@ haba_fire9_t:	.byte 0
 haba_fire9_s:	.byte 0
 haba_fire9_x:	.byte 0
 
+; 52 4バイト目 53 4バイト目
+
 str4_index1_y:	.byte 0
 str4_index1_t:	.byte 0
 str4_index1_s:	.byte 0
@@ -234,7 +244,207 @@ str4_index4_t:	.byte 0
 str4_index4_s:	.byte 0
 str4_index4_x:	.byte 0
 
-; 56
+; fuki_test := $0704 ; 直接アドレス指定
+; ボス用にエイリアス $070C～$072B $074C～
+.org $070C
+boss_index1_y:		.byte 0 ; 070C
+boss_index1_t:		.byte 0
+boss_index1_s:		.byte 0
+boss_index1_x:		.byte 0
+boss_index2_y:		.byte 0 ; 0710                 ; 0750
+boss_index2_t:		.byte 0
+boss_index2_s:		.byte 0
+boss_index2_x:		.byte 0
+boss_index3_y:		.byte 0
+boss_index3_t:		.byte 0
+boss_index3_s:		.byte 0
+boss_index3_x:		.byte 0
+boss_index4_y:		.byte 0
+boss_index4_t:		.byte 0
+boss_index4_s:		.byte 0
+boss_index4_x:		.byte 0
+boss_index5_y:		.byte 0
+boss_index5_t:		.byte 0
+boss_index5_s:		.byte 0
+boss_index5_x:		.byte 0
+boss_index6_y:		.byte 0 ; 0720                    ; 0760
+boss_index6_t:		.byte 0
+boss_index6_s:		.byte 0
+boss_index6_x:		.byte 0
+boss_index7_y:		.byte 0
+boss_index7_t:		.byte 0
+boss_index7_s:		.byte 0
+boss_index7_x:		.byte 0
+boss_index8_y:		.byte 0
+boss_index8_t:		.byte 0
+boss_index8_s:		.byte 0
+boss_index8_x:		.byte 0 ; 072B
+
+.org $074C
+boss_index9_y:		.byte 0
+boss_index9_t:		.byte 0
+boss_index9_s:		.byte 0
+boss_index9_x:		.byte 0
+boss_index10_y:		.byte 0 ; 0770
+boss_index10_t:		.byte 0
+boss_index10_s:		.byte 0
+boss_index10_x:		.byte 0
+boss_index11_y:		.byte 0
+boss_index11_t:		.byte 0
+boss_index11_s:		.byte 0
+boss_index11_x:		.byte 0
+boss_index12_y:		.byte 0
+boss_index12_t:		.byte 0
+boss_index12_s:		.byte 0
+boss_index12_x:		.byte 0
+boss_index13_y:		.byte 0
+boss_index13_t:		.byte 0
+boss_index13_s:		.byte 0
+boss_index13_x:		.byte 0
+boss_index14_y:		.byte 0 ; 0780
+boss_index14_t:		.byte 0
+boss_index14_s:		.byte 0
+boss_index14_x:		.byte 0
+boss_index15_y:		.byte 0
+boss_index15_t:		.byte 0
+boss_index15_s:		.byte 0
+boss_index15_x:		.byte 0
+boss_index16_y:		.byte 0
+boss_index16_t:		.byte 0
+boss_index16_s:		.byte 0
+boss_index16_x:		.byte 0
+boss_index17_y:		.byte 0
+boss_index17_t:		.byte 0
+boss_index17_s:		.byte 0
+boss_index17_x:		.byte 0
+boss_index18_y:		.byte 0 ; 0790
+boss_index18_t:		.byte 0
+boss_index18_s:		.byte 0
+boss_index18_x:		.byte 0
+boss_index19_y:		.byte 0
+boss_index19_t:		.byte 0
+boss_index19_s:		.byte 0
+boss_index19_x:		.byte 0
+boss_index20_y:		.byte 0
+boss_index20_t:		.byte 0
+boss_index20_s:		.byte 0
+boss_index20_x:		.byte 0
+boss_index21_y:		.byte 0
+boss_index21_t:		.byte 0
+boss_index21_s:		.byte 0
+boss_index21_x:		.byte 0
+boss_index22_y:		.byte 0 ; 07a0
+boss_index22_t:		.byte 0
+boss_index22_s:		.byte 0
+boss_index22_x:		.byte 0
+boss_index23_y:		.byte 0
+boss_index23_t:		.byte 0
+boss_index23_s:		.byte 0
+boss_index23_x:		.byte 0
+boss_index24_y:		.byte 0
+boss_index24_t:		.byte 0
+boss_index24_s:		.byte 0
+boss_index24_x:		.byte 0
+boss_index25_y:		.byte 0
+boss_index25_t:		.byte 0
+boss_index25_s:		.byte 0
+boss_index25_x:		.byte 0
+boss_index26_y:		.byte 0 ; 07b0
+boss_index26_t:		.byte 0
+boss_index26_s:		.byte 0
+boss_index26_x:		.byte 0
+boss_index27_y:		.byte 0
+boss_index27_t:		.byte 0
+boss_index27_s:		.byte 0
+boss_index27_x:		.byte 0
+boss_index28_y:		.byte 0
+boss_index28_t:		.byte 0
+boss_index28_s:		.byte 0
+boss_index28_x:		.byte 0
+boss_index29_y:		.byte 0
+boss_index29_t:		.byte 0
+boss_index29_s:		.byte 0
+boss_index29_x:		.byte 0
+boss_index30_y:		.byte 0 ; 07c0
+boss_index30_t:		.byte 0
+boss_index30_s:		.byte 0
+boss_index30_x:		.byte 0
+boss_index31_y:		.byte 0
+boss_index31_t:		.byte 0
+boss_index31_s:		.byte 0
+boss_index31_x:		.byte 0
+boss_index32_y:		.byte 0
+boss_index32_t:		.byte 0
+boss_index32_s:		.byte 0
+boss_index32_x:		.byte 0
+boss_index33_y:		.byte 0
+boss_index33_t:		.byte 0
+boss_index33_s:		.byte 0
+boss_index33_x:		.byte 0
+boss_index34_y:		.byte 0 ; 07d0
+boss_index34_t:		.byte 0
+boss_index34_s:		.byte 0
+boss_index34_x:		.byte 0
+boss_index35_y:		.byte 0
+boss_index35_t:		.byte 0
+boss_index35_s:		.byte 0
+boss_index35_x:		.byte 0
+boss_index36_y:		.byte 0
+boss_index36_t:		.byte 0
+boss_index36_s:		.byte 0
+boss_index36_x:		.byte 0
+boss_index37_y:		.byte 0
+boss_index37_t:		.byte 0
+boss_index37_s:		.byte 0
+boss_index37_x:		.byte 0
+boss_index38_y:		.byte 0 ; 07e0
+boss_index38_t:		.byte 0
+boss_index38_s:		.byte 0
+boss_index38_x:		.byte 0
+boss_index39_y:		.byte 0
+boss_index39_t:		.byte 0
+boss_index39_s:		.byte 0
+boss_index39_x:		.byte 0
+boss_index40_y:		.byte 0
+boss_index40_t:		.byte 0
+boss_index40_s:		.byte 0
+boss_index40_x:		.byte 0
+boss_index41_y:		.byte 0
+boss_index41_t:		.byte 0
+boss_index41_s:		.byte 0
+boss_index41_x:		.byte 0
+boss_index42_y:		.byte 0 ; 07f0
+boss_index42_t:		.byte 0
+boss_index42_s:		.byte 0
+boss_index42_x:		.byte 0
+boss_index43_y:		.byte 0
+boss_index43_t:		.byte 0
+boss_index43_s:		.byte 0
+boss_index43_x:		.byte 0
+boss_index44_y:		.byte 0
+boss_index44_t:		.byte 0
+boss_index44_s:		.byte 0
+boss_index44_x:		.byte 0
+boss_index45_y:		.byte 0
+boss_index45_t:		.byte 0
+boss_index45_s:		.byte 0
+boss_index45_x:		.byte 0
+boss_index46_y:		.byte 0 ; 0800
+boss_index46_t:		.byte 0
+boss_index46_s:		.byte 0
+boss_index46_x:		.byte 0
+boss_index47_y:		.byte 0
+boss_index47_t:		.byte 0
+boss_index47_s:		.byte 0
+boss_index47_x:		.byte 0
+boss_index48_y:		.byte 0
+boss_index48_t:		.byte 0
+boss_index48_s:		.byte 0
+boss_index48_x:		.byte 0
+boss_index49_y:		.byte 0
+boss_index49_t:		.byte 0
+boss_index49_s:		.byte 0 ; 080E
+boss_index49_x:		.byte 0
 
 
 .org $0600
@@ -256,7 +466,7 @@ player1_y2:	.byte 0
 player1_t2:	.byte 0
 player1_s2:	.byte 0
 player1_x2:	.byte 0
-player2_y2:	.byte 0
+player2_y2:	.byte 0; $0610
 player2_t2:	.byte 0
 player2_s2:	.byte 0
 player2_x2:	.byte 0
@@ -272,7 +482,7 @@ player5_y2:	.byte 0
 player5_t2:	.byte 0
 player5_s2:	.byte 0
 player5_x2:	.byte 0
-player6_y2:	.byte 0
+player6_y2:	.byte 0; $0620
 player6_t2:	.byte 0
 player6_s2:	.byte 0
 player6_x2:	.byte 0
@@ -285,11 +495,11 @@ player8_t2:	.byte 0
 player8_s2:	.byte 0
 player8_x2:	.byte 0
 
-haba_fire1_y2:	.byte 0
+haba_fire1_y2:	.byte 0; $062C
 haba_fire1_t2:	.byte 0
 haba_fire1_s2:	.byte 0
 haba_fire1_x2:	.byte 0
-haba_fire2_y2:	.byte 0
+haba_fire2_y2:	.byte 0; $0630
 haba_fire2_t2:	.byte 0
 haba_fire2_s2:	.byte 0
 haba_fire2_x2:	.byte 0
@@ -305,7 +515,7 @@ haba_fire5_y2:	.byte 0
 haba_fire5_t2:	.byte 0
 haba_fire5_s2:	.byte 0
 haba_fire5_x2:	.byte 0
-haba_fire6_y2:	.byte 0
+haba_fire6_y2:	.byte 0; $0640
 haba_fire6_t2:	.byte 0
 haba_fire6_s2:	.byte 0
 haba_fire6_x2:	.byte 0
@@ -322,7 +532,7 @@ haba_fire9_t2:	.byte 0
 haba_fire9_s2:	.byte 0
 haba_fire9_x2:	.byte 0
 
-char_12_type01_y2:	.byte 0
+char_12_type01_y2:	.byte 0; $0650
 char_12_type01_t2:	.byte 0
 char_12_type01_s2:	.byte 0
 char_12_type01_x2:	.byte 0
@@ -471,3 +681,202 @@ str4_index4_y2:	.byte 0
 str4_index4_t2:	.byte 0
 str4_index4_s2:	.byte 0
 str4_index4_x2:	.byte 0
+
+; ボス用にエイリアス
+.org $062C
+boss_index1_y2:		.byte 0
+boss_index1_t2:		.byte 0
+boss_index1_s2:		.byte 0
+boss_index1_x2:		.byte 0
+boss_index2_y2:		.byte 0
+boss_index2_t2:		.byte 0
+boss_index2_s2:		.byte 0
+boss_index2_x2:		.byte 0
+boss_index3_y2:		.byte 0
+boss_index3_t2:		.byte 0
+boss_index3_s2:		.byte 0
+boss_index3_x2:		.byte 0
+boss_index4_y2:		.byte 0
+boss_index4_t2:		.byte 0
+boss_index4_s2:		.byte 0
+boss_index4_x2:		.byte 0
+boss_index5_y2:		.byte 0
+boss_index5_t2:		.byte 0
+boss_index5_s2:		.byte 0
+boss_index5_x2:		.byte 0
+boss_index6_y2:		.byte 0
+boss_index6_t2:		.byte 0
+boss_index6_s2:		.byte 0
+boss_index6_x2:		.byte 0
+boss_index7_y2:		.byte 0
+boss_index7_t2:		.byte 0
+boss_index7_s2:		.byte 0
+boss_index7_x2:		.byte 0
+boss_index8_y2:		.byte 0
+boss_index8_t2:		.byte 0
+boss_index8_s2:		.byte 0
+boss_index8_x2:		.byte 0
+boss_index9_y2:		.byte 0
+boss_index9_t2:		.byte 0
+boss_index9_s2:		.byte 0
+boss_index9_x2:		.byte 0
+boss_index10_y2:		.byte 0
+boss_index10_t2:		.byte 0
+boss_index10_s2:		.byte 0
+boss_index10_x2:		.byte 0
+boss_index11_y2:		.byte 0
+boss_index11_t2:		.byte 0
+boss_index11_s2:		.byte 0
+boss_index11_x2:		.byte 0
+boss_index12_y2:		.byte 0
+boss_index12_t2:		.byte 0
+boss_index12_s2:		.byte 0
+boss_index12_x2:		.byte 0
+boss_index13_y2:		.byte 0
+boss_index13_t2:		.byte 0
+boss_index13_s2:		.byte 0
+boss_index13_x2:		.byte 0
+boss_index14_y2:		.byte 0
+boss_index14_t2:		.byte 0
+boss_index14_s2:		.byte 0
+boss_index14_x2:		.byte 0
+boss_index15_y2:		.byte 0
+boss_index15_t2:		.byte 0
+boss_index15_s2:		.byte 0
+boss_index15_x2:		.byte 0
+boss_index16_y2:		.byte 0
+boss_index16_t2:		.byte 0
+boss_index16_s2:		.byte 0
+boss_index16_x2:		.byte 0
+boss_index17_y2:		.byte 0
+boss_index17_t2:		.byte 0
+boss_index17_s2:		.byte 0
+boss_index17_x2:		.byte 0
+boss_index18_y2:		.byte 0
+boss_index18_t2:		.byte 0
+boss_index18_s2:		.byte 0
+boss_index18_x2:		.byte 0
+boss_index19_y2:		.byte 0
+boss_index19_t2:		.byte 0
+boss_index19_s2:		.byte 0
+boss_index19_x2:		.byte 0
+boss_index20_y2:		.byte 0
+boss_index20_t2:		.byte 0
+boss_index20_s2:		.byte 0
+boss_index20_x2:		.byte 0
+boss_index21_y2:		.byte 0
+boss_index21_t2:		.byte 0
+boss_index21_s2:		.byte 0
+boss_index21_x2:		.byte 0
+boss_index22_y2:		.byte 0
+boss_index22_t2:		.byte 0
+boss_index22_s2:		.byte 0
+boss_index22_x2:		.byte 0
+boss_index23_y2:		.byte 0
+boss_index23_t2:		.byte 0
+boss_index23_s2:		.byte 0
+boss_index23_x2:		.byte 0
+boss_index24_y2:		.byte 0
+boss_index24_t2:		.byte 0
+boss_index24_s2:		.byte 0
+boss_index24_x2:		.byte 0
+boss_index25_y2:		.byte 0
+boss_index25_t2:		.byte 0
+boss_index25_s2:		.byte 0
+boss_index25_x2:		.byte 0
+boss_index26_y2:		.byte 0
+boss_index26_t2:		.byte 0
+boss_index26_s2:		.byte 0
+boss_index26_x2:		.byte 0
+boss_index27_y2:		.byte 0
+boss_index27_t2:		.byte 0
+boss_index27_s2:		.byte 0
+boss_index27_x2:		.byte 0
+boss_index28_y2:		.byte 0
+boss_index28_t2:		.byte 0
+boss_index28_s2:		.byte 0
+boss_index28_x2:		.byte 0
+boss_index29_y2:		.byte 0
+boss_index29_t2:		.byte 0
+boss_index29_s2:		.byte 0
+boss_index29_x2:		.byte 0
+boss_index30_y2:		.byte 0
+boss_index30_t2:		.byte 0
+boss_index30_s2:		.byte 0
+boss_index30_x2:		.byte 0
+boss_index31_y2:		.byte 0
+boss_index31_t2:		.byte 0
+boss_index31_s2:		.byte 0
+boss_index31_x2:		.byte 0
+boss_index32_y2:		.byte 0
+boss_index32_t2:		.byte 0
+boss_index32_s2:		.byte 0
+boss_index32_x2:		.byte 0
+boss_index33_y2:		.byte 0
+boss_index33_t2:		.byte 0
+boss_index33_s2:		.byte 0
+boss_index33_x2:		.byte 0
+boss_index34_y2:		.byte 0
+boss_index34_t2:		.byte 0
+boss_index34_s2:		.byte 0
+boss_index34_x2:		.byte 0
+boss_index35_y2:		.byte 0
+boss_index35_t2:		.byte 0
+boss_index35_s2:		.byte 0
+boss_index35_x2:		.byte 0
+boss_index36_y2:		.byte 0
+boss_index36_t2:		.byte 0
+boss_index36_s2:		.byte 0
+boss_index36_x2:		.byte 0
+boss_index37_y2:		.byte 0
+boss_index37_t2:		.byte 0
+boss_index37_s2:		.byte 0
+boss_index37_x2:		.byte 0
+boss_index38_y2:		.byte 0
+boss_index38_t2:		.byte 0
+boss_index38_s2:		.byte 0
+boss_index38_x2:		.byte 0
+boss_index39_y2:		.byte 0
+boss_index39_t2:		.byte 0
+boss_index39_s2:		.byte 0
+boss_index39_x2:		.byte 0
+boss_index40_y2:		.byte 0
+boss_index40_t2:		.byte 0
+boss_index40_s2:		.byte 0
+boss_index40_x2:		.byte 0
+boss_index41_y2:		.byte 0
+boss_index41_t2:		.byte 0
+boss_index41_s2:		.byte 0
+boss_index41_x2:		.byte 0
+boss_index42_y2:		.byte 0
+boss_index42_t2:		.byte 0
+boss_index42_s2:		.byte 0
+boss_index42_x2:		.byte 0
+boss_index43_y2:		.byte 0
+boss_index43_t2:		.byte 0
+boss_index43_s2:		.byte 0
+boss_index43_x2:		.byte 0
+boss_index44_y2:		.byte 0
+boss_index44_t2:		.byte 0
+boss_index44_s2:		.byte 0
+boss_index44_x2:		.byte 0
+boss_index45_y2:		.byte 0
+boss_index45_t2:		.byte 0
+boss_index45_s2:		.byte 0
+boss_index45_x2:		.byte 0
+boss_index46_y2:		.byte 0
+boss_index46_t2:		.byte 0
+boss_index46_s2:		.byte 0
+boss_index46_x2:		.byte 0
+boss_index47_y2:		.byte 0
+boss_index47_t2:		.byte 0
+boss_index47_s2:		.byte 0
+boss_index47_x2:		.byte 0
+boss_index48_y2:		.byte 0
+boss_index48_t2:		.byte 0
+boss_index48_s2:		.byte 0
+boss_index48_x2:		.byte 0
+boss_index49_y2:		.byte 0
+boss_index49_t2:		.byte 0
+boss_index49_s2:		.byte 0
+boss_index49_x2:		.byte 0

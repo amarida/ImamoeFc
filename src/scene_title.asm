@@ -93,10 +93,22 @@ case_break:
 .endproc
 
 .proc scene_title_init
+	; 0ページを00で初期化
+	ldy #0
+loop_init:
+	lda #0
+	sta (REG0), y
+	iny
+	cpy #0
+    bne loop_init
 
 	; バンクをタイトルバンクにする
 	lda	#1
 	sta	$8000
+
+label:       ;何で？
+lda #1
+sta label+1
 
 	; 割り込みOFF　増加値1byte
 	lda #%00001000

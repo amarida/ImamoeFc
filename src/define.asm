@@ -230,6 +230,13 @@ str_speedup_frame							= $E4	; SPEEDUP文字の表示フレーム
 inosisi_type_flag							= $E5	; イノシシタイプ |00 00 00 00|4体目 3 2 1|
 enemy_id									= $E6   ; enemy_typeの敵キャラID
 enemy_dma_area							    = $E7   ; enemy_typeのDMA内のどこのエリアを使用するか（DMA6かDMA7というわけではない）
+boss_alive_flag                             = $E8   ; ボス生存フラグ
+boss_world_pos_x_low			    		= $E9	; ボス WORLD座標 X軸 下位
+boss_world_pos_x_hi					    	= $EA	; ボス WORLD座標 X軸 上位
+boss_pos_y							    	= $EB	; ボス WORLD座標 Y軸
+boss_window_pos_x					    	= $EC	; ボス WINDOW座標 X軸
+boss_status							        = $ED	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
+boss_update_step                            = $EF   ; ボスステップ状態
 
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号

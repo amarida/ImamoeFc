@@ -276,6 +276,16 @@ loop_x:
 	sbc field_scroll_x_low
 	sta fire0_window_x,x
 
+	; 火3の場合4ドット右ずらし
+	lda tamanegi00_update_step,x
+	cmp #3
+	bne skip_4
+	clc
+	lda fire0_window_x,x
+	adc #4
+	sta fire0_window_x,x
+skip_4:
+
 	lda fire0_window_x,x
 	sta char_6type1_x,y
 	sta char_6type3_x,y
@@ -353,19 +363,32 @@ step_burst3:
 	; タイル番号
 	lda #$D8
 	sta char_6type1_t,y
-	lda #$D9
+	lda #$00
 	sta char_6type2_t,y
 	lda #$E8
 	sta char_6type3_t,y
-	lda #$E9
+	lda #$00
 	sta char_6type4_t,y
 	lda #$F8
 	sta char_6type5_t,y
-	lda #$F9
+	lda #$00
 	sta char_6type6_t,y
 	jmp case_break
 
 step_next:
+	; タイル番号
+	lda #$00
+	sta char_6type1_t,y
+	lda #$00
+	sta char_6type2_t,y
+	lda #$00
+	sta char_6type3_t,y
+	lda #$00
+	sta char_6type4_t,y
+	lda #$00
+	sta char_6type5_t,y
+	lda #$00
+	sta char_6type6_t,y
 	jmp case_break
 
 case_break:
@@ -411,6 +434,16 @@ loop_x:
 	lda fire0_world_x_low,x
 	sbc field_scroll_x_low
 	sta fire0_window_x,x
+
+	; 火3の場合4ドット右ずらし
+	lda tamanegi00_update_step,x
+	cmp #3
+	bne skip_4
+	clc
+	lda fire0_window_x,x
+	adc #4
+	sta fire0_window_x,x
+skip_4:
 
 	lda fire0_window_x,x
 	sta char_6type1_x2,y
@@ -489,19 +522,32 @@ step_burst3:
 	; タイル番号
 	lda #$D8
 	sta char_6type1_t2,y
-	lda #$D9
+	lda #$00
 	sta char_6type2_t2,y
 	lda #$E8
 	sta char_6type3_t2,y
-	lda #$E9
+	lda #$00
 	sta char_6type4_t2,y
 	lda #$F8
 	sta char_6type5_t2,y
-	lda #$F9
+	lda #$00
 	sta char_6type6_t2,y
 	jmp case_break
 
 step_next:
+	; タイル番号
+	lda #$00
+	sta char_6type1_t2,y
+	lda #$00
+	sta char_6type2_t2,y
+	lda #$00
+	sta char_6type3_t2,y
+	lda #$00
+	sta char_6type4_t2,y
+	lda #$00
+	sta char_6type5_t2,y
+	lda #$00
+	sta char_6type6_t2,y
 	jmp case_break
 
 case_break:

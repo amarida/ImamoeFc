@@ -62,6 +62,7 @@ copypal2:
 	jsr TakoInit			; タコ初期化
 	jsr TamanegiInit		; タマネギ初期化
 	jsr TamanegiFire_Init	; タマネギファイアー初期化
+	jsr BossInit			; ボス初期化
 	
 	lda #0
 	sta inosisi_alive_flag	; 生存イノシシフラグ

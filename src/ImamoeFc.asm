@@ -1,5 +1,3 @@
-
-
 ;  #10 10進数値
 ; #$10 16進数値
 ;  $10 16進アドレス
@@ -21,6 +19,7 @@
 .include "utility.asm"
 .include "sound.asm"
 .include "String.asm"
+.include "boss.asm"
 
 .include "scene_title.asm"
 .include "scene_introduction.asm"
@@ -761,7 +760,11 @@ palette_sake_get:
 palette2:
 	.byte	$0f, $00, $10, $20
 	.byte	$0f, $00, $10, $20
-paletteIno:
+paletteBoss:
+	.byte	$0f, $27, $39, $0f	; ボスベース
+	.byte	$0f, $1c, $3c, $0f	; ボスしっぽ
+	.byte	$0f, $06, $02, $0f	; ボス中心部
+
 palettes_bg:
 	.byte	$0f, $0f, $00, $10	; bg色1
 	.byte	$0f, $0f, $12, $30	; bg色2
@@ -839,7 +842,7 @@ string_life_1:
 ; $00:イノシシ、$01:タコ、$02:タマネギ、$03:はばタン
 ; $04:はばタコ、$05:酒 78、$06:タマネギ2
 ; $07:イノシシバックアタップ、$08:タマネギ降ってくる
-; $09:タマネギ降ってくる2
+; $09:タマネギ降ってくる2、$0A:ボス
 map_enemy_info:
 	.byte	$01, $e2, $b8, $00	; イノシシ	1
 
@@ -864,6 +867,9 @@ map_enemy_info:
 	.byte	$06, $02, $b8, $07	; イノシシB	6
 	.byte	$06, $2a, $30, $08	; タマネギ降ってくる
 	.byte	$06, $2a, $40, $19	; タマネギ降ってくる
+
+	.byte	$08, $b2, $50, $0A	; ボス
+;	.byte	$07, $2a, $30, $0A	; ボス
 
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 
