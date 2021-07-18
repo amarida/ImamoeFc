@@ -74,7 +74,7 @@ waitZeroSpriteHit:
 	lda $2002
 	and #$40
 	beq waitZeroSpriteHit
-r_skip:
+;r_skip:
 
 	jsr waitScan
 

@@ -96,39 +96,37 @@ skip_tako:
 	jmp skip_clear
 	not_skip_clear:
 
+	; char4_px_indexx_y,t,s,x‚ğ0–„‚ß‚·‚éˆ—
+	; X‚ª0‚È‚çchar4_p1_index1_y(DMA7)‚Æchar4_p1_index1_y2(DMA6)‚ğg‚¤
+	; X‚ª1‚È‚çchar4_p2_index1_y‚Æchar4_p2_index1_y2‚ğg‚¤
+	lda #< char4_p1_index1_y
+	sta REG5;(low)
+	lda #> char4_p1_index1_y
+	sta REG6;(hi)
+	lda #< char4_p1_index1_y2
+	sta REG3;(low)
+	lda #> char4_p1_index1_y2
+	sta REG4;(hi)
+	cpx #0
+	beq skip_2taime
+	lda #< char4_p2_index1_y
+	sta REG5;(low)
+	lda #> char4_p2_index1_y
+	sta REG6;(hi)
+	lda #< char4_p2_index1_y2
+	sta REG3;(low)
+	lda #> char4_p2_index1_y2
+	sta REG4;(hi)
+	skip_2taime:
+
+	ldy #0
 	lda #0
-	sta char4_p1_index1_y,y
-	sta char4_p1_index1_t,y
-	sta char4_p1_index1_s,y
-	sta char4_p1_index1_x,y
-	sta char4_p1_index2_y,y
-	sta char4_p1_index2_t,y
-	sta char4_p1_index2_s,y
-	sta char4_p1_index2_x,y
-	sta char4_p1_index3_y,y
-	sta char4_p1_index3_t,y
-	sta char4_p1_index3_s,y
-	sta char4_p1_index3_x,y
-	sta char4_p1_index4_y,y
-	sta char4_p1_index4_t,y
-	sta char4_p1_index4_s,y
-	sta char4_p1_index4_x,y
-	sta char4_p1_index1_y2,y
-	sta char4_p1_index1_t2,y
-	sta char4_p1_index1_s2,y
-	sta char4_p1_index1_x2,y
-	sta char4_p1_index2_y2,y
-	sta char4_p1_index2_t2,y
-	sta char4_p1_index2_s2,y
-	sta char4_p1_index2_x2,y
-	sta char4_p1_index3_y2,y
-	sta char4_p1_index3_t2,y
-	sta char4_p1_index3_s2,y
-	sta char4_p1_index3_x2,y
-	sta char4_p1_index4_y2,y
-	sta char4_p1_index4_t2,y
-	sta char4_p1_index4_s2,y
-	sta char4_p1_index4_x2,y
+	clear_loop_y:
+	sta (REG5),y
+	sta (REG3),y
+	iny
+	cpy #16
+	bne clear_loop_y
 
 	lda #0
 	sta tako0_world_pos_x_low,x

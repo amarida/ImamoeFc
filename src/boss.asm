@@ -115,72 +115,54 @@
 	lda #$CE
 	sta boss_index27_t
 	sta boss_index27_t2
-	lda #$CF
+	lda #$DB
 	sta boss_index28_t
 	sta boss_index28_t2
-	lda #$D9
+	lda #$DC
 	sta boss_index29_t
 	sta boss_index29_t2
-	lda #$DA
+	lda #$DD
 	sta boss_index30_t
 	sta boss_index30_t2
-	lda #$DB
+	lda #$DE
 	sta boss_index31_t
 	sta boss_index31_t2
-	lda #$DC
+	lda #$EA
 	sta boss_index32_t
 	sta boss_index32_t2
-	lda #$DD
+	lda #$EB
 	sta boss_index33_t
 	sta boss_index33_t2
-	lda #$DE
+	lda #$EC
 	sta boss_index34_t
 	sta boss_index34_t2
-	lda #$DF
+	lda #$ED
 	sta boss_index35_t
 	sta boss_index35_t2
-	lda #$E9
+	lda #$EE
 	sta boss_index36_t
 	sta boss_index36_t2
-	lda #$EA
+	lda #$EF
 	sta boss_index37_t
 	sta boss_index37_t2
-	lda #$EB
+	lda #$FA
 	sta boss_index38_t
 	sta boss_index38_t2
-	lda #$EC
+	lda #$FB
 	sta boss_index39_t
 	sta boss_index39_t2
-	lda #$ED
+	lda #$FC
 	sta boss_index40_t
 	sta boss_index40_t2
-	lda #$EE
+	lda #$FD
 	sta boss_index41_t
 	sta boss_index41_t2
-	lda #$EF
+	lda #$FE
 	sta boss_index42_t
 	sta boss_index42_t2
-	lda #$F9
+	lda #$FF
 	sta boss_index43_t
 	sta boss_index43_t2
-	lda #$FA
-	sta boss_index44_t
-	sta boss_index44_t2
-	lda #$FB
-	sta boss_index45_t
-	sta boss_index45_t2
-	lda #$FC
-	sta boss_index46_t
-	sta boss_index46_t2
-	lda #$FD
-	sta boss_index47_t
-	sta boss_index47_t2
-	lda #$FE
-	sta boss_index48_t
-	sta boss_index48_t2
-	lda #$FF
-	sta boss_index49_t
-	sta boss_index49_t2
 
 	; 属性
 		; 属性は変わらないことはない
@@ -238,55 +220,41 @@
 	sta boss_index27_s2
 	sta boss_index28_s2
 	sta boss_index29_s
-	sta boss_index30_s
-	sta boss_index31_s
 	sta boss_index32_s
 	sta boss_index29_s2
-	sta boss_index30_s2
-	sta boss_index31_s2
 	sta boss_index32_s2
-	sta boss_index36_s
-	sta boss_index37_s
+	sta boss_index33_s
+	sta boss_index33_s2
+	sta boss_index34_s
+	sta boss_index34_s2
+	sta boss_index35_s
+	sta boss_index35_s2
 	sta boss_index38_s
 	sta boss_index39_s
 	sta boss_index40_s
-	sta boss_index36_s2
-	sta boss_index37_s2
 	sta boss_index38_s2
 	sta boss_index39_s2
 	sta boss_index40_s2
-	sta boss_index43_s
-	sta boss_index44_s
-	sta boss_index45_s
-	sta boss_index46_s
-	sta boss_index47_s
-	sta boss_index43_s2
-	sta boss_index44_s2
-	sta boss_index45_s2
-	sta boss_index46_s2
-	sta boss_index47_s2
 
 	lda #%00000011     ; 0(10進数)をAにロード
 	sta boss_index3_s
 	sta boss_index4_s
 	sta boss_index3_s2
 	sta boss_index4_s2
-	sta boss_index33_s
-	sta boss_index34_s
-	sta boss_index35_s
-	sta boss_index33_s2
-	sta boss_index34_s2
-	sta boss_index35_s2
-	sta boss_index41_s
-	sta boss_index42_s
-	sta boss_index41_s2
-	sta boss_index42_s2
+	sta boss_index30_s
+	sta boss_index31_s
+	sta boss_index30_s2
+	sta boss_index31_s2
+	sta boss_index36_s
+	sta boss_index37_s
+	sta boss_index36_s2
+	sta boss_index37_s2
 
 	lda #%00000010     ; 0(10進数)をAにロード
-	sta boss_index48_s
-	sta boss_index49_s
-	sta boss_index48_s2
-	sta boss_index49_s2
+	sta boss_index42_s
+	sta boss_index43_s
+	sta boss_index42_s2
+	sta boss_index43_s2
 
 
 	
@@ -473,30 +441,6 @@
 	sta boss_index43_t
 	sta boss_index43_s
 	sta boss_index43_x
-	sta boss_index44_y
-	sta boss_index44_t
-	sta boss_index44_s
-	sta boss_index44_x
-	sta boss_index45_y
-	sta boss_index45_t
-	sta boss_index45_s
-	sta boss_index45_x
-	sta boss_index46_y
-	sta boss_index46_t
-	sta boss_index46_s
-	sta boss_index46_x
-	sta boss_index47_y
-	sta boss_index47_t
-	sta boss_index47_s
-	sta boss_index47_x
-	sta boss_index48_y
-	sta boss_index48_t
-	sta boss_index48_s
-	sta boss_index48_x
-	sta boss_index49_y
-	sta boss_index49_t
-	sta boss_index49_s
-	sta boss_index49_x
 	sta boss_index1_y2
 	sta boss_index1_t2
 	sta boss_index1_s2
@@ -669,30 +613,6 @@
 	sta boss_index43_t2
 	sta boss_index43_s2
 	sta boss_index43_x2
-	sta boss_index44_y2
-	sta boss_index44_t2
-	sta boss_index44_s2
-	sta boss_index44_x2
-	sta boss_index45_y2
-	sta boss_index45_t2
-	sta boss_index45_s2
-	sta boss_index45_x2
-	sta boss_index46_y2
-	sta boss_index46_t2
-	sta boss_index46_s2
-	sta boss_index46_x2
-	sta boss_index47_y2
-	sta boss_index47_t2
-	sta boss_index47_s2
-	sta boss_index47_x2
-	sta boss_index48_y2
-	sta boss_index48_t2
-	sta boss_index48_s2
-	sta boss_index48_x2
-	sta boss_index49_y2
-	sta boss_index49_t2
-	sta boss_index49_s2
-	sta boss_index49_x2
 
 	lda #0
 	sta boss_world_pos_x_low
@@ -842,34 +762,28 @@ break_tile:
 	sta boss_index25_y
 	sta boss_index26_y
 	sta boss_index27_y
-	sta boss_index28_y
 	clc
 	adc #8
+	sta boss_index28_y
 	sta boss_index29_y
 	sta boss_index30_y
 	sta boss_index31_y
+	clc
+	adc #8
 	sta boss_index32_y
 	sta boss_index33_y
 	sta boss_index34_y
 	sta boss_index35_y
-	clc
-	adc #8
 	sta boss_index36_y
 	sta boss_index37_y
+	clc
+	adc #8
 	sta boss_index38_y
 	sta boss_index39_y
 	sta boss_index40_y
 	sta boss_index41_y
 	sta boss_index42_y
-	clc
-	adc #8
 	sta boss_index43_y
-	sta boss_index44_y
-	sta boss_index45_y
-	sta boss_index46_y
-	sta boss_index47_y
-	sta boss_index48_y
-	sta boss_index49_y
 
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
@@ -883,9 +797,6 @@ break_tile:
 	sta boss_index8_x
 	sta boss_index15_x
 	sta boss_index22_x
-	sta boss_index29_x
-	sta boss_index36_x
-	sta boss_index43_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -897,17 +808,15 @@ break_tile:
 	sta boss_index9_y
 	sta boss_index16_y
 	sta boss_index23_y
-	sta boss_index30_y
-	sta boss_index37_y
-	sta boss_index44_y
+	sta boss_index32_y
+	sta boss_index38_y
 not_overflow_8:
 	sta boss_index2_x
 	sta boss_index9_x
 	sta boss_index16_x
 	sta boss_index23_x
-	sta boss_index30_x
-	sta boss_index37_x
-	sta boss_index44_x
+	sta boss_index32_x
+	sta boss_index38_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -919,17 +828,17 @@ not_overflow_8:
 	sta boss_index10_y
 	sta boss_index17_y
 	sta boss_index24_y
-	sta boss_index31_y
-	sta boss_index38_y
-	sta boss_index45_y
+	sta boss_index28_y
+	sta boss_index33_y
+	sta boss_index39_y
 not_overflow_16:
 	sta boss_index3_x
 	sta boss_index10_x
 	sta boss_index17_x
 	sta boss_index24_x
-	sta boss_index31_x
-	sta boss_index38_x
-	sta boss_index45_x
+	sta boss_index28_x
+	sta boss_index33_x
+	sta boss_index39_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -941,17 +850,17 @@ not_overflow_16:
 	sta boss_index11_y
 	sta boss_index18_y
 	sta boss_index25_y
-	sta boss_index32_y
-	sta boss_index39_y
-	sta boss_index46_y
+	sta boss_index29_y
+	sta boss_index34_y
+	sta boss_index40_y
 not_overflow_24:
 	sta boss_index4_x
 	sta boss_index11_x
 	sta boss_index18_x
 	sta boss_index25_x
-	sta boss_index32_x
-	sta boss_index39_x
-	sta boss_index46_x
+	sta boss_index29_x
+	sta boss_index34_x
+	sta boss_index40_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -963,17 +872,17 @@ not_overflow_24:
 	sta boss_index12_y
 	sta boss_index19_y
 	sta boss_index26_y
-	sta boss_index33_y
-	sta boss_index40_y
-	sta boss_index47_y
+	sta boss_index30_y
+	sta boss_index35_y
+	sta boss_index41_y
 not_overflow_32:
 	sta boss_index5_x
 	sta boss_index12_x
 	sta boss_index19_x
 	sta boss_index26_x
-	sta boss_index33_x
-	sta boss_index40_x
-	sta boss_index47_x
+	sta boss_index30_x
+	sta boss_index35_x
+	sta boss_index41_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -985,17 +894,17 @@ not_overflow_32:
 	sta boss_index13_y
 	sta boss_index20_y
 	sta boss_index27_y
-	sta boss_index34_y
-	sta boss_index41_y
-	sta boss_index48_y
+	sta boss_index31_y
+	sta boss_index36_y
+	sta boss_index42_y
 not_overflow_40:
 	sta boss_index6_x
 	sta boss_index13_x
 	sta boss_index20_x
 	sta boss_index27_x
-	sta boss_index34_x
-	sta boss_index41_x
-	sta boss_index48_x
+	sta boss_index31_x
+	sta boss_index36_x
+	sta boss_index42_x
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1006,19 +915,14 @@ not_overflow_40:
 	sta boss_index7_y
 	sta boss_index14_y
 	sta boss_index21_y
-	sta boss_index28_y
-	sta boss_index35_y
-	sta boss_index42_y
-	sta boss_index49_y
+	sta boss_index37_y
+	sta boss_index43_y
 not_overflow_48:
 	sta boss_index7_x
 	sta boss_index14_x
 	sta boss_index21_x
-	sta boss_index28_x
-	sta boss_index35_x
-	sta boss_index42_x
-	sta boss_index49_x
-
+	sta boss_index37_x
+	sta boss_index43_x
 
 skip_draw:
 
@@ -1107,34 +1011,34 @@ break_tile:
 	sta boss_index25_y2
 	sta boss_index26_y2
 	sta boss_index27_y2
-	sta boss_index28_y2
+	;
 	clc
 	adc #8
+	;
+	;
+	sta boss_index28_y2
 	sta boss_index29_y2
 	sta boss_index30_y2
 	sta boss_index31_y2
+	;
+	clc
+	adc #8
+	;
 	sta boss_index32_y2
 	sta boss_index33_y2
 	sta boss_index34_y2
 	sta boss_index35_y2
-	clc
-	adc #8
 	sta boss_index36_y2
 	sta boss_index37_y2
+	clc
+	adc #8
+	;
 	sta boss_index38_y2
 	sta boss_index39_y2
 	sta boss_index40_y2
 	sta boss_index41_y2
 	sta boss_index42_y2
-	clc
-	adc #8
 	sta boss_index43_y2
-	sta boss_index44_y2
-	sta boss_index45_y2
-	sta boss_index46_y2
-	sta boss_index47_y2
-	sta boss_index48_y2
-	sta boss_index49_y2
 
 
 	; 存在していれば、ワールド座標からウィンドウ座標に変換
@@ -1148,9 +1052,6 @@ break_tile:
 	sta boss_index8_x2
 	sta boss_index15_x2
 	sta boss_index22_x2
-	sta boss_index29_x2
-	sta boss_index36_x2
-	sta boss_index43_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1162,17 +1063,15 @@ break_tile:
 	sta boss_index9_y2
 	sta boss_index16_y2
 	sta boss_index23_y2
-	sta boss_index30_y2
-	sta boss_index37_y2
-	sta boss_index44_y2
+	sta boss_index32_y2
+	sta boss_index38_y2
 not_overflow_8:
 	sta boss_index2_x2
 	sta boss_index9_x2
 	sta boss_index16_x2
 	sta boss_index23_x2
-	sta boss_index30_x2
-	sta boss_index37_x2
-	sta boss_index44_x2
+	sta boss_index32_x2
+	sta boss_index38_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1184,17 +1083,17 @@ not_overflow_8:
 	sta boss_index10_y2
 	sta boss_index17_y2
 	sta boss_index24_y2
-	sta boss_index31_y2
-	sta boss_index38_y2
-	sta boss_index45_y2
+	sta boss_index28_y2
+	sta boss_index33_y2
+	sta boss_index39_y2
 not_overflow_16:
 	sta boss_index3_x2
 	sta boss_index10_x2
 	sta boss_index17_x2
 	sta boss_index24_x2
-	sta boss_index31_x2
-	sta boss_index38_x2
-	sta boss_index45_x2
+	sta boss_index28_x2
+	sta boss_index33_x2
+	sta boss_index39_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1206,17 +1105,17 @@ not_overflow_16:
 	sta boss_index11_y2
 	sta boss_index18_y2
 	sta boss_index25_y2
-	sta boss_index32_y2
-	sta boss_index39_y2
-	sta boss_index46_y2
+	sta boss_index29_y2
+	sta boss_index34_y2
+	sta boss_index40_y2
 not_overflow_24:
 	sta boss_index4_x2
 	sta boss_index11_x2
 	sta boss_index18_x2
 	sta boss_index25_x2
-	sta boss_index32_x2
-	sta boss_index39_x2
-	sta boss_index46_x2
+	sta boss_index29_x2
+	sta boss_index34_x2
+	sta boss_index40_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1228,17 +1127,17 @@ not_overflow_24:
 	sta boss_index12_y2
 	sta boss_index19_y2
 	sta boss_index26_y2
-	sta boss_index33_y2
-	sta boss_index40_y2
-	sta boss_index47_y2
+	sta boss_index30_y2
+	sta boss_index35_y2
+	sta boss_index41_y2
 not_overflow_32:
 	sta boss_index5_x2
 	sta boss_index12_x2
 	sta boss_index19_x2
 	sta boss_index26_x2
-	sta boss_index33_x2
-	sta boss_index40_x2
-	sta boss_index47_x2
+	sta boss_index30_x2
+	sta boss_index35_x2
+	sta boss_index41_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1250,17 +1149,17 @@ not_overflow_32:
 	sta boss_index13_y2
 	sta boss_index20_y2
 	sta boss_index27_y2
-	sta boss_index34_y2
-	sta boss_index41_y2
-	sta boss_index48_y2
+	sta boss_index31_y2
+	sta boss_index36_y2
+	sta boss_index42_y2
 not_overflow_40:
 	sta boss_index6_x2
 	sta boss_index13_x2
 	sta boss_index20_x2
 	sta boss_index27_x2
-	sta boss_index34_x2
-	sta boss_index41_x2
-	sta boss_index48_x2
+	sta boss_index31_x2
+	sta boss_index36_x2
+	sta boss_index42_x2
 
 	lda boss_window_pos_x
 	clc			; キャリーフラグOFF
@@ -1271,18 +1170,14 @@ not_overflow_40:
 	sta boss_index7_y2
 	sta boss_index14_y2
 	sta boss_index21_y2
-	sta boss_index28_y2
-	sta boss_index35_y2
-	sta boss_index42_y2
-	sta boss_index49_y2
+	sta boss_index37_y2
+	sta boss_index43_y2
 not_overflow_48:
 	sta boss_index7_x2
 	sta boss_index14_x2
 	sta boss_index21_x2
-	sta boss_index28_x2
-	sta boss_index35_x2
-	sta boss_index42_x2
-	sta boss_index49_x2
+	sta boss_index37_x2
+	sta boss_index43_x2
 
 
 skip_draw:

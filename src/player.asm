@@ -5,6 +5,7 @@
 	sta update_dead_step
 	sta player_draw_status
 	sta item_count
+
 	rts
 .endproc
 
@@ -165,13 +166,13 @@ roll_skip:
 	lda player_x_low
 	sbc field_scroll_x_low
 	sec
-	sbc #127
+	sbc #127	; 画面の中心
 	bcc skip	; キャリーフラグがクリアされている時
 
 	; スクロール情報
 	clc
 	lda scroll_x
-	adc #1
+	adc #1		; もしプレイヤーの速度が１より大きくなる場合ここを見直す
 	sta scroll_x
 
 	inc scroll_count_8dot

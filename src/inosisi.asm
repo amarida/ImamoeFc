@@ -182,7 +182,7 @@ skip_inosisi:
 	ldy #0
 	lda #%00000001
 	sta REG0
-	txa
+	txa ; XをAへコピー
 	beq not_set24
 	ldy #24
 	lda #%00000010
@@ -196,55 +196,37 @@ skip_inosisi:
 	jmp skip_clear
 	not_skip_clear:
 
+	; char_6typeX_y,t,s,xを0埋めする処理
+	; Xが0ならchar_6type1_y（#$074C）(DMA7)とchar_6type1_y2(DMA6)を使う
+	; Xが1ならchar_6type21_yとchar_6type21_y2を使う
+	lda #< char_6type1_y
+	sta REG5;(low)
+	lda #> char_6type1_y
+	sta REG6;(hi)
+	lda #< char_6type1_y2
+	sta REG3;(low)
+	lda #> char_6type1_y2
+	sta REG4;(hi)
+	cpx #0
+	beq skip_2taime
+	lda #< char_6type21_y
+	sta REG5;(low)
+	lda #> char_6type21_y
+	sta REG6;(hi)
+	lda #< char_6type21_y2
+	sta REG3;(low)
+	lda #> char_6type21_y2
+	sta REG4;(hi)
+	skip_2taime:
+
+	ldy #0
 	lda #0
-	sta char_6type1_y,y
-	sta char_6type1_t,y
-	sta char_6type1_s,y
-	sta char_6type1_x,y
-	sta char_6type2_y,y
-	sta char_6type2_t,y
-	sta char_6type2_s,y
-	sta char_6type2_x,y
-	sta char_6type3_y,y
-	sta char_6type3_t,y
-	sta char_6type3_s,y
-	sta char_6type3_x,y
-	sta char_6type4_y,y
-	sta char_6type4_t,y
-	sta char_6type4_s,y
-	sta char_6type4_x,y
-	sta char_6type5_y,y
-	sta char_6type5_t,y
-	sta char_6type5_s,y
-	sta char_6type5_x,y
-	sta char_6type6_y,y
-	sta char_6type6_t,y
-	sta char_6type6_s,y
-	sta char_6type6_x,y
-	sta char_6type1_y2,y
-	sta char_6type1_t2,y
-	sta char_6type1_s2,y
-	sta char_6type1_x2,y
-	sta char_6type2_y2,y
-	sta char_6type2_t2,y
-	sta char_6type2_s2,y
-	sta char_6type2_x2,y
-	sta char_6type3_y2,y
-	sta char_6type3_t2,y
-	sta char_6type3_s2,y
-	sta char_6type3_x2,y
-	sta char_6type4_y2,y
-	sta char_6type4_t2,y
-	sta char_6type4_s2,y
-	sta char_6type4_x2,y
-	sta char_6type5_y2,y
-	sta char_6type5_t2,y
-	sta char_6type5_s2,y
-	sta char_6type5_x2,y
-	sta char_6type6_y2,y
-	sta char_6type6_t2,y
-	sta char_6type6_s2,y
-	sta char_6type6_x2,y
+	clear_loop_y:
+	sta (REG5),y
+	sta (REG3),y
+	iny
+	cpy #24
+	bne clear_loop_y
 
 	lda #0
 	sta inosisi0_world_pos_x_low,x

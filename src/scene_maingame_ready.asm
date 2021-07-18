@@ -1,3 +1,38 @@
+.proc Scene_Debug
+	; 途中から始めるテスト用
+	lda #$7
+	sta player_x_hi
+	sta field_scroll_x_hi
+	; 18個 アドレスは72ずらす
+	clc
+	lda map_enemy_info_address_low
+	adc #72
+	sta map_enemy_info_address_low
+	lda map_enemy_info_address_hi
+	adc #0
+	sta map_enemy_info_address_hi
+
+	; マップチップの起点(NameTable)を7ページ、25*32*7 5600ずらす
+	clc
+	lda map_table_screen_low
+	adc #224
+	sta map_table_screen_low
+	lda map_table_screen_hi
+	adc #21
+	sta map_table_screen_hi
+
+	; マップチップの起点(属性)を7ページ、7*8*7 392ずらす
+	clc
+	lda map_table_attribute_low
+	adc #136
+	sta map_table_attribute_low
+	lda map_table_attribute_hi
+	adc #1
+	sta map_table_attribute_hi
+
+	rts
+.endproc
+
 .proc scene_maingame_ready
 
 ; パレットテーブルへ転送(BG用のみ転送)
@@ -152,6 +187,8 @@ copypal2:
 	lda #1
 	sta current_draw_display_no
 	
+	; デバッグ
+	;jsr Scene_Debug
 
 ; 初期背景ネームテーブル ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ldx #31	; 32個
