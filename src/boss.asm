@@ -235,6 +235,8 @@
 	sta boss_index38_s2
 	sta boss_index39_s2
 	sta boss_index40_s2
+	sta boss_index41_s
+	sta boss_index41_s2
 
 	lda #%00000011     ; 0(10進数)をAにロード
 	sta boss_index3_s
@@ -625,28 +627,45 @@
 
 ; 更新
 .proc	BossUpdate
-	lda is_dead
-	bne skip_boss
+	;lda is_dead
+	;bne skip_boss
 
 	; 存在しているか
 	lda boss_alive_flag
+	cmp #0
 	beq skip_boss
 
 	; 状態
-	lda boss_status
+	lda boss_status	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
+
 	cmp #0
-	beq case_normal
-	jmp case_dead	;	(1～3)
+	beq case_stop
+	cmp #1
+	beq case_fire
+	cmp #2
+	beq case_roll
+	cmp #3
+	beq case_leave
+
+case_stop:
+	jmp break
+case_fire:
+	jsr Boss_UpdateFire
+	jmp break
+case_roll:
+	jmp break
+case_leave:
+	jmp break
+
+	;cmp #0
+	;beq case_normal
+	;jmp case_dead	;	(1～3)
 
 ; 通常
 case_normal:
 	jsr Boss_UpdateNormal
 	jmp break;
 
-; 死亡
-case_dead:
-	jsr Boss_UpdateDead
-	jmp break;
 
 break:
 
@@ -654,6 +673,55 @@ break:
 skip_boss:
 	rts
 .endproc	; BossUpdate
+
+; 火吹き更新
+.proc Boss_UpdateFire	
+	lda boss_update_step
+
+	cmp #0
+	beq case_init
+	cmp #1
+	beq case_init2
+	cmp #2
+	beq case_fire
+	cmp #3
+	beq case_fire_wait
+
+case_init:
+	; 横にする
+	;lda $2000
+	;and #%11111011
+	;sta $2000
+	inc boss_update_step
+	jmp case_break
+
+case_init2:
+	inc boss_update_step
+	jsr Boss_SetFire
+	jmp case_break
+
+case_fire:
+	; 縦にする
+	;lda $2000
+	;ora #%00000100
+	;sta $2000
+
+
+	;jsr HabatanFire_Appear
+	;jsr Boss_SetFire
+	;jsr Sound_PlayFire
+	inc boss_update_step
+	
+	jmp case_break
+
+case_fire_wait:
+
+	jmp case_break
+
+case_break:
+
+	rts
+.endproc	; Boss_UpdateFire
 
 ; 通常更新
 .proc	Boss_UpdateNormal
@@ -671,12 +739,6 @@ roll_skip:
 
 	rts
 .endproc	; Boss_UpdateNormal
-
-; 溺れる更新
-.proc	Boss_UpdateDead
-
-	rts
-.endproc	; Boss_UpdateDead
 
 
 ; 描画
@@ -1198,3 +1260,83 @@ skip_return:
 	rts
 .endproc	; boss_collision_object
 
+.proc Boss_SetFire
+	; 1 PLAYER GAME
+	;lda #14
+	;sta draw_bg_y
+	;lda #10
+	;sta draw_bg_x
+	;jsr SetPosition
+	
+	; 横にする
+	;lda $2000
+	;and #%11111011
+	;sta $2000
+
+	;lda #%00001000	;
+	;sta $2000
+
+	
+;1	
+	lda #$21
+	sta $2006
+	lda #$F2
+	sta $2006
+
+	ldx #0
+	loop_moji_x:
+	lda image_fire_1, x
+	sta $2007
+	inx
+	cpx #4
+	bne loop_moji_x
+
+;2
+	lda #$21
+	sta $2006
+	lda #$F3
+	sta $2006
+
+	ldx #0
+	loop_moji_x2:
+	lda image_fire_2, x
+	sta $2007
+	inx
+	cpx #4
+	bne loop_moji_x2
+
+;3
+	lda #$21
+	sta $2006
+	lda #$F4
+	sta $2006
+
+	ldx #0
+	loop_moji_x3:
+	lda image_fire_3, x
+	sta $2007
+	inx
+	cpx #4
+	bne loop_moji_x3
+
+;4
+	lda #$21
+	sta $2006
+	lda #$F5
+	sta $2006
+
+	ldx #0
+	loop_moji_x4:
+	lda image_fire_4, x
+	sta $2007
+	inx
+	cpx #4
+	bne loop_moji_x4
+
+	; 縦にする
+	;lda $2000
+	;ora #%00000100
+	;sta $2000
+
+	rts
+.endproc ; Boss_SetFire

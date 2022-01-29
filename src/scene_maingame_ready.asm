@@ -1,34 +1,45 @@
 .proc Scene_Debug
 	; 途中から始めるテスト用
-	lda #$7
+	lda #6;#$7
 	sta player_x_hi
 	sta field_scroll_x_hi
-	; 18個 アドレスは72ずらす
+	; 15個 アドレスは60ずらす; 18個 アドレスは72ずらす
 	clc
 	lda map_enemy_info_address_low
-	adc #72
+	adc #60 ;#72
 	sta map_enemy_info_address_low
 	lda map_enemy_info_address_hi
 	adc #0
 	sta map_enemy_info_address_hi
 
-	; マップチップの起点(NameTable)を7ページ、25*32*7 5600ずらす
+	; マップチップの起点(NameTable)を6ページ、25*32*6 4800ずらす
+	  ; マップチップの起点(NameTable)を7ページ、25*32*7 5600ずらす
 	clc
 	lda map_table_screen_low
-	adc #224
+	adc #192 ; #224
 	sta map_table_screen_low
 	lda map_table_screen_hi
-	adc #21
+	adc #18 ; #21
 	sta map_table_screen_hi
 
-	; マップチップの起点(属性)を7ページ、7*8*7 392ずらす
+	; マップチップの起点(属性)を6ページ、7*8*6 336ずらす
+	  ; マップチップの起点(属性)を7ページ、7*8*7 392ずらす
 	clc
 	lda map_table_attribute_low
-	adc #136
+	adc #80 ; #136
 	sta map_table_attribute_low
 	lda map_table_attribute_hi
 	adc #1
 	sta map_table_attribute_hi
+
+	; パターンをビル
+	lda #3
+	sta palette_bg_change_state
+	jsr change_palette_bg_table
+	; パターンを海
+	lda #5
+	sta palette_bg_change_state
+	jsr change_palette_bg_table
 
 	rts
 .endproc
@@ -324,6 +335,7 @@ skip_reset:
 
 ; 割り込み開始
 	lda #%10001100	; VBlank割り込みあり　VRAM増加量32byte
+	;lda #%00001100	; VBlank割り込みなし　VRAM増加量32byte
 	sta $2000
 	
 	; 次のシーン

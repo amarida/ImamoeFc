@@ -50,6 +50,7 @@
 	lda #$00
 	sta $2000
 	sta $2001
+	sta ppu2000
 
 ;counter_hit: .byte 1
 ;DoubleRAM: .word 2
@@ -197,8 +198,9 @@ cmd_test3:
 break:
 
 ; スクリーンオン
-	lda #%00001100	; VBlank割り込みなし、スプライトが1、VRAM増加量32byte
+	lda #%00001100	; VBlank割り込みなし、スプライトが1、VRAM増加量32byte(縦)
 	sta $2000
+	sta ppu2000
 
 ; スクロール設定
 	lda	#$00
@@ -208,6 +210,7 @@ break:
 ; 割り込み開始
 	lda #%10001100	; VBlank割り込みあり　VRAM増加量32byte
 	sta $2000
+	sta ppu2000
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; メインループ
@@ -300,6 +303,8 @@ scene_break:
 	beq case_umi1
 	cmp #$09	; 海2
 	beq case_umi2
+	cmp #$20	; 背景色（ボス火検出用）
+	beq case_fire2
 	jmp skip
 
 	case_kirin:
@@ -324,6 +329,11 @@ scene_break:
 
 	case_umi2:
 	lda #5
+	sta palette_bg_change_state
+	jmp skip
+
+	case_fire2:
+	lda #6
 	sta palette_bg_change_state
 	jmp skip
 
@@ -833,6 +843,16 @@ string_player_1:
 
 string_life_1:
 	.byte	"LIFE-"
+
+image_fire_1:	; 縦
+	.byte	$66, $76, $86, $96
+image_fire_2:
+	.byte	$67, $77, $87, $97
+image_fire_3:
+	.byte	$68, $78, $88, $98
+image_fire_4:
+	.byte	$69, $79, $89, $99
+
 
 .include "map_chip.asm"
 

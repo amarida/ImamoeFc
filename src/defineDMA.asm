@@ -186,7 +186,7 @@ d7_y:	.byte 0
 d7_t:	.byte 0
 d7_s:	.byte 0
 d7_x:	.byte 0; $07af
-char_12_type01_y:	.byte 0 ; 07d8
+char_12_type01_y:	.byte 0 ; 07b0 07d8
 char_12_type01_t:	.byte 0
 char_12_type01_s:	.byte 0
 char_12_type01_x:	.byte 0
@@ -230,7 +230,7 @@ player8_t:	.byte 0
 player8_s:	.byte 0
 player8_x:	.byte 0; 07d7
 
-char_12_type03_y:	.byte 0;e
+char_12_type03_y:	.byte 0; 07d8
 char_12_type03_t:	.byte 0
 char_12_type03_s:	.byte 0
 char_12_type03_x:	.byte 0
@@ -239,14 +239,14 @@ char_12_type04_t:	.byte 0
 char_12_type04_s:	.byte 0
 char_12_type04_x:	.byte 0 
 char_12_type05_y:	.byte 0
-char_12_type05_t:	.byte 0
+char_12_type05_t:	.byte 0; 07e0
 char_12_type05_s:	.byte 0
 char_12_type05_x:	.byte 0
 char_12_type06_y:	.byte 0
 char_12_type06_t:	.byte 0
 char_12_type06_s:	.byte 0
 char_12_type06_x:	.byte 0
-char_12_type07_y:	.byte 0;f
+char_12_type07_y:	.byte 0;
 char_12_type07_t:	.byte 0
 char_12_type07_s:	.byte 0
 char_12_type07_x:	.byte 0
@@ -255,21 +255,21 @@ char_12_type08_t:	.byte 0
 char_12_type08_s:	.byte 0
 char_12_type08_x:	.byte 0
 char_12_type09_y:	.byte 0
-char_12_type09_t:	.byte 0
+char_12_type09_t:	.byte 0 ; 07f0
 char_12_type09_s:	.byte 0
 char_12_type09_x:	.byte 0
 char_12_type10_y:	.byte 0
 char_12_type10_t:	.byte 0
 char_12_type10_s:	.byte 0
 char_12_type10_x:	.byte 0
-char_12_type11_y:	.byte 0;0800
+char_12_type11_y:	.byte 0
 char_12_type11_t:	.byte 0
 char_12_type11_s:	.byte 0
 char_12_type11_x:	.byte 0
 char_12_type12_y:	.byte 0
 char_12_type12_t:	.byte 0
 char_12_type12_s:	.byte 0
-char_12_type12_x:	.byte 0 ; $0807
+char_12_type12_x:	.byte 0 ; $07fe
 
 ; fuki_test := $0704 ; 直接アドレス指定
 ; ボス用にエイリアス $070C～

@@ -85,10 +85,31 @@ waitZeroSpriteHit:
 	lda	#0		; Yは固定
 	sta	$2005
 
-	clc
+	;lda $2000
+	;and #%00000001
+	;sta debug_var ; VirtuaNESずっと1　FCEUX ずっと0
+
+	; Todo: 変更があったときだけsta $2000を呼び出すようにする
+	;lda $2000
+	;and #%00000001
+	;cmp current_draw_display_no
+
+	;beq skip_draw_display
+
 	lda #%10001100	; VBlank割り込みあり
+	;lda #%00001100	; VBlank割り込みなし
+
+	clc
 	adc current_draw_display_no	; 画面０か１
 	sta $2000
+	;inc debug_var ; VirtuaNES FCEUX でことなる
+	;lda $2000	; VirtuaNESとれない（FF）　FCEUX とれる
+	;and #%00000001
+	;sta debug_var ; VirtuaNESずっと1　FCEUX 0,1切り替わる
+
+;skip_draw_display:
+
+
 	
 	jsr	Update	; 更新
 
@@ -115,7 +136,7 @@ waitScanSub:
 	cmp #3
 	beq case_boss_introduction
 	cmp #4
-	beq case_boss
+	beq case_boss_maingame
 	cmp #5
 	beq case_boss_conclusion 
 
@@ -142,7 +163,8 @@ case_boss_introduction:
 
 	jmp case_break
 
-case_boss:
+case_boss_maingame:
+	jsr UpdateBossMaingame
 	jmp case_break
 
 case_boss_conclusion:
@@ -357,6 +379,9 @@ eor_skip:
 	lda #3
 	sta scene_update_step
 
+	lda #1
+	sta boss_status
+
 skip:
 
 	rts ;  サブルーチンから復帰します。
@@ -364,12 +389,39 @@ skip:
 
 .proc UpdateBossIntroduction
 
-mugen:
-jmp mugen
+    jsr BossUpdate
+
+	lda boss_status	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
+	cmp #0
+	beq fire_appear
+	cmp #2
+	bne not_next
+
+	jmp update_break
+
+	; ボスが火吹き終わったら次の状態へ
+	lda #4
+	sta scene_update_step
+	jmp update_break
+
+fire_appear:
+	inc boss_status
+	jmp update_break
+
+not_next:
+update_break:
 
 	rts ;  サブルーチンから復帰します。
 .endproc
 
+; ボスメインゲーム
+.proc UpdateBossMaingame
+
+;mugen:
+;jmp mugen
+
+	rts
+.endproc
 
 ; 初期化更新
 .proc UpdatePlaySound
@@ -1306,6 +1358,8 @@ break:
 	beq case_2_umi
 	cmp #5
 	beq case_4_umi
+	cmp #6
+	beq case_2_fire
 
 case_none:
 	jmp break
@@ -1319,6 +1373,8 @@ case_2_umi:
 	jmp change_palette_2_umi
 case_4_umi:
 	jmp change_palette_4_umi
+case_2_fire:
+	jmp change_palette_2_fire
 
 change_palette_4_kirin:
 ; パレット4をキリン色にする
@@ -1447,6 +1503,33 @@ copypal_4umi:
 	inx
 	dey
 	bne	copypal_4umi
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_2_fire:
+; パレット2を火色にする
+	clc
+	adc current_draw_display_no	; 画面０か１
+	lda #%10001000	; VRAM増加量1byte
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$04
+	sta	$2006
+	ldx	#$14
+	ldy	#4
+copypal_4fire:
+	lda	palette1, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_4fire
 
 	clc
 	lda #%10001100	; VRAM増加量32byte
