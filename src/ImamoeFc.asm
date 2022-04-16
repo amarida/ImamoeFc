@@ -218,9 +218,9 @@ break:
 mainloop:
 
 vblank_wait:
-	lda	$2002
-	and	#%10000000
-	beq	vblank_wait
+	lda $2002
+	and #%10000000
+	beq vblank_wait
 
 		;60フレーム毎にマッパー切り替え
 ;		dec	mapper_cnt
@@ -844,14 +844,23 @@ string_player_1:
 string_life_1:
 	.byte	"LIFE-"
 
+; ボスの小さい方の火
 image_fire_1:	; 縦
-	.byte	$66, $76, $86, $96
-image_fire_2:
-	.byte	$67, $77, $87, $97
-image_fire_3:
-	.byte	$68, $78, $88, $98
-image_fire_4:
-	.byte	$69, $79, $89, $99
+	.byte	$66, $76, $96, $A6
+	.byte	$67, $77, $97, $A7
+	.byte	$69, $79, $99, $A9
+	.byte	$6A, $7A, $9A, $00
+
+; ボスの大きい方の火
+image_bfire_1:	; 縦
+	.byte	$66, $76, $86, $96, $A6
+	.byte	$67, $77, $87, $97, $A7
+	.byte	$68, $78, $88, $98, $A8
+	.byte	$69, $79, $89, $99, $A9
+	.byte	$6A, $7A, $8A, $9A, $00
+; ボスの火の粉
+image_sparks_1:	; 縦
+	.byte	$0C, $1C, $0D, $1D
 
 
 .include "map_chip.asm"

@@ -270,351 +270,31 @@
 
 ; ボスクリア
 .proc Boss_Clear
+	; $070C～$07b7
+	lda #< boss_index1_y;下位
+	sta REG0
+	lda #> boss_index1_y;上位
+	sta REG1
+	ldy #0
 	lda #0
-	sta boss_index1_y
-	sta boss_index1_t
-	sta boss_index1_s
-	sta boss_index1_x
-	sta boss_index2_y
-	sta boss_index2_t
-	sta boss_index2_s
-	sta boss_index2_x
-	sta boss_index3_y
-	sta boss_index3_t
-	sta boss_index3_s
-	sta boss_index3_x
-	sta boss_index4_y
-	sta boss_index4_t
-	sta boss_index4_s
-	sta boss_index4_x
-	sta boss_index5_y
-	sta boss_index5_t
-	sta boss_index5_s
-	sta boss_index5_x
-	sta boss_index6_y
-	sta boss_index6_t
-	sta boss_index6_s
-	sta boss_index6_x
-	sta boss_index7_y
-	sta boss_index7_t
-	sta boss_index7_s
-	sta boss_index7_x
-	sta boss_index8_y
-	sta boss_index8_t
-	sta boss_index8_s
-	sta boss_index8_x
-	sta boss_index9_y
-	sta boss_index9_t
-	sta boss_index9_s
-	sta boss_index9_x
-	sta boss_index10_y
-	sta boss_index10_t
-	sta boss_index10_s
-	sta boss_index10_x
-	sta boss_index11_y
-	sta boss_index11_t
-	sta boss_index11_s
-	sta boss_index11_x
-	sta boss_index12_y
-	sta boss_index12_t
-	sta boss_index12_s
-	sta boss_index12_x
-	sta boss_index13_y
-	sta boss_index13_t
-	sta boss_index13_s
-	sta boss_index13_x
-	sta boss_index14_y
-	sta boss_index14_t
-	sta boss_index14_s
-	sta boss_index14_x
-	sta boss_index15_y
-	sta boss_index15_t
-	sta boss_index15_s
-	sta boss_index15_x
-	sta boss_index16_y
-	sta boss_index16_t
-	sta boss_index16_s
-	sta boss_index16_x
-	sta boss_index17_y
-	sta boss_index17_t
-	sta boss_index17_s
-	sta boss_index17_x
-	sta boss_index18_y
-	sta boss_index18_t
-	sta boss_index18_s
-	sta boss_index18_x
-	sta boss_index19_y
-	sta boss_index19_t
-	sta boss_index19_s
-	sta boss_index19_x
-	sta boss_index20_y
-	sta boss_index20_t
-	sta boss_index20_s
-	sta boss_index20_x
-	sta boss_index21_y
-	sta boss_index21_t
-	sta boss_index21_s
-	sta boss_index21_x
-	sta boss_index22_y
-	sta boss_index22_t
-	sta boss_index22_s
-	sta boss_index22_x
-	sta boss_index23_y
-	sta boss_index23_t
-	sta boss_index23_s
-	sta boss_index23_x
-	sta boss_index24_y
-	sta boss_index24_t
-	sta boss_index24_s
-	sta boss_index24_x
-	sta boss_index25_y
-	sta boss_index25_t
-	sta boss_index25_s
-	sta boss_index25_x
-	sta boss_index26_y
-	sta boss_index26_t
-	sta boss_index26_s
-	sta boss_index26_x
-	sta boss_index27_y
-	sta boss_index27_t
-	sta boss_index27_s
-	sta boss_index27_x
-	sta boss_index28_y
-	sta boss_index28_t
-	sta boss_index28_s
-	sta boss_index28_x
-	sta boss_index29_y
-	sta boss_index29_t
-	sta boss_index29_s
-	sta boss_index29_x
-	sta boss_index30_y
-	sta boss_index30_t
-	sta boss_index30_s
-	sta boss_index30_x
-	sta boss_index31_y
-	sta boss_index31_t
-	sta boss_index31_s
-	sta boss_index31_x
-	sta boss_index32_y
-	sta boss_index32_t
-	sta boss_index32_s
-	sta boss_index32_x
-	sta boss_index33_y
-	sta boss_index33_t
-	sta boss_index33_s
-	sta boss_index33_x
-	sta boss_index34_y
-	sta boss_index34_t
-	sta boss_index34_s
-	sta boss_index34_x
-	sta boss_index35_y
-	sta boss_index35_t
-	sta boss_index35_s
-	sta boss_index35_x
-	sta boss_index36_y
-	sta boss_index36_t
-	sta boss_index36_s
-	sta boss_index36_x
-	sta boss_index37_y
-	sta boss_index37_t
-	sta boss_index37_s
-	sta boss_index37_x
-	sta boss_index38_y
-	sta boss_index38_t
-	sta boss_index38_s
-	sta boss_index38_x
-	sta boss_index39_y
-	sta boss_index39_t
-	sta boss_index39_s
-	sta boss_index39_x
-	sta boss_index40_y
-	sta boss_index40_t
-	sta boss_index40_s
-	sta boss_index40_x
-	sta boss_index41_y
-	sta boss_index41_t
-	sta boss_index41_s
-	sta boss_index41_x
-	sta boss_index42_y
-	sta boss_index42_t
-	sta boss_index42_s
-	sta boss_index42_x
-	sta boss_index43_y
-	sta boss_index43_t
-	sta boss_index43_s
-	sta boss_index43_x
-	sta boss_index1_y2
-	sta boss_index1_t2
-	sta boss_index1_s2
-	sta boss_index1_x2
-	sta boss_index2_y2
-	sta boss_index2_t2
-	sta boss_index2_s2
-	sta boss_index2_x2
-	sta boss_index3_y2
-	sta boss_index3_t2
-	sta boss_index3_s2
-	sta boss_index3_x2
-	sta boss_index4_y2
-	sta boss_index4_t2
-	sta boss_index4_s2
-	sta boss_index4_x2
-	sta boss_index5_y2
-	sta boss_index5_t2
-	sta boss_index5_s2
-	sta boss_index5_x2
-	sta boss_index6_y2
-	sta boss_index6_t2
-	sta boss_index6_s2
-	sta boss_index6_x2
-	sta boss_index7_y2
-	sta boss_index7_t2
-	sta boss_index7_s2
-	sta boss_index7_x2
-	sta boss_index8_y2
-	sta boss_index8_t2
-	sta boss_index8_s2
-	sta boss_index8_x2
-	sta boss_index9_y2
-	sta boss_index9_t2
-	sta boss_index9_s2
-	sta boss_index9_x2
-	sta boss_index10_y2
-	sta boss_index10_t2
-	sta boss_index10_s2
-	sta boss_index10_x2
-	sta boss_index11_y2
-	sta boss_index11_t2
-	sta boss_index11_s2
-	sta boss_index11_x2
-	sta boss_index12_y2
-	sta boss_index12_t2
-	sta boss_index12_s2
-	sta boss_index12_x2
-	sta boss_index13_y2
-	sta boss_index13_t2
-	sta boss_index13_s2
-	sta boss_index13_x2
-	sta boss_index14_y2
-	sta boss_index14_t2
-	sta boss_index14_s2
-	sta boss_index14_x2
-	sta boss_index15_y2
-	sta boss_index15_t2
-	sta boss_index15_s2
-	sta boss_index15_x2
-	sta boss_index16_y2
-	sta boss_index16_t2
-	sta boss_index16_s2
-	sta boss_index16_x2
-	sta boss_index17_y2
-	sta boss_index17_t2
-	sta boss_index17_s2
-	sta boss_index17_x2
-	sta boss_index18_y2
-	sta boss_index18_t2
-	sta boss_index18_s2
-	sta boss_index18_x2
-	sta boss_index19_y2
-	sta boss_index19_t2
-	sta boss_index19_s2
-	sta boss_index19_x2
-	sta boss_index20_y2
-	sta boss_index20_t2
-	sta boss_index20_s2
-	sta boss_index20_x2
-	sta boss_index21_y2
-	sta boss_index21_t2
-	sta boss_index21_s2
-	sta boss_index21_x2
-	sta boss_index22_y2
-	sta boss_index22_t2
-	sta boss_index22_s2
-	sta boss_index22_x2
-	sta boss_index23_y2
-	sta boss_index23_t2
-	sta boss_index23_s2
-	sta boss_index23_x2
-	sta boss_index24_y2
-	sta boss_index24_t2
-	sta boss_index24_s2
-	sta boss_index24_x2
-	sta boss_index25_y2
-	sta boss_index25_t2
-	sta boss_index25_s2
-	sta boss_index25_x2
-	sta boss_index26_y2
-	sta boss_index26_t2
-	sta boss_index26_s2
-	sta boss_index26_x2
-	sta boss_index27_y2
-	sta boss_index27_t2
-	sta boss_index27_s2
-	sta boss_index27_x2
-	sta boss_index28_y2
-	sta boss_index28_t2
-	sta boss_index28_s2
-	sta boss_index28_x2
-	sta boss_index29_y2
-	sta boss_index29_t2
-	sta boss_index29_s2
-	sta boss_index29_x2
-	sta boss_index30_y2
-	sta boss_index30_t2
-	sta boss_index30_s2
-	sta boss_index30_x2
-	sta boss_index31_y2
-	sta boss_index31_t2
-	sta boss_index31_s2
-	sta boss_index31_x2
-	sta boss_index32_y2
-	sta boss_index32_t2
-	sta boss_index32_s2
-	sta boss_index32_x2
-	sta boss_index33_y2
-	sta boss_index33_t2
-	sta boss_index33_s2
-	sta boss_index33_x2
-	sta boss_index34_y2
-	sta boss_index34_t2
-	sta boss_index34_s2
-	sta boss_index34_x2
-	sta boss_index35_y2
-	sta boss_index35_t2
-	sta boss_index35_s2
-	sta boss_index35_x2
-	sta boss_index36_y2
-	sta boss_index36_t2
-	sta boss_index36_s2
-	sta boss_index36_x2
-	sta boss_index37_y2
-	sta boss_index37_t2
-	sta boss_index37_s2
-	sta boss_index37_x2
-	sta boss_index38_y2
-	sta boss_index38_t2
-	sta boss_index38_s2
-	sta boss_index38_x2
-	sta boss_index39_y2
-	sta boss_index39_t2
-	sta boss_index39_s2
-	sta boss_index39_x2
-	sta boss_index40_y2
-	sta boss_index40_t2
-	sta boss_index40_s2
-	sta boss_index40_x2
-	sta boss_index41_y2
-	sta boss_index41_t2
-	sta boss_index41_s2
-	sta boss_index41_x2
-	sta boss_index42_y2
-	sta boss_index42_t2
-	sta boss_index42_s2
-	sta boss_index42_x2
-	sta boss_index43_y2
-	sta boss_index43_t2
-	sta boss_index43_s2
-	sta boss_index43_x2
+	loop_b_clr:
+	sta (REG0), y
+	iny
+	cpy #$AC
+	bne loop_b_clr
+
+	; $062C~
+	lda #< boss_index1_y2;下位
+	sta REG0
+	lda #> boss_index1_y2;上位
+	sta REG1
+	ldy #0
+	lda #0
+	loop_b_clr2:
+	sta (REG0), y
+	iny
+	cpy #$AC
+	bne loop_b_clr2
 
 	lda #0
 	sta boss_world_pos_x_low
@@ -650,7 +330,7 @@
 case_stop:
 	jmp break
 case_fire:
-	jsr Boss_UpdateFire
+	;jsr Boss_UpdateFire
 	jmp break
 case_roll:
 	jmp break
@@ -676,46 +356,68 @@ skip_boss:
 
 ; 火吹き更新
 .proc Boss_UpdateFire	
+	lda boss_status
+	cmp #1
+	beq skip_Boss_UpdateFireReturn
+	rts
+	skip_Boss_UpdateFireReturn:
+
 	lda boss_update_step
 
 	cmp #0
 	beq case_init
 	cmp #1
-	beq case_init2
+	beq case_fire1
 	cmp #2
-	beq case_fire
+	beq case_fire1_wait
 	cmp #3
-	beq case_fire_wait
+	beq case_fire2
+	cmp #4
+	beq case_fire2_wait
+	cmp #5
+	beq case_fire3
+	cmp #6
+	beq case_fire3_wait
 
 case_init:
-	; 横にする
-	;lda $2000
-	;and #%11111011
-	;sta $2000
+
 	inc boss_update_step
 	jmp case_break
 
-case_init2:
+case_fire1:
 	inc boss_update_step
-	jsr Boss_SetFire
+	jsr Boss_SetFire1
+	lda #30
+	sta boss_wait
 	jmp case_break
 
-case_fire:
-	; 縦にする
-	;lda $2000
-	;ora #%00000100
-	;sta $2000
-
-
-	;jsr HabatanFire_Appear
-	;jsr Boss_SetFire
-	;jsr Sound_PlayFire
-	inc boss_update_step
-	
+case_fire1_wait:
+	dec boss_wait
+	bne case_break
+	inc boss_update_step	
 	jmp case_break
 
-case_fire_wait:
+case_fire2:
+	inc boss_update_step
+	jsr Boss_SetFire2
+	lda #30
+	sta boss_wait
+	jmp case_break
 
+case_fire2_wait:
+	dec boss_wait
+	bne case_break
+	inc boss_update_step	
+	jmp case_break
+
+case_fire3:
+	inc boss_update_step
+	jsr Boss_SetFire3
+	lda #30
+	sta boss_wait
+	jmp case_break
+
+case_fire3_wait:
 	jmp case_break
 
 case_break:
@@ -1260,83 +962,184 @@ skip_return:
 	rts
 .endproc	; boss_collision_object
 
-.proc Boss_SetFire
-	; 1 PLAYER GAME
-	;lda #14
-	;sta draw_bg_y
-	;lda #10
-	;sta draw_bg_x
-	;jsr SetPosition
-	
-	; 横にする
-	;lda $2000
-	;and #%11111011
-	;sta $2000
+.proc Boss_SetFire1
+; $2006に送る２回目のアドレス　 REG0 初期値#$F2 増加量1
+; lda image_fire_1, yのyの初期値 y 初期値#0  増加量1
+; 縦ループ終端 REG1 初期値#4 増加量4
+; 横ループ変数y
 
-	;lda #%00001000	;
-	;sta $2000
-
-	
-;1	
-	lda #$21
-	sta $2006
 	lda #$F2
-	sta $2006
-
+	sta REG0
 	ldx #0
-	loop_moji_x:
-	lda image_fire_1, x
-	sta $2007
-	inx
-	cpx #4
-	bne loop_moji_x
+	ldy #0
+	lda #4
+	sta REG1
 
-;2
+; 外ループ（横）
+loop_x:
 	lda #$21
 	sta $2006
-	lda #$F3
+	lda REG0
 	sta $2006
 
-	ldx #0
-	loop_moji_x2:
-	lda image_fire_2, x
-	sta $2007
+	; 中ループ（縦）4回ループ
+	loop_moji_y:
+		lda image_fire_1, y
+		sta $2007
+		iny
+		cpy REG1
+		bne loop_moji_y
+
+	; $2006用値をインクリメント
+	inc REG0
+
+	; 終端変数を4増加
+	lda REG1
+	clc
+	adc #4
+	sta REG1
+
+	; 外ループ4回したか
 	inx
 	cpx #4
-	bne loop_moji_x2
-
-;3
-	lda #$21
-	sta $2006
-	lda #$F4
-	sta $2006
-
-	ldx #0
-	loop_moji_x3:
-	lda image_fire_3, x
-	sta $2007
-	inx
-	cpx #4
-	bne loop_moji_x3
-
-;4
-	lda #$21
-	sta $2006
-	lda #$F5
-	sta $2006
-
-	ldx #0
-	loop_moji_x4:
-	lda image_fire_4, x
-	sta $2007
-	inx
-	cpx #4
-	bne loop_moji_x4
-
-	; 縦にする
-	;lda $2000
-	;ora #%00000100
-	;sta $2000
+	bne loop_x
 
 	rts
-.endproc ; Boss_SetFire
+.endproc ; Boss_SetFire1
+
+.proc Boss_SetFire2
+; $2006に送る2回目のアドレス　 REG0 初期値#$F1 増加量1
+; lda image_bfire_1, yのyの初期値 y 初期値#0  増加量1
+; 縦ループ終端 REG1 初期値#5 増加量5
+; 横ループ変数y
+
+	lda #$F1
+	sta REG0
+	ldx #0
+	ldy #0
+	lda #5
+	sta REG1
+
+; 外ループ（横）
+loop_x:
+	lda #$21
+	sta $2006
+	lda REG0
+	sta $2006
+
+	; 中ループ（縦）5回ループ
+	loop_moji_y:
+	lda image_bfire_1, y
+	sta $2007
+	iny
+	cpy REG1
+	bne loop_moji_y
+
+	; $2006用値をインクリメント
+	inc REG0
+
+	; 終端変数を5増加
+	lda REG1
+	clc
+	adc #5
+	sta REG1
+
+	; 外ループ5回したか
+	inx
+	cpx #5
+	bne loop_x
+
+	lda #$10
+	sta REG0
+	lda #$11
+	sta REG1
+;sparks
+	jsr Boss_SetSparks
+
+	rts
+.endproc ; Boss_SetFire2
+
+.proc Boss_SetFire3
+
+	lda #$F1
+	sta REG0
+	ldx #0
+	ldy #0
+	lda #5
+	sta REG1
+
+; 外ループ（横）
+loop_x:
+	lda #$21
+	sta $2006
+	lda REG0
+	sta $2006
+
+	; 中ループ（縦）5回ループ
+	loop_moji_y:
+	lda #$00
+	sta $2007
+	iny
+	cpy REG1
+	bne loop_moji_y
+
+	; $2006用値をインクリメント
+	inc REG0
+
+	; 終端変数を5増加
+	lda REG1
+	clc
+	adc #5
+	sta REG1
+
+	; 外ループ5回したか
+	inx
+	cpx #5
+	bne loop_x
+
+	lda #$4f
+	sta REG0
+	lda #$4f
+	sta REG1
+;sparks
+	jsr Boss_SetSparks
+	
+	rts
+.endproc ; Boss_SetFire3
+
+.proc Boss_SetSparks
+; fire2
+;REG0 $10 REG1 $11
+; fire3
+;REG0 $50 REG1 $51
+
+;sparks 1
+	lda #$22
+	sta $2006
+	lda REG0
+	sta $2006
+
+	ldx #0
+	loop_sparks1_x:
+	lda image_sparks_1, x
+	sta $2007
+	inx
+	cpx #2
+	bne loop_sparks1_x
+
+;sparks 2
+	lda #$22
+	sta $2006
+	lda REG1
+	sta $2006
+
+	ldx #2
+	loop_sparks2_x:
+	lda image_sparks_1, x
+	sta $2007
+	inx
+	cpx #4
+	bne loop_sparks2_x
+
+	rts
+.endproc ; Boss_SetSparks

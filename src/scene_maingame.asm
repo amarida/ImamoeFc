@@ -9,6 +9,11 @@
 	jsr draw_bg_attribute	; 属性テーブル
 	jsr DrawStatus
 
+	; ボスの火吹き処理
+	jsr Boss_UpdateFire
+
+	; （$2006を呼ぶのはここ以前にしないといけない）
+
 	lda $2002		; スクロール値クリア
 	lda #$00
 	sta $2005		; X方向スクロール
@@ -111,7 +116,7 @@ waitZeroSpriteHit:
 
 
 	
-	jsr	Update	; 更新
+	jsr Update	; 更新
 
 	rts
 .endproc
@@ -311,6 +316,7 @@ break:
 
 	; ボスエリアに到着
 	lda #2
+	;jsr Boss_Clear
 	sta scene_update_step
 
 check_skip:
