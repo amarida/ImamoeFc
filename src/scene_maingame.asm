@@ -130,7 +130,7 @@ waitScanSub:
 .endproc
 
 ; 更新
-.proc	Update
+.proc Update
 	lda scene_update_step
 	cmp #0
 	beq case_play_bgm
@@ -170,6 +170,7 @@ case_boss_introduction:
 
 case_boss_maingame:
 	jsr UpdateBossMaingame
+	jsr UpdateMaingame
 	jmp case_break
 
 case_boss_conclusion:
@@ -270,7 +271,7 @@ break:
 	jsr HabatanUpdate
 	jsr HabatanFire_Update
 	jsr Item_Update
-	jsr BossUpdate
+	;jsr BossUpdate ; UpdateBossIntroductionとUpdateBossMaingameで呼び出す
 
 	lda str_speedup_state
 	beq skip_str
@@ -382,10 +383,10 @@ eor_skip:
 	bne skip
 
 	; 所定位置に着いたら
-	lda #3
+	lda #3 ; case_boss_introduction
 	sta scene_update_step
 
-	lda #1
+	lda #1 ; 1:火吹き
 	sta boss_status
 
 skip:
@@ -397,21 +398,23 @@ skip:
 
     jsr BossUpdate
 
-	lda boss_status	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
-	cmp #0
-	beq fire_appear
-	cmp #2
+	;lda boss_status	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
+	;cmp #2
+	;bne not_next
+
+	lda boss_update_step
+	cmp #7
 	bne not_next
+	; 一連の火吹き処理が完了
+
+	inc boss_status; 1→2
+	inc scene_update_step ; 3→4
+	lda #0
+	sta boss_move_type ; ボス移動方向を0で初期化
 
 	jmp update_break
 
-	; ボスが火吹き終わったら次の状態へ
-	lda #4
-	sta scene_update_step
-	jmp update_break
 
-fire_appear:
-	inc boss_status
 	jmp update_break
 
 not_next:
@@ -423,8 +426,7 @@ update_break:
 ; ボスメインゲーム
 .proc UpdateBossMaingame
 
-;mugen:
-;jmp mugen
+	jsr BossUpdate
 
 	rts
 .endproc

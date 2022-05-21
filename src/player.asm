@@ -87,6 +87,7 @@ exit:
 	sbc field_scroll_x_low
 ;	sbc #9
 ;	bcc skip; キャリーフラグがクリアされている時
+	cmp #32
 	beq skip; ゼロフラグが立っていないときスキップ
 
 	sec					; キャリーフラグON
@@ -133,6 +134,15 @@ skip:
 	jmp skip
 	skip_skip2:
 
+	; 画面の右端なら右移動しない
+	sec
+	lda player_x_low
+	sbc field_scroll_x_low
+	cmp #223
+;	sbc #9
+;	bcc skip; キャリーフラグがクリアされている時
+	beq skip; ゼロフラグが立っていないときスキップ
+
 	clc					; キャリーフラグOFF
 	lda player_x_decimal
 	adc player_spd_decimal
@@ -169,6 +179,17 @@ roll_skip:
 	sbc #127	; 画面の中心
 	bcc skip	; キャリーフラグがクリアされている時
 
+	; ボス戦ならスクロールしない
+	lda scene_type
+	cmp #3
+	bne not_skip
+	lda scene_update_step
+	cmp #4
+	bne not_skip
+	jmp skip
+
+	; スキップしない
+	not_skip:
 	; スクロール情報
 	clc
 	lda scroll_x

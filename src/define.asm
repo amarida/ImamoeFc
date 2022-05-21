@@ -239,6 +239,7 @@ boss_status							        = $ED	; ボス状態(0:停止、1:火吹き、2:くるくる、3:退場)
 boss_update_step                            = $EF   ; ボスステップ状態
 ppu2000                                     = $F0   ; PPU
 boss_wait                                   = $F1   ; ボス汎用待ち
+boss_move_type                              = $F2   ; ボス移動方向
 
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号

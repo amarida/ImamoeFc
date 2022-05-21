@@ -333,6 +333,7 @@ case_fire:
 	;jsr Boss_UpdateFire
 	jmp break
 case_roll:
+	jsr Boss_UpdateRoll
 	jmp break
 case_leave:
 	jmp break
@@ -418,6 +419,12 @@ case_fire3:
 	jmp case_break
 
 case_fire3_wait:
+	dec boss_wait
+	bne case_break
+	inc boss_update_step	; 6Å®7
+;	; É{ÉXÇ™âŒêÅÇ´èIÇÌÇ¡ÇΩÇÁéüÇÃèÛë‘Ç÷
+;	lda #4
+;	sta scene_update_step	
 	jmp case_break
 
 case_break:
@@ -1143,3 +1150,125 @@ loop_x:
 
 	rts
 .endproc ; Boss_SetSparks
+
+.proc Boss_UpdateRoll
+
+	lda boss_move_type
+
+	cmp #0
+	beq case_lb
+	cmp #1
+	beq case_lt
+	cmp #2
+	beq case_rt
+	cmp #3
+	beq case_rb
+
+case_lb:
+	jsr Boss_UpdateRollLb
+	jmp break
+case_lt:
+	jsr Boss_UpdateRollLt
+	jmp break
+case_rt:
+	jsr Boss_UpdateRollRt
+	jmp break
+case_rb:
+	jsr Boss_UpdateRollRb
+	jmp break
+
+break:
+	rts
+.endproc ; Boss_UpdateRoll
+
+.proc Boss_UpdateRollLb
+	sec
+	lda boss_world_pos_x_low
+	sbc #1
+	sta boss_world_pos_x_low
+	lda boss_world_pos_x_hi
+	sbc #0
+	sta boss_world_pos_x_hi
+
+	clc
+	lda boss_pos_y
+	adc #1
+	sta boss_pos_y
+
+	lda boss_pos_y
+	cmp #150
+	bne skip
+	inc boss_move_type
+	skip:
+	rts
+.endproc ; Boss_UpdateRollLb
+
+.proc Boss_UpdateRollLt
+	sec
+	lda boss_world_pos_x_low
+	sbc #1
+	sta boss_world_pos_x_low
+	lda boss_world_pos_x_hi
+	sbc #0
+	sta boss_world_pos_x_hi
+
+	sec
+	lda boss_pos_y
+	sbc #1
+	sta boss_pos_y
+
+	lda boss_pos_y
+	cmp #100
+	bne skip
+	inc boss_move_type
+	skip:
+
+	rts
+.endproc ; Boss_UpdateRollLt
+
+.proc Boss_UpdateRollRt
+	clc
+	lda boss_world_pos_x_low
+	adc #1
+	sta boss_world_pos_x_low
+	lda boss_world_pos_x_hi
+	adc #0
+	sta boss_world_pos_x_hi
+
+	sec
+	lda boss_pos_y
+	sbc #1
+	sta boss_pos_y
+
+	lda boss_pos_y
+	cmp #50
+	bne skip
+	inc boss_move_type
+	skip:
+
+	rts
+.endproc ; Boss_UpdateRollLt
+
+.proc Boss_UpdateRollRb
+	clc
+	lda boss_world_pos_x_low
+	adc #1
+	sta boss_world_pos_x_low
+	lda boss_world_pos_x_hi
+	adc #0
+	sta boss_world_pos_x_hi
+
+	clc
+	lda boss_pos_y
+	adc #1
+	sta boss_pos_y
+
+	lda boss_pos_y
+	cmp #100
+	bne skip
+	lda #0
+	sta boss_move_type
+	skip:
+
+	rts
+.endproc ; Boss_UpdateRollLb
