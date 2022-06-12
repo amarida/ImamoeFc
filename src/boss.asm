@@ -422,6 +422,8 @@ case_fire3_wait:
 	dec boss_wait
 	bne case_break
 	inc boss_update_step	; 6→7
+	; 最後の火花を削除
+	jsr Boss_SetFire4 ; 削除
 ;	; ボスが火吹き終わったら次の状態へ
 ;	lda #4
 ;	sta scene_update_step	
@@ -1113,6 +1115,47 @@ loop_x:
 	
 	rts
 .endproc ; Boss_SetFire3
+
+.proc Boss_SetFire4
+
+	lda #$2f
+	sta REG0
+	ldx #0
+	ldy #0
+	lda #3
+	sta REG1
+
+; 外ループ（横）
+loop_x:
+	lda #$22
+	sta $2006
+	lda REG0
+	sta $2006
+
+	; 中ループ（縦）3回ループ
+	loop_moji_y:
+	lda #$00
+	sta $2007
+	iny
+	cpy REG1
+	bne loop_moji_y
+
+	; $2006用値をインクリメント
+	inc REG0
+
+	; 終端変数を3増加
+	lda REG1
+	clc
+	adc #3
+	sta REG1
+
+	; 外ループ2回したか
+	inx
+	cpx #2
+	bne loop_x
+	
+	rts
+.endproc ; Boss_SetFire4
 
 .proc Boss_SetSparks
 ; fire2
