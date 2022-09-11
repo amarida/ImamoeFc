@@ -83,103 +83,44 @@ skip_appear:
 	jmp skip_clear
 	not_skip_clear:
 
+	; $07B0Å`$07B7 char_12_type01_y Å` char_12_type02_x
+	lda #< char_12_type01_y;â∫à 
+	sta REG0
+	lda #> char_12_type01_y;è„à 
+	sta REG1
+	ldy #0
 	lda #0
-	sta char_12_type01_y
-	sta char_12_type01_t
-	sta char_12_type01_s
-	sta char_12_type01_x
-	sta char_12_type02_y
-	sta char_12_type02_t
-	sta char_12_type02_s
-	sta char_12_type02_x
-	sta char_12_type03_y
-	sta char_12_type03_t
-	sta char_12_type03_s
-	sta char_12_type03_x
-	sta char_12_type04_y
-	sta char_12_type04_t
-	sta char_12_type04_s
-	sta char_12_type04_x
-	sta char_12_type05_y
-	sta char_12_type05_t
-	sta char_12_type05_s
-	sta char_12_type05_x
-	sta char_12_type06_y
-	sta char_12_type06_t
-	sta char_12_type06_s
-	sta char_12_type06_x
-	sta char_12_type07_y
-	sta char_12_type07_t
-	sta char_12_type07_s
-	sta char_12_type07_x
-	sta char_12_type08_y
-	sta char_12_type08_t
-	sta char_12_type08_s
-	sta char_12_type08_x
-	sta char_12_type09_y
-	sta char_12_type09_t
-	sta char_12_type09_s
-	sta char_12_type09_x
-	sta char_12_type10_y
-	sta char_12_type10_t
-	sta char_12_type10_s
-	sta char_12_type10_x
-	sta char_12_type11_y
-	sta char_12_type11_t
-	sta char_12_type11_s
-	sta char_12_type11_x
-	sta char_12_type12_y
-	sta char_12_type12_t
-	sta char_12_type12_s
-	sta char_12_type12_x
-	sta char_12_type01_y2
-	sta char_12_type01_t2
-	sta char_12_type01_s2
-	sta char_12_type01_x2
-	sta char_12_type02_y2
-	sta char_12_type02_t2
-	sta char_12_type02_s2
-	sta char_12_type02_x2
-	sta char_12_type03_y2
-	sta char_12_type03_t2
-	sta char_12_type03_s2
-	sta char_12_type03_x2
-	sta char_12_type04_y2
-	sta char_12_type04_t2
-	sta char_12_type04_s2
-	sta char_12_type04_x2
-	sta char_12_type05_y2
-	sta char_12_type05_t2
-	sta char_12_type05_s2
-	sta char_12_type05_x2
-	sta char_12_type06_y2
-	sta char_12_type06_t2
-	sta char_12_type06_s2
-	sta char_12_type06_x2
-	sta char_12_type07_y2
-	sta char_12_type07_t2
-	sta char_12_type07_s2
-	sta char_12_type07_x2
-	sta char_12_type08_y2
-	sta char_12_type08_t2
-	sta char_12_type08_s2
-	sta char_12_type08_x2
-	sta char_12_type09_y2
-	sta char_12_type09_t2
-	sta char_12_type09_s2
-	sta char_12_type09_x2
-	sta char_12_type10_y2
-	sta char_12_type10_t2
-	sta char_12_type10_s2
-	sta char_12_type10_x2
-	sta char_12_type11_y2
-	sta char_12_type11_t2
-	sta char_12_type11_s2
-	sta char_12_type11_x2
-	sta char_12_type12_y2
-	sta char_12_type12_t2
-	sta char_12_type12_s2
-	sta char_12_type12_x2
+	loop_i_clr1:
+	sta (REG0), y
+	iny
+	cpy #$08
+	bne loop_i_clr1
+
+	; $07d8Å`$07ff char_12_type03_y Å` char_12_type12_x
+	lda #< char_12_type03_y;â∫à 
+	sta REG0
+	lda #> char_12_type03_y;è„à 
+	sta REG1
+	ldy #0
+	lda #0
+	loop_i_clr2:
+	sta (REG0), y
+	iny
+	cpy #$28; 10êiÇ≈40
+	bne loop_i_clr2
+
+	; $07d8Å`$07ff char_12_type01_y2 Å` char_12_type12_x2
+	lda #< char_12_type01_y2;â∫à 
+	sta REG0
+	lda #> char_12_type01_y2;è„à 
+	sta REG1
+	ldy #0
+	lda #0
+	loop_i_clr3:
+	sta (REG0), y
+	iny
+	cpy #$30; 10êiÇ≈48
+	bne loop_i_clr3
 
 	lda #0
 	sta item_world_pos_x_low

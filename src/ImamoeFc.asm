@@ -20,6 +20,7 @@
 .include "sound.asm"
 .include "String.asm"
 .include "boss.asm"
+.include "button.asm"
 
 .include "scene_title.asm"
 .include "scene_introduction.asm"
@@ -772,7 +773,7 @@ palette2:
 	.byte	$0f, $00, $10, $20
 paletteBoss:
 	.byte	$0f, $27, $39, $0f	; ボスベース
-	.byte	$0f, $1c, $3c, $0f	; ボスしっぽ
+	.byte	$0f, $1c, $3c, $0f	; ボスしっぽ	ボタン
 	.byte	$0f, $06, $02, $0f	; ボス中心部
 
 palettes_bg:
@@ -872,6 +873,7 @@ image_sparks_1:	; 縦
 ; $04:はばタコ、$05:酒 78、$06:タマネギ2
 ; $07:イノシシバックアタップ、$08:タマネギ降ってくる
 ; $09:タマネギ降ってくる2、$0A:ボス
+; $0B:ボタン
 map_enemy_info:
 	.byte	$01, $e2, $b8, $00	; イノシシ	1
 
@@ -899,6 +901,7 @@ map_enemy_info:
 
 	.byte	$08, $b2, $50, $0A	; ボス
 ;	.byte	$07, $2a, $30, $0A	; ボス
+	.byte	$08, $d2, $c0, $0B	; ボタン
 
 	.byte	$ff, $ff, $ff, $00	; 最後のダミー
 

@@ -240,6 +240,8 @@ boss_update_step                            = $EF   ; ボスステップ状態
 ppu2000                                     = $F0   ; PPU
 boss_wait                                   = $F1   ; ボス汎用待ち
 boss_move_type                              = $F2   ; ボス移動方向
+button_alive_flag							= $F3	; ボタン存在フラグ
+boss_window_pos_col_x                       = $F4   ; ボス WINDOW座標 X軸 当たり判定用
 
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号

@@ -419,6 +419,13 @@ skip_first_hit:
 	jsr Item_GetAction
 	not_get:
 
+	; ボタン当たり判定
+	jsr collision_button
+	lda char_collision_result
+	beq not_hit_button
+	jsr Button_Action
+	not_hit_button:
+
 	rts
 .endproc
 
@@ -1398,6 +1405,8 @@ skip_return:
 	beq hit0
 	cmp #$18
 	beq hit0
+	cmp #$19
+	beq hit0
 	jmp skip0
 hit0:
 	lda #1
@@ -1657,6 +1666,8 @@ skip1:
 	cmp #$17
 	beq hit2
 	cmp #$18
+	beq hit2
+	cmp #$19
 	beq hit2
 	jmp skip2
 hit2:
@@ -1988,6 +1999,65 @@ next_update_tamanegi:
 	cpx tamanegi_max_count	; ループ最大数
 	bne loop_x_tamanegi				; ループ
 	
+	; プレイヤのX座標とボスのX座標と
+	; プレイヤのY座標とボスのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+	ldx #0
+	; 生存しているか
+	lda boss_alive_flag
+	beq next_update_boss	; 存在していない
+	
+	; 当たり判定用
+	clc
+	lda boss_window_pos_x
+	adc #32
+	sta boss_window_pos_col_x
+
+	; 存在している
+	; プレイヤのXとボスのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc boss_window_pos_col_x
+	bpl big_player_boss	; プレイヤの方が大きい
+	; ボスの方が大きい
+	sec
+	lda boss_window_pos_col_x
+	sbc window_player_x_low
+big_player_boss:
+	sta REG0	; X差分
+
+	; プレイヤのXとボスのYの大きい方
+	sec
+	lda player_y
+	sbc boss_pos_y
+	bpl big_player_y_boss	; プレイヤの方が大きい
+	; ボスの方が大きい
+	sec
+	lda boss_pos_y
+	sbc player_y
+big_player_y_boss:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #57
+	bpl	next_update_boss	; 差分が56より大きい
+	
+	sec
+	lda REG1
+	sbc #57
+	bpl	next_update_boss	; 差分が56より大きい
+
+	lda #1
+	sta char_collision_result
+	jmp exit
+
+
+next_update_boss:
 
 exit:
 
@@ -2066,6 +2136,78 @@ exit:
 
 	rts
 .endproc	; collision_item
+
+; ボタンとのあたり判定
+.proc collision_button
+	lda #0
+	sta char_collision_result
+
+	; プレイヤのX座標とアイテムのX座標と
+	; プレイヤのY座標とアイテムのY座標を
+	; 比較して、ともに差分が一定以下なら
+	; 当たった。
+
+	; 生存しているか
+	lda button_alive_flag
+	beq exit		; 存在していない
+	
+	; 通常状態か
+	lda item_status
+	bne exit		; 通常状態ではない
+
+	; 存在している
+	; プレイヤのXとアイテムのXの大きい方
+	sec
+	lda window_player_x_low
+	sbc item_window_pos_x
+	bpl big_player	; プレイヤの方が大きい
+	; アイテムの方が大きい
+	sec
+	lda item_window_pos_x
+	sbc window_player_x_low
+big_player:
+	sta REG0	; X差分
+
+	; プレイヤのYとアイテムのYの大きい方
+	sec
+	lda player_y
+	sbc item_pos_y
+	bpl big_player_y	; プレイヤの方が大きい
+	; アイテムの方が大きい
+	sec
+	lda item_pos_y
+	sbc player_y
+big_player_y:
+	sta REG1	; y差分
+
+	lda #0
+	sta char_collision_result
+	
+	sec
+	lda REG0
+	sbc #17
+	bpl	exit	; 差分が16より大きい
+	
+	sec
+	lda REG1
+	sbc #49;#81;#49
+	bpl	exit	; 差分が48より大きい
+
+	lda #1	; 当たった
+	sta char_collision_result
+	;inc item_count
+	; 当たった場合とりあえず表示位置を格納する
+	lda item_window_pos_x
+	sta REG0
+	lda item_pos_y
+	sta REG1
+	;jsr String_Init
+	jmp exit
+
+exit:
+
+	rts
+.endproc	; collision_button
 
 .proc Player_SetSpeed
 	lda REG0

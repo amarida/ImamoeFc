@@ -39,6 +39,7 @@ player_dma7:
 	jsr Item_DrawDma7			; 酒描画
 	jsr String_DrawDma7			; 文字列描画
 	jsr BossDrawDma7			; ボス描画
+	jsr Button_DrawDma7			; ボタン描画
 	jmp player_dma_break
 player_dma6:
 	jsr	player_draw_dma6		; プレイヤー描画関数
@@ -52,6 +53,7 @@ player_dma6:
 	jsr Item_DrawDma6			; 酒描画
 	jsr String_DrawDma6			; 文字列描画
 	jsr BossDrawDma6			; ボス描画
+	jsr Button_DrawDma6			; ボタン描画
 	jmp player_dma_break
 player_dma_break:
 	
@@ -81,7 +83,7 @@ waitZeroSpriteHit:
 	beq waitZeroSpriteHit
 ;r_skip:
 
-	jsr waitScan
+	jsr waitScan	; ラスタスクロール待ち
 
 	; スクロール位置更新
 	lda $2002		; スクロール値クリア
@@ -271,6 +273,7 @@ break:
 	jsr HabatanUpdate
 	jsr HabatanFire_Update
 	jsr Item_Update
+	jsr Button_Update
 	;jsr BossUpdate ; UpdateBossIntroductionとUpdateBossMaingameで呼び出す
 
 	lda str_speedup_state
@@ -573,6 +576,8 @@ appear_skip:
 	beq case_tamanegi_free_fall2
 	cmp #10
 	beq case_boss
+	cmp #11
+	beq case_button
 
 case_inosisi:
 	lda #0
@@ -618,6 +623,9 @@ case_tamanegi_free_fall2:
 	jmp break
 case_boss:
 	jsr appear_boss
+	jmp break
+case_button:
+	jsr appear_button
 	jmp break
 
 break:
