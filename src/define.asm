@@ -242,6 +242,9 @@ boss_wait                                   = $F1   ; ボス汎用待ち
 boss_move_type                              = $F2   ; ボス移動方向
 button_alive_flag							= $F3	; ボタン存在フラグ
 boss_window_pos_col_x                       = $F4   ; ボス WINDOW座標 X軸 当たり判定用
+boss_pos_col_y                              = $F5   ; ボス WINDOW座標 Y軸 当たり判定用
+boss_room_status                            = $F6   ; ボス部屋状態（0:通常、1~4:開ける、5:開いた）
+boss_room_status_wait                       = $F7   ; カウントアップウェイト
 
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号

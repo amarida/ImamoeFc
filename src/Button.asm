@@ -7,6 +7,7 @@
 	sta item_status
 	sta item_pos_y
 	sta button_alive_flag
+	sta boss_room_status
 
 	rts
 .endproc
@@ -303,5 +304,17 @@ skip_draw:
 .proc Button_Action
 	lda #1
 	sta item_status
+	; ボス上移動
+	lda #3
+	sta boss_status
+	; ボス決着
+	lda #5
+	sta scene_update_step
+	; 屋根
+	lda #1
+	sta boss_room_status
+	lda #0
+	sta boss_room_status_wait
+
 	rts
 .endproc	; Button_GetAction

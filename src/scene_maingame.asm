@@ -11,6 +11,8 @@
 
 	; ボスの火吹き処理
 	jsr Boss_UpdateFire
+	; ボスの部屋開放
+	jsr Draw_BossRoom
 
 	; （$2006を呼ぶのはここ以前にしないといけない）
 
@@ -145,7 +147,7 @@ waitScanSub:
 	cmp #4
 	beq case_boss_maingame
 	cmp #5
-	beq case_boss_conclusion 
+	beq case_boss_conclusion
 
 case_play_bgm:
 	jsr PlayBgmIntroduction
@@ -176,6 +178,8 @@ case_boss_maingame:
 	jmp case_break
 
 case_boss_conclusion:
+	jsr UpdateBossMaingame
+	;jsr UpdateMaingame
 	jmp case_break
 
 	case_break:

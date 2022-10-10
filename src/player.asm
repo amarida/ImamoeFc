@@ -2008,11 +2008,16 @@ next_update_tamanegi:
 	lda boss_alive_flag
 	beq next_update_boss	; 存在していない
 	
-	; 当たり判定用
+	; 当たり判定用x
 	clc
 	lda boss_window_pos_x
-	adc #32
+	adc #24
 	sta boss_window_pos_col_x
+	; 当たり判定用y
+	clc
+	lda boss_pos_y
+	adc #16
+	sta boss_pos_col_y
 
 	; 存在している
 	; プレイヤのXとボスのXの大きい方
@@ -2030,11 +2035,11 @@ big_player_boss:
 	; プレイヤのXとボスのYの大きい方
 	sec
 	lda player_y
-	sbc boss_pos_y
+	sbc boss_pos_col_y
 	bpl big_player_y_boss	; プレイヤの方が大きい
 	; ボスの方が大きい
 	sec
-	lda boss_pos_y
+	lda boss_pos_col_y
 	sbc player_y
 big_player_y_boss:
 	sta REG1	; y差分
@@ -2044,13 +2049,13 @@ big_player_y_boss:
 	
 	sec
 	lda REG0
-	sbc #57
-	bpl	next_update_boss	; 差分が56より大きい
+	sbc #25
+	bpl	next_update_boss	; 差分が24より大きい
 	
 	sec
 	lda REG1
-	sbc #57
-	bpl	next_update_boss	; 差分が56より大きい
+	sbc #25
+	bpl	next_update_boss	; 差分が24より大きい
 
 	lda #1
 	sta char_collision_result
@@ -2190,8 +2195,8 @@ big_player_y:
 	
 	sec
 	lda REG1
-	sbc #49;#81;#49
-	bpl	exit	; 差分が48より大きい
+	sbc #37;#81;#49
+	bpl	exit	; 差分が36より大きい
 
 	lda #1	; 当たった
 	sta char_collision_result

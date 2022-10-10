@@ -336,6 +336,7 @@ case_roll:
 	jsr Boss_UpdateRoll
 	jmp break
 case_leave:
+	jsr Boss_UpdateLeave
 	jmp break
 
 	;cmp #0
@@ -433,6 +434,79 @@ case_break:
 
 	rts
 .endproc	; Boss_UpdateFire
+
+; ボス部屋
+.proc Draw_BossRoom
+	; 2080~20CF
+
+	; 2084~209C
+	; 20A4
+	; 20C4
+	; 20E4
+
+	; boss_room_statusが1の場合屋根を開ける
+	lda boss_room_status
+	cmp #0
+	beq case_none
+	cmp #1
+	beq case_break_kabe1
+	cmp #2
+	beq case_break_kabe2
+	cmp #3
+	beq case_break_kabe3
+	cmp #4
+	beq case_break_kabe4
+	cmp #5
+	beq case_none
+
+case_none:
+	jmp break
+
+case_break_kabe1:
+	lda #$84
+	sta REG0
+	jmp case_break_kabe
+case_break_kabe2:
+	lda #$A4
+	sta REG0
+	jmp case_break_kabe
+case_break_kabe3:
+	lda #$C4
+	sta REG0
+	jmp case_break_kabe
+case_break_kabe4:
+	lda #$E4
+	sta REG0
+	jmp case_break_kabe
+
+case_break_kabe:
+	ldx #0 
+	loop:
+	lda #$20
+	sta $2006
+	lda REG0
+	sta $2006
+	lda #$00
+	sta $2007
+
+	inc REG0
+	inx
+	cpx #26
+	bne loop
+
+	inc boss_room_status_wait
+	lda boss_room_status_wait
+	cmp #8
+	bne break
+	inc boss_room_status
+	lda #0
+	sta boss_room_status_wait
+	jmp break
+
+break:
+
+	rts
+.endproc ; Draw_BossRoom
 
 ; 通常更新
 .proc	Boss_UpdateNormal
@@ -1315,3 +1389,12 @@ break:
 
 	rts
 .endproc ; Boss_UpdateRollLb
+
+.proc Boss_UpdateLeave
+	sec
+	lda boss_pos_y
+	sbc #1
+	sta boss_pos_y
+
+	rts
+.endproc ; Boss_UpdateLeave
