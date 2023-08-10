@@ -6,8 +6,8 @@
 	sta inosisi1_world_pos_x_hi
 	sta inosisi00_status
 	sta inosisi01_status
-	sta inosisi00_wait
-	sta inosisi01_wait
+	;sta inosisi00_wait
+	;sta inosisi01_wait
 	sta inosisi00_update_dead_step
 	sta inosisi01_update_dead_step
 	lda #224	; 画面外;#184
@@ -233,6 +233,24 @@ skip_inosisi:
 	sta inosisi0_world_pos_x_hi,x
 	sta inosisi0_pos_y,x
 	
+;	cpx #0
+;	lda #232	; 画面外
+;	sta char_6type1_y
+;	sta char_6type2_y
+;	sta char_6type3_y
+;	sta char_6type4_y
+;	sta char_6type5_y
+;	sta char_6type6_y
+;	sta char_6type1_y2
+;	sta char_6type2_y2
+;	sta char_6type3_y2
+;	sta char_6type4_y2
+;	sta char_6type5_y2
+;	sta char_6type6_y2
+
+
+
+
 	; 生存フラグを落とす
 	lda inosisi_alive_flag
 	eor REG0
@@ -241,7 +259,7 @@ skip_inosisi:
 	; イノシシタイプ（前からか後ろからの）を落とす
 	; x(REG1)：何体目、REG0：種別（0前から、1後ろから）
 	; 00 00 00 00
-	;       ↑ ↑
+	;       ↑  ↑
 	;		｜	`-- 1体目の種別(01,前から 10後ろから)
 	;		 `----- 2体目の種別(01,前から 10後ろから)
 	txa

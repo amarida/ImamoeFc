@@ -362,6 +362,10 @@ skip_not_jump:
 	beq case_attack2
 	cmp #4	; 死亡
 	beq case_dead
+	cmp #5	; 喜び
+	beq case_joy
+	cmp #6	; ピース
+	beq case_peace
 	jmp break_status
 
 case_nomal:
@@ -385,6 +389,11 @@ case_attack2:
 	sta player_draw_status
 	jmp break_status
 case_dead:
+	jmp break_status
+case_joy:
+	jmp break_status
+case_peace:
+	jmp break_status
 
 break_status:
 
@@ -699,6 +708,7 @@ break_fuki_attack1:
 .proc player_draw_dma7_attack2
 	ldx #0
 	stx REG0
+	stx REG4
 	; 吹き戻し
 	clc			; キャリーフラグOFF
 	lda player_y
@@ -743,6 +753,12 @@ break_fuki_attack2:
 
 ; 描画
 .proc	player_draw_dma7
+
+	lda #0
+	sta REG0
+	sta REG4
+	sta REG5
+
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
 	lda player_x_low
@@ -795,6 +811,10 @@ ContinueLR:
 	beq case_attack2
 	cmp #4	; 死亡
 	beq case_dead
+	cmp #5	; 喜び
+	beq case_joy
+	cmp #6	; ピース
+	beq case_peace
 
 ; 通常
 case_nomal:
@@ -833,9 +853,48 @@ case_dead:
 	stx REG0
 
 	jmp break
+
+; 喜び
+case_joy:
+	; REG4 喜び差分
+	ldx #$88
+	stx REG4
+
+	;REG0 = (p_pat == 0) ? 2 : 0;
+	ldx #2
+	lda p_pat
+	bne	yorokobi
+	ldx #0
+yorokobi:
+	stx REG5; REG5 喜び差分差分
+
+	jmp break
+
+; ピース
+case_peace:
+	; REG4 ピース差分
+	ldx #$88
+	stx REG4
+	; REG5 ピース差分差分
+	ldx #$5
+	stx REG5
+
+	lda #$15
+	sta player9_t
+	lda #$0
+	sta player9_s
+	clc
+	lda window_player_x_low
+	adc #16
+	sta player9_x
+	clc
+	lda player_y
+	adc #23
+	sta player9_y
+
+	jmp break;
+
 break:
-
-
 
 
 	clc			; キャリーフラグOFF
@@ -856,6 +915,16 @@ break:
 	sta player6_s
 	sta player7_s
 	sta player8_s
+	lda player_draw_status
+	cmp #5
+	beq egao
+	cmp #6
+	beq egao
+	jmp egao_skip
+	egao:
+	lda #%00000011
+	sta player4_s
+	egao_skip:
 
 	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sta player1_x
@@ -881,11 +950,15 @@ break:
 	clc
 	lda #$90     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
 	sta player3_t
 
 	clc
 	lda #$91     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
 	sta player4_t
 
 	clc			; キャリーフラグOFF
@@ -896,11 +969,19 @@ break:
 	clc
 	lda #$A0     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
+	sec
+	sbc REG5
 	sta player5_t
 
 	clc
 	lda #$A1     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
+	sec
+	sbc REG5
 	sta player6_t
 
 	clc			; キャリーフラグOFF
@@ -1034,6 +1115,11 @@ break_fuki_attack2:
 ; 描画
 .proc	player_draw_dma6
 
+	lda #0
+	sta REG0
+	sta REG4
+	sta REG5
+
 	; フィールドプレイヤー位置 - フィールドスクロール位置
 	sec
 	lda player_x_low
@@ -1084,6 +1170,10 @@ ContinueLR:
 	beq case_attack2
 	cmp #4	; 死亡
 	beq case_dead
+	cmp #5	; 喜び
+	beq case_joy
+	cmp #6	; ピース
+	beq case_peace
 
 ; 通常
 case_nomal:
@@ -1123,6 +1213,46 @@ case_dead:
 
 	jmp break
 
+; 喜び
+case_joy:
+	; REG4 喜び差分
+	ldx #$88
+	stx REG4
+
+	;REG0 = (p_pat == 0) ? 2 : 0;
+	ldx #2
+	lda p_pat
+	bne	yorokobi
+	ldx #0
+yorokobi:
+	stx REG5; REG5 喜び差分差分
+
+	jmp break
+
+; ピース
+case_peace:
+	; REG4 ピース差分
+	ldx #$88
+	stx REG4
+	; REG5 ピース差分差分
+	ldx #$5
+	stx REG5
+
+	lda #$15
+	sta player9_t2
+	lda #$0
+	sta player9_s2
+	clc
+	lda window_player_x_low
+	adc #16
+	sta player9_x2
+	clc
+	lda player_y
+	adc #23
+	sta player9_y2
+
+	jmp break
+
 break:
 
 
@@ -1144,6 +1274,16 @@ break:
 	sta player6_s2
 	sta player7_s2
 	sta player8_s2
+	lda player_draw_status
+	cmp #5
+	beq egao
+	cmp #6
+	beq egao
+	jmp egao_skip
+	egao:
+	lda #%00000011
+	sta player4_s2
+	egao_skip:
 
 	lda REG3; player_x;#30;#%01111110     ; 30(10進数)をAにロード
 	sta player1_x2
@@ -1169,11 +1309,15 @@ break:
 	clc
 	lda #$90     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
 	sta player3_t2
 
 	clc
 	lda #$91     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
 	sta player4_t2
 
 	clc			; キャリーフラグOFF
@@ -1184,11 +1328,19 @@ break:
 	clc
 	lda #$A0     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
+	sec
+	sbc REG5
 	sta player5_t2
 
 	clc
 	lda #$A1     ; 21をAにロード
 	adc REG0
+	sec
+	sbc REG4
+	sec
+	sbc REG5
 	sta player6_t2
 
 	clc			; キャリーフラグOFF
@@ -2272,3 +2424,16 @@ exit:
 	
 	rts
 .endproc	; Player_UpdateSpeed
+
+.proc Player_SetJoy
+	lda #5	; 喜び
+	sta player_draw_status
+
+	rts
+.endproc	; Player_SetJoy
+
+.proc Player_SetPeace
+	lda #6	; ピース
+	sta player_draw_status
+
+.endproc	; Player_SetPeace

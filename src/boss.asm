@@ -326,6 +326,8 @@
 	beq case_roll
 	cmp #3
 	beq case_leave
+	cmp #4
+	beq case_finalize
 
 case_stop:
 	jmp break
@@ -338,6 +340,9 @@ case_roll:
 case_leave:
 	jsr Boss_UpdateLeave
 	jmp break
+case_finalize:
+	jsr Boss_Finalize
+	jmp break;
 
 	;cmp #0
 	;beq case_normal
@@ -560,18 +565,11 @@ break_pat:
 	lda boss_status
 	cmp #0
 	beq nomal
-	cmp #1
-	beq drown_tail
+
 	
 nomal:
-
-	
 	jmp break_tile
-; 溺れタイル
-drown_tail:
 
-
-	jmp break_tile
 
 break_tile:
 
@@ -632,8 +630,48 @@ break_tile:
 	sta boss_index42_y
 	sta boss_index43_y
 
+	sec
+	lda boss_index1_y
+	sbc #200
+	bcc skip_over1
+	lda #231
+	sta boss_index1_y
+	sta boss_index2_y
+	sta boss_index3_y
+	sta boss_index4_y
+	sta boss_index5_y
+	sta boss_index6_y
+	sta boss_index7_y
+skip_over1:
 
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
+	sec
+	lda boss_index8_y
+	sbc #200
+	bcc skip_over2
+	lda #231
+	sta boss_index8_y
+	sta boss_index9_y
+	sta boss_index10_y
+	sta boss_index11_y
+	sta boss_index12_y
+	sta boss_index13_y
+	sta boss_index14_y
+skip_over2:
+
+	sec
+	lda boss_index15_y
+	sbc #200
+	bcc skip_over3
+	lda #231
+	sta boss_index15_y
+	sta boss_index16_y
+	sta boss_index17_y
+	sta boss_index18_y
+	sta boss_index19_y
+	sta boss_index20_y
+	sta boss_index21_y
+skip_over3:
+
 	sec
 	lda boss_world_pos_x_low
 	sbc field_scroll_x_low
@@ -887,8 +925,48 @@ break_tile:
 	sta boss_index42_y2
 	sta boss_index43_y2
 
+	sec
+	lda boss_index1_y2
+	sbc #200
+	bcc skip_over1
+	lda #231
+	sta boss_index1_y2
+	sta boss_index2_y2
+	sta boss_index3_y2
+	sta boss_index4_y2
+	sta boss_index5_y2
+	sta boss_index6_y2
+	sta boss_index7_y2
+skip_over1:
 
-	; 存在していれば、ワールド座標からウィンドウ座標に変換
+	sec
+	lda boss_index8_y2
+	sbc #200
+	bcc skip_over2
+	lda #231
+	sta boss_index8_y2
+	sta boss_index9_y2
+	sta boss_index10_y2
+	sta boss_index11_y2
+	sta boss_index12_y2
+	sta boss_index13_y2
+	sta boss_index14_y2
+skip_over2:
+
+	sec
+	lda boss_index15_y2
+	sbc #200
+	bcc skip_over3
+	lda #231
+	sta boss_index15_y2
+	sta boss_index16_y2
+	sta boss_index17_y2
+	sta boss_index18_y2
+	sta boss_index19_y2
+	sta boss_index20_y2
+	sta boss_index21_y2
+skip_over3:
+
 	sec
 	lda boss_world_pos_x_low
 	sbc field_scroll_x_low
@@ -1396,5 +1474,27 @@ break:
 	sbc #1
 	sta boss_pos_y
 
+	sec
+	lda boss_pos_y
+	cmp #207
+	bne skip_over
+	lda #4
+	sta boss_status
+	lda #0
+	sta boss_wait
+	skip_over:
+
 	rts
 .endproc ; Boss_UpdateLeave
+
+.proc Boss_Finalize
+	lda boss_wait
+	cmp #1
+	bne skip
+	lda #0
+	sta boss_alive_flag
+skip:
+	inc boss_wait
+
+	rts
+.endproc ; Boss_Finalize

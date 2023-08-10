@@ -7,7 +7,7 @@ REG5										= $05	; 汎用5
 REG6										= $06	; 汎用6
 scroll_x									= $07	; NameTableの座標（$2005に送る値）
 scroll_y									= $08	; NameTableの座標（$2005に送る値）
-player_draw_status							= $09	; 描画タイプ…0:通常、1:ジャンプ、2:攻撃中1、3:攻撃中2、4:死亡
+player_draw_status							= $09	; 描画タイプ…0:通常、1:ジャンプ、2:攻撃中1、3:攻撃中2、4:死亡、5:喜び
 attack_frame								= $0A	; 攻撃フレーム
 player_x_low								= $0B	; プレイヤ位置X（下位）上位はplayer_x_hi
 player_x_hi									= $0C	; プレイヤ位置X上位
@@ -245,6 +245,7 @@ boss_window_pos_col_x                       = $F4   ; ボス WINDOW座標 X軸 当たり
 boss_pos_col_y                              = $F5   ; ボス WINDOW座標 Y軸 当たり判定用
 boss_room_status                            = $F6   ; ボス部屋状態（0:通常、1~4:開ける、5:開いた）
 boss_room_status_wait                       = $F7   ; カウントアップウェイト
+player_joy_wait                             = $F8   ; 喜び待ち
 
 mapper_cnt									= $FE	;マッパー切り替えテスト用カウンタ
 mapper_no									= $FE	;現在のマッパー番号

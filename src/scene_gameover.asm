@@ -156,10 +156,10 @@ skip_reset:
 ; ネームテーブル黒で塗りつぶす
 .proc FillBlackNametable
 
-	lda #< map_chip_game_over
-	sta map_table_screen_low
-	lda #> map_chip_game_over
-	sta map_table_screen_hi
+	;lda #< map_chip_game_over
+	;sta map_table_screen_low
+	;lda #> map_chip_game_over
+	;sta map_table_screen_hi
 
 	lda #0
 	sta bg_already_draw_pos
@@ -177,7 +177,8 @@ loop_first_x:
 	ldy #24	; 25個
 
 draw_loop:
-	lda (map_table_screen_low), y
+	;lda (map_table_screen_low), y
+	lda #$00
 	sta $2007
 
 	dey

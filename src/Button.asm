@@ -308,7 +308,7 @@ skip_draw:
 	lda #3
 	sta boss_status
 	; ƒ{ƒXŒˆ’…
-	lda #5
+	lda #5 ; scene_maingame‚Ìscene_update_step
 	sta scene_update_step
 	; ‰®ª
 	lda #1

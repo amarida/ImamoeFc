@@ -458,13 +458,20 @@ sw_index2_t:		.byte 0
 sw_index2_s:		.byte 0
 sw_index2_x:		.byte 0
 sw_index3_y:		.byte 0
-sw_index3_t:		.byte 0
+sw_index3_t:		.byte 0; 07e0
 sw_index3_s:		.byte 0
 sw_index3_x:		.byte 0
 sw_index4_y:		.byte 0
 sw_index4_t:		.byte 0
 sw_index4_s:		.byte 0
-sw_index4_x:		.byte 0
+sw_index4_x:		.byte 0; 07e6
+
+; 9‚Â‚ß
+player9_y:	.byte 0; $07e7
+player9_t:	.byte 0
+player9_s:	.byte 0
+player9_x:	.byte 0
+
 
 .org $0600
 spriteZero_y2:		.byte 0
@@ -567,7 +574,7 @@ char_12_type04_y2:	.byte 0
 char_12_type04_t2:	.byte 0
 char_12_type04_s2:	.byte 0
 char_12_type04_x2:	.byte 0
-char_12_type05_y2:	.byte 0
+char_12_type05_y2:	.byte 0; $0660
 char_12_type05_t2:	.byte 0
 char_12_type05_s2:	.byte 0
 char_12_type05_x2:	.byte 0
@@ -583,7 +590,7 @@ char_12_type08_y2:	.byte 0
 char_12_type08_t2:	.byte 0
 char_12_type08_s2:	.byte 0
 char_12_type08_x2:	.byte 0
-char_12_type09_y2:	.byte 0
+char_12_type09_y2:	.byte 0; $0670
 char_12_type09_t2:	.byte 0
 char_12_type09_s2:	.byte 0
 char_12_type09_x2:	.byte 0
@@ -600,7 +607,7 @@ char_12_type12_t2:	.byte 0
 char_12_type12_s2:	.byte 0
 char_12_type12_x2:	.byte 0
 
-char_6type1_y2:	.byte 0
+char_6type1_y2:	.byte 0; $0680
 char_6type1_t2:	.byte 0
 char_6type1_s2:	.byte 0
 char_6type1_x2:	.byte 0
@@ -616,7 +623,7 @@ char_6type4_y2:	.byte 0
 char_6type4_t2:	.byte 0
 char_6type4_s2:	.byte 0
 char_6type4_x2:	.byte 0
-char_6type5_y2:	.byte 0
+char_6type5_y2:	.byte 0; $0690
 char_6type5_t2:	.byte 0
 char_6type5_s2:	.byte 0
 char_6type5_x2:	.byte 0
@@ -633,7 +640,7 @@ char_6type22_y2:	.byte 0
 char_6type22_t2:	.byte 0
 char_6type22_s2:	.byte 0
 char_6type22_x2:	.byte 0
-char_6type23_y2:	.byte 0
+char_6type23_y2:	.byte 0; $06a0
 char_6type23_t2:	.byte 0
 char_6type23_s2:	.byte 0
 char_6type23_x2:	.byte 0
@@ -650,7 +657,7 @@ char_6type26_t2:	.byte 0
 char_6type26_s2:	.byte 0
 char_6type26_x2:	.byte 0
 
-char4_p1_index1_y2:	.byte 0
+char4_p1_index1_y2:	.byte 0; $06b0
 char4_p1_index1_t2:	.byte 0
 char4_p1_index1_s2:	.byte 0
 char4_p1_index1_x2:	.byte 0
@@ -667,7 +674,7 @@ char4_p1_index4_t2:	.byte 0
 char4_p1_index4_s2:	.byte 0
 char4_p1_index4_x2:	.byte 0
 
-char4_p2_index1_y2:	.byte 0
+char4_p2_index1_y2:	.byte 0; $06c0
 char4_p2_index1_t2:	.byte 0
 char4_p2_index1_s2:	.byte 0
 char4_p2_index1_x2:	.byte 0
@@ -707,7 +714,7 @@ sw_index1_y2:		.byte 0
 sw_index1_t2:		.byte 0
 sw_index1_s2:		.byte 0
 sw_index1_x2:		.byte 0
-sw_index2_y2:		.byte 0
+sw_index2_y2:		.byte 0; 0630
 sw_index2_t2:		.byte 0
 sw_index2_s2:		.byte 0
 sw_index2_x2:		.byte 0
@@ -723,7 +730,7 @@ boss_index1_y2:		.byte 0
 boss_index1_t2:		.byte 0
 boss_index1_s2:		.byte 0
 boss_index1_x2:		.byte 0
-boss_index2_y2:		.byte 0
+boss_index2_y2:		.byte 0; 0640
 boss_index2_t2:		.byte 0
 boss_index2_s2:		.byte 0
 boss_index2_x2:		.byte 0
@@ -739,7 +746,7 @@ boss_index5_y2:		.byte 0
 boss_index5_t2:		.byte 0
 boss_index5_s2:		.byte 0
 boss_index5_x2:		.byte 0
-boss_index6_y2:		.byte 0
+boss_index6_y2:		.byte 0; 0650
 boss_index6_t2:		.byte 0
 boss_index6_s2:		.byte 0
 boss_index6_x2:		.byte 0
@@ -755,7 +762,7 @@ boss_index9_y2:		.byte 0
 boss_index9_t2:		.byte 0
 boss_index9_s2:		.byte 0
 boss_index9_x2:		.byte 0
-boss_index10_y2:		.byte 0
+boss_index10_y2:		.byte 0; 0660
 boss_index10_t2:		.byte 0
 boss_index10_s2:		.byte 0
 boss_index10_x2:		.byte 0
@@ -771,7 +778,7 @@ boss_index13_y2:		.byte 0
 boss_index13_t2:		.byte 0
 boss_index13_s2:		.byte 0
 boss_index13_x2:		.byte 0
-boss_index14_y2:		.byte 0
+boss_index14_y2:		.byte 0; 0670
 boss_index14_t2:		.byte 0
 boss_index14_s2:		.byte 0
 boss_index14_x2:		.byte 0
@@ -787,7 +794,7 @@ boss_index17_y2:		.byte 0
 boss_index17_t2:		.byte 0
 boss_index17_s2:		.byte 0
 boss_index17_x2:		.byte 0
-boss_index18_y2:		.byte 0
+boss_index18_y2:		.byte 0; 0680
 boss_index18_t2:		.byte 0
 boss_index18_s2:		.byte 0
 boss_index18_x2:		.byte 0
@@ -803,7 +810,7 @@ boss_index21_y2:		.byte 0
 boss_index21_t2:		.byte 0
 boss_index21_s2:		.byte 0
 boss_index21_x2:		.byte 0
-boss_index22_y2:		.byte 0
+boss_index22_y2:		.byte 0; 0690
 boss_index22_t2:		.byte 0
 boss_index22_s2:		.byte 0
 boss_index22_x2:		.byte 0
@@ -819,7 +826,7 @@ boss_index25_y2:		.byte 0
 boss_index25_t2:		.byte 0
 boss_index25_s2:		.byte 0
 boss_index25_x2:		.byte 0
-boss_index26_y2:		.byte 0
+boss_index26_y2:		.byte 0; 06A0
 boss_index26_t2:		.byte 0
 boss_index26_s2:		.byte 0
 boss_index26_x2:		.byte 0
@@ -835,7 +842,7 @@ boss_index29_y2:		.byte 0
 boss_index29_t2:		.byte 0
 boss_index29_s2:		.byte 0
 boss_index29_x2:		.byte 0
-boss_index30_y2:		.byte 0
+boss_index30_y2:		.byte 0; 06B0
 boss_index30_t2:		.byte 0
 boss_index30_s2:		.byte 0
 boss_index30_x2:		.byte 0
@@ -851,7 +858,7 @@ boss_index33_y2:		.byte 0
 boss_index33_t2:		.byte 0
 boss_index33_s2:		.byte 0
 boss_index33_x2:		.byte 0
-boss_index34_y2:		.byte 0
+boss_index34_y2:		.byte 0; 06C0
 boss_index34_t2:		.byte 0
 boss_index34_s2:		.byte 0
 boss_index34_x2:		.byte 0
@@ -867,7 +874,7 @@ boss_index37_y2:		.byte 0
 boss_index37_t2:		.byte 0
 boss_index37_s2:		.byte 0
 boss_index37_x2:		.byte 0
-boss_index38_y2:		.byte 0
+boss_index38_y2:		.byte 0; 06D0
 boss_index38_t2:		.byte 0
 boss_index38_s2:		.byte 0
 boss_index38_x2:		.byte 0
@@ -883,11 +890,16 @@ boss_index41_y2:		.byte 0
 boss_index41_t2:		.byte 0
 boss_index41_s2:		.byte 0
 boss_index41_x2:		.byte 0
-boss_index42_y2:		.byte 0
+boss_index42_y2:		.byte 0; 06E0
 boss_index42_t2:		.byte 0
 boss_index42_s2:		.byte 0
 boss_index42_x2:		.byte 0
 boss_index43_y2:		.byte 0
 boss_index43_t2:		.byte 0
 boss_index43_s2:		.byte 0
-boss_index43_x2:		.byte 0
+boss_index43_x2:		.byte 0; 06E7
+; 9‚Â‚ß
+player9_y2:	.byte 0; $06E8
+player9_t2:	.byte 0; $06E9
+player9_s2:	.byte 0; $06EA
+player9_x2:	.byte 0; $06EB

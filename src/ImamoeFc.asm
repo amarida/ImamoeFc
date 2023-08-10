@@ -51,7 +51,7 @@
 	lda #$00
 	sta $2000
 	sta $2001
-	sta ppu2000
+	;sta ppu2000
 
 ;counter_hit: .byte 1
 ;DoubleRAM: .word 2
@@ -201,7 +201,7 @@ break:
 ; スクリーンオン
 	lda #%00001100	; VBlank割り込みなし、スプライトが1、VRAM増加量32byte(縦)
 	sta $2000
-	sta ppu2000
+	;sta ppu2000
 
 ; スクロール設定
 	lda	#$00
@@ -211,7 +211,7 @@ break:
 ; 割り込み開始
 	lda #%10001100	; VBlank割り込みあり　VRAM増加量32byte
 	sta $2000
-	sta ppu2000
+	;sta ppu2000
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; メインループ
@@ -775,6 +775,8 @@ paletteBoss:
 	.byte	$0f, $27, $39, $0f	; ボスベース
 	.byte	$0f, $1c, $3c, $0f	; ボスしっぽ	ボタン
 	.byte	$0f, $06, $02, $0f	; ボス中心部
+palette4egao:
+	.byte	$0f, $23, $37, $02
 
 palettes_bg:
 	.byte	$0f, $0f, $00, $10	; bg色1

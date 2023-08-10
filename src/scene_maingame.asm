@@ -126,7 +126,7 @@ waitZeroSpriteHit:
 .endproc
 
 .proc waitScan			; 何もせず待つ
-	ldx #157	;#167
+	ldx #137;	#157	;#167
 waitScanSub:
 	dex
 	bne waitScanSub
@@ -148,6 +148,12 @@ waitScanSub:
 	beq case_boss_maingame
 	cmp #5
 	beq case_boss_conclusion
+	cmp #6
+	beq case_boss_player_joy
+	cmp #7
+	beq case_boss_player_joy_wait
+	cmp #8
+	beq case_boss_player_peace_wait
 
 case_play_bgm:
 	jsr PlayBgmIntroduction
@@ -182,8 +188,36 @@ case_boss_conclusion:
 	;jsr UpdateMaingame
 	jmp case_break
 
-	case_break:
+case_boss_player_joy:
+	; プレイヤーを喜ばす
+	jsr Player_SetJoy
+	inc scene_update_step
+	lda #0
+	sta player_joy_wait
 
+	jmp case_break
+
+case_boss_player_joy_wait:
+    inc player_joy_wait
+	lda player_joy_wait
+	cmp #100
+	bne next_skip
+	inc scene_update_step
+	lda #0
+	sta player_joy_wait
+	jsr Player_SetPeace
+	next_skip:
+	jmp case_break
+
+case_boss_player_peace_wait:
+    inc player_joy_wait
+	lda player_joy_wait
+	cmp #100
+	jmp case_break;
+	
+case_clear_walk:
+	
+	case_break:
 
 	rts	; サブルーチンから復帰します。
 .endproc
@@ -434,6 +468,19 @@ update_break:
 .proc UpdateBossMaingame
 
 	jsr BossUpdate
+	; ボスが死亡判定になったら次のステップへ
+	lda boss_alive_flag
+	cmp #0
+	bne skip
+
+	lda #6
+	sta scene_update_step
+
+	; パレット4を笑顔
+	lda #11
+	sta palette_change_state
+
+skip:
 
 	rts
 .endproc
@@ -1056,6 +1103,8 @@ skip_bcd1hi:
 	beq case_3binosisi
 	cmp #10
 	beq case_234boss
+	cmp #11
+	beq case_4egao
 
 case_none:
 	jmp break
@@ -1079,7 +1128,8 @@ case_3binosisi:
 	jmp change_palette_3_binosisi
 case_234boss:
 	jmp change_palette_234_boss
-
+case_4egao:
+	jmp change_palette_4_egao
 
 change_palette_2_tamanegi:
 ; パレット2をタマネギ色にする
@@ -1345,6 +1395,33 @@ copypal_234_boss:
 	inx
 	dey
 	bne	copypal_234_boss
+
+	clc
+	lda #%10001100	; VRAM増加量32byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	jmp break
+
+change_palette_4_egao:
+	; パレット4を笑顔
+	clc
+	lda #%10001000	; VRAM増加量1byte
+	adc current_draw_display_no	; 画面０か１
+	sta $2000
+
+	lda	#$3f
+	sta	$2006
+	lda	#$1c
+	sta	$2006
+	ldx	#0
+	ldy	#4
+copypal_4_egao:
+	lda	palette4egao, x
+	sta $2007
+	inx
+	dey
+	bne	copypal_4_egao
 
 	clc
 	lda #%10001100	; VRAM増加量32byte
