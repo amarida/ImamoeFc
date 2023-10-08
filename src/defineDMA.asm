@@ -472,7 +472,7 @@ player9_t:	.byte 0
 player9_s:	.byte 0
 player9_x:	.byte 0
 
-
+; スプライトDMA用$0600～$06ff
 .org $0600
 spriteZero_y2:		.byte 0
 spriteZero_t2:		.byte 0

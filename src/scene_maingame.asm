@@ -154,69 +154,65 @@ waitScanSub:
 	beq case_boss_player_joy_wait
 	cmp #8
 	beq case_boss_player_peace_wait
+	cmp #9
+	beq case_clear_walk_to_castle
+	cmp #10
+	beq case_next_stage
 
 case_play_bgm:
 	jsr PlayBgmIntroduction
 	jsr UpdateMaingame
-
-	inc scene_update_step
-
+	inc scene_update_step; 0→1
 	jmp case_break
-
 case_maingame:
 	jsr UpdateMaingame
-
 	jmp case_break
-
 case_boss_scroll:
 	jsr UpdateBossScroll
-
 	jmp case_break
-
 case_boss_introduction:
 	jsr UpdateBossIntroduction
-
 	jmp case_break
-
 case_boss_maingame:
 	jsr UpdateBossMaingame
 	jsr UpdateMaingame
 	jmp case_break
-
 case_boss_conclusion:
 	jsr UpdateBossMaingame
 	;jsr UpdateMaingame
 	jmp case_break
-
 case_boss_player_joy:
 	; プレイヤーを喜ばす
 	jsr Player_SetJoy
-	inc scene_update_step
+	inc scene_update_step ; 6→7
 	lda #0
 	sta player_joy_wait
-
 	jmp case_break
-
 case_boss_player_joy_wait:
     inc player_joy_wait
 	lda player_joy_wait
 	cmp #100
 	bne next_skip
-	inc scene_update_step
+	inc scene_update_step ; 7→8
 	lda #0
 	sta player_joy_wait
 	jsr Player_SetPeace
 	next_skip:
 	jmp case_break
-
 case_boss_player_peace_wait:
     inc player_joy_wait
 	lda player_joy_wait
 	cmp #100
+	bne next_skip2
+	inc scene_update_step ; 8→9
+	next_skip2:
 	jmp case_break;
-	
-case_clear_walk:
-	
+case_clear_walk_to_castle:
+	jsr UpdateBossScroll
+	jmp case_break
+case_next_stage:
+	jmp case_break
+
 	case_break:
 
 	rts	; サブルーチンから復帰します。
@@ -410,13 +406,22 @@ eor_skip:
 	adc #0
 	sta field_scroll_x_hi
 
+ 	lda scene_update_step
+	cmp #2
+	beq Confirm1
+	; 城
+	jsr ConfirmScrollPos2
+	jmp ConfirmBreak
+	Confirm1:
 	; 所定位置に着いたか
 	jsr ConfirmScrollPos
+
+	ConfirmBreak:
 
 	rts ;  サブルーチンから復帰します。
 .endproc
 
-; 所定位置に着いたか
+; 所定位置に着いたか（ボス前のスクロール）
 .proc ConfirmScrollPos
 
 	lda field_scroll_x_hi
@@ -429,6 +434,22 @@ eor_skip:
 
 	lda #1 ; 1:火吹き
 	sta boss_status
+
+skip:
+
+	rts ;  サブルーチンから復帰します。
+.endproc
+
+; 所定位置に着いたか（城へのスクロール）
+.proc ConfirmScrollPos2
+
+	lda field_scroll_x_hi
+	cmp #9
+	bne skip
+
+	; 所定位置に着いたら
+	lda #10 ; case_next_stage
+	sta scene_update_step
 
 skip:
 
