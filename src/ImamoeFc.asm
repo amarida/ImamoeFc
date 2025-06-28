@@ -20,7 +20,7 @@
 .include "sound.asm"
 .include "String.asm"
 .include "boss.asm"
-.include "button.asm"
+.include "Button.asm"
 
 .include "scene_title.asm"
 .include "scene_introduction.asm"

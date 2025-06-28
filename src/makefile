@@ -11,15 +11,15 @@ OBJECTS	=	$(CSOURCES:.c=.o) $(ASMSOURCES:.asm=.o)
 LIBRARIES =
 #-------------------------------------------------------------------------------
 all :	$(OBJECTS) $(LIBRARIES)
-	LD65 -o ‚¢‚Ü‚¢‚¿–G‚¦‚È‚¢–º.nes --config ImamoeFc.cfg --obj $(OBJECTS) -m ImamoeFc.map
+	$(LD65) -o ImamoeFc.nes --config ImamoeFc.cfg --obj $(OBJECTS) -m ImamoeFc.map
 
 .SUFFIXES : .asm .o
 
 .c.o :
-	CL65 -t none -o $*.o -c -O $*.c
+	$(CL65) -t none -o $*.o -c -O $*.c
 
 .asm.o :
-	CL65 -t none -o $*.o -c $*.asm
+	$(CL65) -t none -o $*.o -c $*.asm
 
 clean :
 	del *.smc
